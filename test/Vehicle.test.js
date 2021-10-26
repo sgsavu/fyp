@@ -44,29 +44,29 @@ contract('Vehicle', (accounts) => {
   describe('minting', async () => {
 
     it('creates a new token', async () => {
-      const result = await contract.mint('B90EWZ')
+      const result = await contract.mint('https://sgsavu.com')
       const totalSupply = await contract.totalSupply()
 
       assert.equal(totalSupply, 1, 'number of tokens correct')
 
       const event = result.logs[0].args
-      assert.equal(event.tokenId.toNumber(), 1, 'tokenId is correct')
+      assert.equal(event.tokenId.toNumber(), 0, 'tokenId is correct')
       assert.equal(event.from, '0x0000000000000000000000000000000000000000', 'from is correct')
       assert.equal(event.to, accounts[0], 'to is correct')
 
-      const name = await contract.getVehiclePlateForTokenId(1)
-      assert.equal(name,"B90EWZ", 'name is correct')
+      const name = await contract.tokenURI(0)
+      assert.equal(name,"https://sgsavu.com", 'uri is correct')
 
-      await contract.mint('B90EWZ').should.be.rejected;
+      //await contract.mint('https://sgsavu.com').should.be.rejected;
     })
   })
 
   describe('indexing', async () => {
     it('lists vehicles', async () => {
 
-      await contract.mint('B90EWZ2')
-      const event = await contract.mint('B90EWZ3',{ from: accounts[1] })
-      const event2 = await contract.mint('B90EWZ4')
+      await contract.mint('https://sgsavu.com')
+      const event = await contract.mint('https://sgsavu.com',{ from: accounts[1] })
+      const event2 = await contract.mint('https://sgsavu.com')
 
       assert.equal(event.logs[0].args.to, accounts[1])
       assert.equal(event2.logs[0].args.to, accounts[0])
@@ -74,8 +74,8 @@ contract('Vehicle', (accounts) => {
       const totalSupply = await contract.totalSupply()
       assert.equal(totalSupply, 4, 'number of tokens correct')
 
-      for (var i = 1; i <= totalSupply; i++) {
-        const vehicle = await contract.getVehiclePlateForTokenId(i)
+      for (var i = 0; i < totalSupply; i++) {
+        const vehicle = await contract.tokenURI(i)
         console.log(vehicle)
       }
     })
@@ -85,6 +85,18 @@ contract('Vehicle', (accounts) => {
       const event2 = await contract.balanceOf(accounts[1])
       assert.equal(event.words[0], 3)
       assert.equal(event2.words[0], 1)
+    })
+
+    it ('lists my tokens', async() =>{
+      const event0 = await contract.balanceOf(accounts[1])
+      const allMyTokens = event0.words[0]
+
+      for (var i = 0; i < allMyTokens; i++) {
+        const vehicle = await contract.tokenOfOwnerByIndex(accounts[1],i)
+        console.log(vehicle)
+      }
+
+    
     })
 
   })

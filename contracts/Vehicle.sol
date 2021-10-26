@@ -2,45 +2,56 @@
 pragma solidity >=0.6.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Vehicle is ERC721 {
+contract Vehicle is ERC721Enumerable {
 
-    string[] private vehicles;
+    using Counters for Counters.Counter;
+    Counters.Counter _tokenIds;
 
-    mapping (uint => string) _vehiclePlate;
-    mapping(string => bool) _vehicleExists;
+    uint256[] private _allTokens;
+    mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
+    mapping(uint256 => string) _tokenURIs;
 
-    mapping(uint => address) _vehicleToOwner;
-    mapping(address => uint)_ownerVehicleCount;
 
-    constructor() ERC721("Vehicle", "VHC"){
+    struct VehicleToken {
+        uint256 id;
+        string uri;
     }
 
-    function totalSupply() external view returns (uint256){
-        return vehicles.length;
-    }
+    constructor() ERC721("Vehicle", "VHC") {}
 
-    modifier notRegistered(string memory _vehicle) {
-        require(!_vehicleExists[_vehicle]);
+    /*
+    modifier notRegistered(uint256 tokenId) {
+        require(_tokenURIs[tokenId]== );
         _;
     }
+    */
 
-    function mint(string memory _vehicle) public notRegistered(_vehicle){
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
+        _tokenURIs[tokenId] = _tokenURI;
+    }
 
-        vehicles.push(_vehicle);
-        uint _id = vehicles.length;
-        _vehiclePlate[_id] = _vehicle;
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        require(_exists(tokenId));
+        return _tokenURIs[tokenId];
+    }
 
+    function mint(string memory uri) public returns (uint256){
+
+        uint256 _id = _tokenIds.current();
         _mint(msg.sender, _id);
-        _vehicleToOwner[_id] = msg.sender;
-        _ownerVehicleCount[msg.sender] = _ownerVehicleCount[msg.sender] + 1;
-        _vehicleExists[_vehicle] = true;
+        _setTokenURI(_id, uri);
+        _tokenIds.increment();
+        return _id;
     }
-
-    function getVehiclePlateForTokenId(uint _tokenId) public view returns (string memory){
-        return _vehiclePlate[_tokenId];
-    }
-
 
 }
