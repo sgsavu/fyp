@@ -54,7 +54,8 @@ contract('Vehicle', (accounts) => {
       assert.equal(event.from, '0x0000000000000000000000000000000000000000', 'from is correct')
       assert.equal(event.to, accounts[0], 'to is correct')
 
-      const name = await contract.tokenURI(0)
+      console.log("this"mawait contract.tokenURI(20))
+      const name = await contract.tokenURI(20)
       assert.equal(name,"https://sgsavu.com", 'uri is correct')
 
       //await contract.mint('https://sgsavu.com').should.be.rejected;
@@ -75,7 +76,7 @@ contract('Vehicle', (accounts) => {
       assert.equal(totalSupply, 4, 'number of tokens correct')
 
       for (var i = 0; i < totalSupply; i++) {
-        const vehicle = await contract.tokenURI(i)
+        const vehicle = await contract.tokenURI(5)
         console.log(vehicle)
       }
     })
@@ -98,6 +99,8 @@ contract('Vehicle', (accounts) => {
 
     
     })
+
+    
 
   })
 

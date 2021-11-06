@@ -12,9 +12,11 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
 
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 private constant ADMIN_FOR_MINTER_ROLE = keccak256("ADMIN_FOR_MINTER_ROLE");
 
-    mapping(uint256 => string) _tokenURIs;
+    mapping(uint256 => string) private _tokenURIs;
+    mapping(string => bool) private _uriRegistered;
     mapping(uint256 => bool) private _forSale;
 
     function supportsInterface(bytes4 interfaceId)
@@ -28,16 +30,20 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
 
     constructor() ERC721("Vehicle", "VHC") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(ADMIN_FOR_MINTER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
-        
+        _setRoleAdmin(MINTER_ROLE,ADMIN_FOR_MINTER_ROLE);
     }
 
-    /*
-    modifier notRegistered(uint256 tokenId) {
-        require(_tokenURIs[tokenId]== );
+    modifier notAlreadyRegistered(string memory uri) {
+        require(_uriRegistered[uri] == false);
         _;
     }
-    */
+
+    modifier onlyOwnerOf(uint256 tokenId){
+        require(ownerOf(tokenId)==msg.sender);
+        _;
+    }
 
 
     function getTokensForSale() public view returns (uint256[] memory){
@@ -63,8 +69,7 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
 
     
 
-    function listForSale(uint256 tokenId) public {
-        require(ownerOf(tokenId)==msg.sender);
+    function listForSale(uint256 tokenId) public onlyOwnerOf(tokenId){
         _forSale[tokenId] = true;
     }
 
@@ -87,11 +92,12 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         return _tokenURIs[tokenId];
     }
 
-    function mint(string memory uri) public onlyRole(MINTER_ROLE) returns (uint256) {
+    function mint(string memory uri) public onlyRole(MINTER_ROLE) notAlreadyRegistered(uri) returns (uint256) {
         uint256 _id = _tokenIds.current();
         _mint(msg.sender, _id);
         _setTokenURI(_id, uri);
-        _forSale[_id]=true;
+        _uriRegistered[uri] = true;
+        _forSale[_id] = true;
         _tokenIds.increment();
         return _id;
     }
