@@ -1,15 +1,52 @@
 
 
 .dropzone{
-    flex-direction: column;
+    
     justify-content: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     height: 95%;
+    color: black;
     --tw-space-y-reverse: 0;
     margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
     border-width: 2px;
     border-style: dashed;
-    width: 100%;
 }
+
+.dropzone-active{
+    
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 95%;
+    color: white;
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+    border-width: 2px;
+    border-style: dashed;
+}
+
+
+.dropzone p{
+
+    justify-content: center;
+    margin-top: 5%;
+    align-items: center;
+    color: black;
+    text-align: center;
+}
+
+.dropzone-active p{
+
+    justify-content: center;
+    margin-top: 5%;
+    align-items: center;
+    color: black;
+    text-align: center;
+}
+
 

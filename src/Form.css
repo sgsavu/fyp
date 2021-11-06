@@ -37,17 +37,17 @@
     rgb(39, 176, 255) 0%,
     rgb(0, 232, 236) 100%
   );
-  padding: 1rem;
+  padding: 4rem;
 	width: 100%;
+  justify-content: center;
+    align-items: center;
 }
 
+
 .form-img {
-  width: 80%;
-  height: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 90%;
+
+
 }
 
 
@@ -72,7 +72,7 @@
 
 .form h1 {
   font-size: 1rem;
-  text-align: start;
+  text-align: center;
   width: 80%;
   margin-bottom: 1rem;
   color: #fff;
@@ -112,15 +112,16 @@
 }
 
 .form-input-btn {
-  width: 80%;
-  height: 50px;
-  margin-top: 10px;
+  width: 20%;
+  height: 40px;
+  margin-top: 20px;
   border-radius: 2px;
   background: linear-gradient(
     90deg,
     rgb(39, 176, 255) 0%,
     rgb(0, 232, 236) 100%
   );
+ 
   outline: none;
   border: none;
   color: #fff;

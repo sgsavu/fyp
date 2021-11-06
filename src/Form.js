@@ -18,32 +18,29 @@ const Form = () => {
     const data = useSelector((state) => state.data);
     let [buffer, setBuffer] = useState([]);
     const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
-    const [files, setFiles] = useState([])
+    const [preview, setPreview] = useState([])
 
 
-    const { getRootProps, getInputProps, isDragAccept, isDragReject, } = useDropzone({
-        isDragActive: () => {
+    const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
 
-        },
         multiple: false,
         accept: "image/*",
         onDrop: (acceptedFiles) => {
-
-
             const reader = new FileReader();
-            reader.onload = (event) => {
-                console.log(reader.result)
-                setBuffer(Buffer(reader.result.split(",")[1], "base64"))
-                console.log('buffer', buffer)
-            };
-
             reader.readAsDataURL(acceptedFiles[0]);
-
-            setFiles(
+            reader.onload = () => {
+                setBuffer(Buffer(reader.result.split(",")[1], "base64"))
+            };
+           
+            setPreview(
                 URL.createObjectURL(acceptedFiles[0])
             )
-
-
+            const i = new Image()
+            const w = preview
+            i.src = preview
+    
+            console.log(i.width)
+            console.log(i.height)
         },
     })
 
@@ -115,26 +112,30 @@ const Form = () => {
     };
 
 
+    function isBufferEmpty()
+    {   
+        return Object.keys(buffer).length == 0
+    }
 
     function submitForm() {
         setIsSubmitted(true);
     }
 
 
-
     return (
-
+        
         <div className='form-container'>
             <div className='form-content-left'>
-                <div {...getRootProps()} className="dropzone">
+            <p>Vehicle Image</p>
+                <div {...getRootProps()} className={isDragActive?"dropzone-active":"dropzone"}>
                     <input {...getInputProps()} />
-                    {isDragAccept ? <p>Drop files here</p> : <p>Don't drop files here</p>}
-                    <img src={files} className=".form-img"/>
+                    <img src={preview} className="form-img"/>
+                    <p>Drag & drop <br></br> OR <br></br>Click to upload an image</p>
                 </div>
             </div>
 
             {!isSubmitted ? (
-                <FormFields submitForm={startMintingProcess} />
+                <FormFields submitForm={startMintingProcess} isBufferEmpty={isBufferEmpty}/>
             ) : (
                 null
             )}
