@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
-import './Form.css';
-import { useDispatch, useSelector } from "react-redux";
-import { nextStep, prevStep, handleChange } from "./redux/minting/formActions";
-import validateInfo from './validate';
+import React from 'react';
+import './styles/Form.css';
+import { useSelector } from "react-redux";
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
 
-const FormSignup = ({ submitForm, isBufferEmpty }) => {
+const FormSignup = () => {
 
   const form = useSelector((state) => state.form);
-  let errors = validateInfo(form.step,form)
 
   return (
 

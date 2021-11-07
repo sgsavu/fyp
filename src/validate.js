@@ -1,8 +1,8 @@
-export default function validateInfo(step,values) {
+export default function validate(step,values) {
   let errors = {};
 
   switch (step) {
-    case 0:
+    case 1:
       if (!values.company ) {
         errors.company = 'Field required';
       }
@@ -19,7 +19,7 @@ export default function validateInfo(step,values) {
         errors.year = 'Field required';
       }
       break;
-    case 1:
+    case 2:
       if (!values.color ) {
         errors.color = 'Field required';
       }
@@ -36,7 +36,7 @@ export default function validateInfo(step,values) {
         errors.fuel = 'Field required';
       }
       break;
-    case 2:
+    case 3:
       if (!values.engine ) {
         errors.engine = 'Field required';
       }
@@ -55,5 +55,6 @@ export default function validateInfo(step,values) {
       break;
   }
 
+  
   return errors;
 }

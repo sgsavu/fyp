@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './Form.css';
+import './styles/Form.css';
 import { useDispatch, useSelector } from "react-redux";
-import { handleSubmit, prevStep, handleChange } from "./redux/minting/formActions";
+import { startSubmit, prevStep, handleChange,checkForErrors } from "./redux/minting/formActions";
 import validateInfo from './validate';
 
 const Step3 = () => {
@@ -10,13 +10,17 @@ const Step3 = () => {
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
     let errors = validateInfo(form.step,form)
+    console.log(form)
 
   return ( 
-    <div className='form-content-right'>
+    <div>
           <span className='back-btn' onClick={ (e) =>dispatch(prevStep(form.step)) }>←</span>
           <span className='page-status'>{form.step}/3</span>
 
-          <form onSubmit={ (e) =>dispatch(handleSubmit(e)) } className='form' noValidate>
+          <form onSubmit={(e) => {
+        dispatch(checkForErrors(e))
+        dispatch(startSubmit(e))
+      }} className='form' noValidate>
             <h1>
               Form3
             </h1>
@@ -68,9 +72,10 @@ const Step3 = () => {
               />
               {errors.driver_side && <p>{errors.driver_side}</p>}
             </div>
-            <button className='form-input-btn' type='submit'>
+            {!form.submitting? <button className='form-input-btn' type='submit'>
               Confirm
-            </button>
+            </button> : null}
+            
 
           </form>
         </div>

@@ -2,113 +2,156 @@
 import store from "../store";
 import validate from "../../validate";
 
-const fetchUpdate = (payload) => {
-    return {
-      type: "UPDATE",
-      payload: payload,
-    };
-  };
+
 
 const fetchNextStep = (payload) => {
-    return {
-      type: "NEXT_STEP",
-      payload: payload,
-    };
+  return {
+    type: "NEXT_STEP",
+    payload: payload,
   };
+};
 
 const fetchPrevStep = (payload) => {
-    return {
-      type: "PREV_STEP",
-      payload: payload,
-    };
+  return {
+    type: "PREV_STEP",
+    payload: payload,
   };
+};
 
-  const fetchHandleSubmit = (payload) => {
-    return {
-      type: "HANDLE_SUBMIT",
-      payload: payload,
-    };
+const fetchUpdate = (payload) => {
+  return {
+    type: "UPDATE",
+    payload: payload,
   };
+};
+
+const fetchUploadImage = (payload) => {
+  return {
+    type: "UPLOAD_IMAGE",
+    payload: payload,
+  };
+};
 
 
+const fetchStartSubmit = () => {
+  return {
+    type: "START_SUBMIT",
+  };
+};
 
-  
+const fetchFinishSubmit = () => {
+  return {
+    type: "FINISH_SUBMIT",
+  };
+};
 
-  export const handleChange = e => {
-    return async (dispatch) => {
+const fetchErrorUpdate = (payload) => {
+  return {
+    type: "ERROR_UPDATE",
+    payload: payload,
+  };
+};
+
+
+const getStoreState = () => {
+  return store.getState().form;
+}
+
+
+export const handleChange = e => {
+  return async (dispatch) => {
 
     const { name, value } = e.target;
-    
-    dispatch(
-        fetchUpdate({name,value})
-        );
-    }
-  };
 
-  export const nextStep = (step) => {
-    return async (dispatch) => {
-      /*
+    dispatch(
+      fetchUpdate({ name, value })
+    );
+  }
+};
+
+export const nextStep = (step) => {
+  return async (dispatch) => {
+
+    const form = getStoreState();
+
+    if (form.errors && Object.entries(form.errors).length === 0) {
+      dispatch(
+        fetchNextStep({ step })
+      );
+    }
+
+  };
+};
+
+export const checkForErrors = e => {
+  return async (dispatch) => {
+
     e.preventDefault();
-    let es = validate(step,values)
-    setErrors(es);
-    */
+
+    const form = getStoreState();
+    let errors = validate(form.step, form)
+
+    dispatch(
+      fetchErrorUpdate({ errors })
+    );
+
+  };
+};
+
+export const prevStep = (step) => {
+  return async (dispatch) => {
+
+    dispatch(
+      fetchPrevStep({ step })
+    );
+
+  };
+};
+
+export const startSubmit = e => {
+  return async (dispatch) => {
+
+    e.preventDefault();
     /*
+
+    let es = validate(step,values)
+ 
     if (es && Object.entries(es).length === 0)
     {
-       
+      
     }
     */
-   console.log("bruh")
+
+    const form = getStoreState();
+
+    if (form.errors && Object.entries(form.errors).length === 0) {
+      if (form.preview != "https://designshack.net/wp-content/uploads/placeholder-image.png" && await form.buffer != []) {
+        dispatch(
+          fetchStartSubmit())
+      }
+    }
+
+
+  };
+};
+
+export const finishSubmit = e => {
+  return async (dispatch) => {
 
     dispatch(
-        fetchNextStep({step})
-      );
-      
-    };
+      fetchFinishSubmit())
   };
+};
 
-  export const prevStep = (step) => {
-    return async (dispatch) => {
-      /*
-    e.preventDefault();
-    
-    */
-   console.log("aye")
-
+export const uploadImage = (preview, buffer) => {
+  return async (dispatch) => {
     dispatch(
-        fetchPrevStep({step})
-      );
-      
-    };
+      fetchUploadImage({ preview, buffer })
+    );
   };
+};
 
-  export const handleSubmit = e => {
-    return async (dispatch) => {
-        /*
-        e.preventDefault();
-        let es = validate(step,values)
-        setErrors(es);
-    
-        if (es && Object.entries(es).length === 0)
-        {
-          if (!isBufferEmpty())
-          {
-            submitForm(values);
-            
-          }
-          //setIsSubmitting(true);
-    
-        }
 
-         dispatch(
-        fetchHandleSubmit({step})
-      );
-      
-        */
-    };
-  };
-
- 
 
 
 

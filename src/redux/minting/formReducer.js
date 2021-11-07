@@ -1,7 +1,9 @@
 
 const formFields = {
   step: 1,
-  image: "",
+  preview: "https://designshack.net/wp-content/uploads/placeholder-image.png",
+  buffer: [],
+  submitting: false,
   company: '',
   model: '',
   vhcid: '',
@@ -15,7 +17,7 @@ const formFields = {
   seats: '',
   driver_side: '',
   mileage: 0,
-  
+  errors : {}
 };
 
 const formReducer = (state = formFields, action) => {
@@ -31,12 +33,37 @@ const formReducer = (state = formFields, action) => {
         step: action.payload.step - 1,
       };
     case "UPDATE":
-        
-          return {
-            ...state,
-            [action.payload.name]:action.payload.value
-          }
-     
+
+      return {
+        ...state,
+        [action.payload.name]: action.payload.value
+      }
+    case "UPLOAD_IMAGE":
+
+      return {
+        ...state,
+        preview: action.payload.preview,
+        buffer: action.payload.buffer
+      }
+    case "START_SUBMIT":
+
+      return {
+        ...state,
+        submitting: true
+      }
+    case "FINISH_SUBMIT":
+
+      return {
+        ...formFields
+      }
+
+    case "ERROR_UPDATE":
+
+      return {
+        ...state,
+        errors: action.payload.errors
+      }
+
     default:
       return state;
   }

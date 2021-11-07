@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import './App.css';
+import './styles/App.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import MyVehicles from './pages/MyVehicles';
@@ -28,7 +28,9 @@ function App() {
 
 
   useEffect(() => {
+    
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
+      console.log("bruh")
       dispatch(fetchData(blockchain.account));
     }
   }, [blockchain.smartContract, dispatch]);
