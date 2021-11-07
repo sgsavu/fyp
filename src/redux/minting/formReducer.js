@@ -4,20 +4,22 @@ const formFields = {
   preview: "https://designshack.net/wp-content/uploads/placeholder-image.png",
   buffer: [],
   submitting: false,
-  company: '',
-  model: '',
-  vhcid: '',
-  year: '',
-  color: '',
-  body: '',
-  transmission: '',
-  fuel: '',
-  engine: '',
-  doors: '',
-  seats: '',
-  driver_side: '',
-  mileage: 0,
-  errors : {}
+  fields: {
+    company: '',
+    model: '',
+    vhcid: '',
+    year: '',
+    color: '',
+    body: '',
+    transmission: '',
+    fuel: '',
+    engine: '',
+    doors: '',
+    seats: '',
+    driver_side: '',
+    mileage: 0,
+  },
+  errors: {}
 };
 
 const formReducer = (state = formFields, action) => {
@@ -36,7 +38,10 @@ const formReducer = (state = formFields, action) => {
 
       return {
         ...state,
-        [action.payload.name]: action.payload.value
+        fields: {
+          ...state.fields,
+          [action.payload.name]: action.payload.value
+        }
       }
     case "UPLOAD_IMAGE":
 

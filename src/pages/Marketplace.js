@@ -1,18 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { connect } from "../redux/blockchain/blockchainActions";
-import { fetchData } from "../redux/data/dataActions";
 import * as s from "../styles/globalStyles";
-import styled from "styled-components";
 
 function Marketplace() {
 
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("");
-  const [NFTS, setNFTS] = useState([]);
 
     if (false)
   return (

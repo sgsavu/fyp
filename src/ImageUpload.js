@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './styles/Form.css';
 import './styles/drop.css';
 import { useDispatch, useSelector } from "react-redux";
@@ -10,8 +10,6 @@ const ImageUpload = () => {
 
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
-    let errors = validateInfo(form.step, form)
-
 
     const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
 

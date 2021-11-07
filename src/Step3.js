@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './styles/Form.css';
 import { useDispatch, useSelector } from "react-redux";
-import { startSubmit, prevStep, handleChange,checkForErrors } from "./redux/minting/formActions";
-import validateInfo from './validate';
+import { nextStep, prevStep, handleChange,checkForErrors } from "./redux/minting/formActions";
 
 const Step3 = () => {
   
 
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
-    let errors = validateInfo(form.step,form)
-    console.log(form)
 
   return ( 
     <div>
@@ -19,7 +16,7 @@ const Step3 = () => {
 
           <form onSubmit={(e) => {
         dispatch(checkForErrors(e))
-        dispatch(startSubmit(e))
+        dispatch(nextStep(form.step))
       }} className='form' noValidate>
             <h1>
               Form3
@@ -31,34 +28,34 @@ const Step3 = () => {
                 type='text'
                 name='engine'
                 placeholder='eg. V10'
-                value={form.engine}
+                value={form.fields.engine}
                 onChange={ (e) =>dispatch(handleChange(e)) }
               />
-              {errors.engine && <p>{errors.engine}</p>}
+              {form.errors.engine && <p>{form.errors.engine}</p>}
             </div>
             <div className='form-inputs'>
               <label className='form-label'>Number of doors</label>
               <input
                 className='form-input'
-                type='text'
+                type='number'
                 name='doors'
                 placeholder='eg. 5'
-                value={form.doors}
+                value={form.fields.doors}
                 onChange={ (e) =>dispatch(handleChange(e)) }
               />
-              {errors.doors && <p>{errors.doors}</p>}
+              {form.errors.doors && <p>{form.errors.doors}</p>}
             </div>
             <div className='form-inputs'>
               <label className='form-label'>Number of seats</label>
               <input
                 className='form-input'
-                type='text'
+                type='number'
                 name='seats'
                 placeholder='eg. 5'
-                value={form.seats}
+                value={form.fields.seats}
                 onChange={ (e) =>dispatch(handleChange(e)) }
               />
-              {errors.seats && <p>{errors.seats}</p>}
+              {form.errors.seats && <p>{form.errors.seats}</p>}
             </div>
             <div className='form-inputs'>
               <label className='form-label'>Driver Side</label>
@@ -67,14 +64,14 @@ const Step3 = () => {
                 type='text'
                 name='driver_side'
                 placeholder='eg. Left'
-                value={form.driver_side}
+                value={form.fields.driver_side}
                 onChange={ (e) =>dispatch(handleChange(e)) }
               />
-              {errors.driver_side && <p>{errors.driver_side}</p>}
+              {form.errors.driver_side && <p>{form.errors.driver_side}</p>}
             </div>
-            {!form.submitting? <button className='form-input-btn' type='submit'>
-              Confirm
-            </button> : null}
+            <button className='form-input-btn' type='submit'>
+              Next
+            </button>
             
 
           </form>

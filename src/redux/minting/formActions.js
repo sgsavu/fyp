@@ -125,10 +125,10 @@ export const startSubmit = e => {
     const form = getStoreState();
 
     if (form.errors && Object.entries(form.errors).length === 0) {
-      if (form.preview != "https://designshack.net/wp-content/uploads/placeholder-image.png" && await form.buffer != []) {
+  
         dispatch(
           fetchStartSubmit())
-      }
+  
     }
 
 

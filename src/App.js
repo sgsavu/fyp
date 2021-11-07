@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect} from "react";
 import './styles/App.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
@@ -10,9 +10,7 @@ import Mint from './pages/Mint';
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
-import { create } from "ipfs-http-client";
 import * as s from "./styles/globalStyles";
-import styled from "styled-components";
 
 
 
@@ -23,14 +21,11 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("");
 
 
   useEffect(() => {
     
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
-      console.log("bruh")
       dispatch(fetchData(blockchain.account));
     }
   }, [blockchain.smartContract, dispatch]);

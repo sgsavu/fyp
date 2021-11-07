@@ -1,11 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { connect } from "../redux/blockchain/blockchainActions";
-import { fetchData } from "../redux/data/dataActions";
 import * as s from "../styles/globalStyles";
-import styled from "styled-components";
-import { create } from "ipfs-http-client";
-import classNames from "classnames";
 
 
 function MyVehicles() {

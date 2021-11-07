@@ -1,5 +1,8 @@
-export default function validate(step,values) {
+export default function validate(step,form) {
   let errors = {};
+
+  let values = form.fields;
+
 
   switch (step) {
     case 1:
@@ -53,6 +56,14 @@ export default function validate(step,values) {
         errors.driver_side = 'Field required';
       }
       break;
+    case 4:
+      if (form.preview == "https://designshack.net/wp-content/uploads/placeholder-image.png" || form.buffer == [])
+      {
+        errors.image = 'Image required';
+      }
+
+    default:
+      
   }
 
   
