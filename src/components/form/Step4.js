@@ -9,6 +9,19 @@ const Step4 = () => {
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
 
+    const xd = () => {
+
+        let fildz = []
+        let valuz = []
+
+        for (const [key, value] of Object.entries(form.fields)) {
+            fildz = [...fildz, key]
+            valuz = [...fildz, value]
+        }
+
+        
+    }
+
     return (
         <div>
             <span className='back-btn' onClick={(e) => dispatch(prevStep(form.step))}>←</span>
@@ -19,26 +32,7 @@ const Step4 = () => {
                 dispatch(startSubmit(e))
             }} className='form' noValidate>
                 <h1>Confirm details</h1>
-              
-                {form?(
-
-                    
-
-
-                    () => {
-
-                        let fildz = []
-                        let valuz = []
-
-                        for (const [key, value] of Object.entries(form.fields)) {
-                            fildz = [...fildz, key]
-                            valuz = [...fildz, value]
-                        }
-
-                        
-                    }
-             ): null}
-               
+            
 
                 {!form.submitting ? <button className='form-input-btn' type='submit'>
                     Confirm
