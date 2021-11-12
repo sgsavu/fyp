@@ -1,7 +1,7 @@
 import React from 'react';
-import './styles/Form.css';
+import '../../styles/Form.css';
 import { useDispatch, useSelector } from "react-redux";
-import { nextStep, prevStep, handleChange,checkForErrors } from "./redux/minting/formActions";
+import { nextStep, prevStep, handleChange,checkForErrors } from "../../redux/minting/formActions";
 
 const Step3 = () => {
   

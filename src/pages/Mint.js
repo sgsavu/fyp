@@ -1,8 +1,8 @@
 import React, { useEffect} from 'react';
 import '../styles/Form.css';
 import '../styles/drop.css';
-import FormFields from '../FormFields';
-import ImageUpload from '../imageUpload';
+import FormFields from '../components/form/FormFields';
+import ImageUpload from '../components/form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
 import { fetchData } from "../redux/data/dataActions";

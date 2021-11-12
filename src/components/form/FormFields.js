@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles/Form.css';
+import '../../styles/Form.css';
 import { useSelector } from "react-redux";
 import Step1 from './Step1';
 import Step2 from './Step2';

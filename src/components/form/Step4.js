@@ -1,7 +1,7 @@
 import React from 'react';
-import './styles/Form.css';
+import '../../styles/Form.css';
 import { useDispatch, useSelector } from "react-redux";
-import { startSubmit, prevStep, handleChange, checkForErrors } from "./redux/minting/formActions";
+import { startSubmit, prevStep, handleChange, checkForErrors } from "../../redux/minting/formActions";
 
 const Step4 = () => {
 
@@ -19,10 +19,30 @@ const Step4 = () => {
                 dispatch(startSubmit(e))
             }} className='form' noValidate>
                 <h1>Confirm details</h1>
-                
+              
+                {form?(
+
+                    
+
+
+                    () => {
+
+                        let fildz = []
+                        let valuz = []
+
+                        for (const [key, value] of Object.entries(form.fields)) {
+                            fildz = [...fildz, key]
+                            valuz = [...fildz, value]
+                        }
+
+                        
+                    }
+             ): null}
+               
+
                 {!form.submitting ? <button className='form-input-btn' type='submit'>
                     Confirm
-                </button> : <button className='form-input-btn'  disabled type='loading'>
+                </button> : <button className='form-input-btn' disabled type='loading'>
                     Loading...
                 </button>}
 

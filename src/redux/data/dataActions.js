@@ -1,6 +1,8 @@
 // log
 import store from "../store";
 
+const keccak256 = require('keccak256')
+
 const fetchDataRequest = () => {
   return {
     type: "CHECK_DATA_REQUEST",
@@ -47,10 +49,39 @@ async function getTokenURI (token){
   .call();
 }
 
+async function getExtraRoles (account){
+
+  if (await store
+    .getState()
+    .blockchain.smartContract.methods
+    .hasRole("0x00",account)
+    .call())
+    return "ADMIN"
+  else if (await store
+      .getState()
+      .blockchain.smartContract.methods
+      .hasRole(keccak256('AUTHORITY_ROLE'),account)
+      .call())
+      return "AUTHORITY"
+  else if (await store
+    .getState()
+    .blockchain.smartContract.methods
+    .hasRole(keccak256('MINTER_ROLE'),account)
+    .call())
+    return "MINTER"
+  else
+    return "USER"
+  
+}
+
 export const fetchData = (account) => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
+
+
+      let role = await getExtraRoles(account)
+
       let name = await store
         .getState()
         .blockchain.smartContract.methods.name()
@@ -106,12 +137,13 @@ export const fetchData = (account) => {
       let forSaleTokensMetadata = await fetchMetadata(forSaleTokenURIs)
 
       console.log("for sale",forSaleTokensMetadata)
-      
+    
       dispatch(
         fetchDataSuccess({
           name,
           myTokensMetadata,
-          forSaleTokensMetadata
+          forSaleTokensMetadata,
+          role,
         })
       );
     } catch (err) {

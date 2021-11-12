@@ -6,11 +6,15 @@ import MyVehicles from './pages/MyVehicles';
 import Marketplace from './pages/Marketplace';
 import Verify from './pages/Verify';
 import Mint from './pages/Mint';
+import Admin from './pages/Admin';
 
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
+
+import ControlledRoute from './components/ControlledRoute';
+
 
 
 
@@ -52,12 +56,14 @@ function App() {
           ) : null}
         </s.Container>
       ) : <Router>
-        <Navbar />
+        <Navbar>
+        </Navbar>
         <Switch>
-          <Route path='/' exact component={MyVehicles} />
-          <Route path='/marketplace' component={Marketplace} />
-          <Route path='/verify' component={Verify} />
-          <Route path='/mint' component={Mint} />
+          <ControlledRoute path='/' exact component={MyVehicles}/>
+          <ControlledRoute path='/marketplace' component={Marketplace} />
+          <ControlledRoute path='/verify' component={Verify} />
+          <ControlledRoute path='/mint' component={Mint} />
+          <ControlledRoute path='/admin' component={Admin} />
         </Switch>
       </Router> }
       

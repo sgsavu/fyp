@@ -1,6 +1,6 @@
 // log
 import store from "../store";
-import validate from "../../validate";
+import validate from "../../components/form/validate";
 
 
 

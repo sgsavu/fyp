@@ -13,6 +13,7 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     Counters.Counter _tokenIds;
 
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 private constant AUTHORITY_ROLE = keccak256("AUTHORITY_ROLE");
     bytes32 private constant ADMIN_FOR_MINTER_ROLE = keccak256("ADMIN_FOR_MINTER_ROLE");
 
     mapping(uint256 => string) private _tokenURIs;

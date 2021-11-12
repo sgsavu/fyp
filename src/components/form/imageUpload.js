@@ -1,8 +1,8 @@
 import React from 'react';
-import './styles/Form.css';
-import './styles/drop.css';
+import '../../styles/Form.css';
+import '../../styles/drop.css';
 import { useDispatch, useSelector } from "react-redux";
-import { uploadImage } from "./redux/minting/formActions";
+import { uploadImage } from "../../redux/minting/formActions";
 import validateInfo from './validate';
 import { useDropzone } from "react-dropzone"
 

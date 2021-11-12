@@ -5,6 +5,7 @@ const initialState = {
   error: false,
   errorMsg: "",
   forSaleTokensMetadata: [],
+  role: ""
 };
 
 const dataReducer = (state = initialState, action) => {
@@ -20,7 +21,8 @@ const dataReducer = (state = initialState, action) => {
         loading: false,
         name: action.payload.name,
         myTokensMetadata: action.payload.myTokensMetadata,
-        forSaleTokensMetadata: action.payload.forSaleTokensMetadata
+        forSaleTokensMetadata: action.payload.forSaleTokensMetadata,
+        role: action.payload.role,
       };
     case "CHECK_DATA_FAILED":
       return {

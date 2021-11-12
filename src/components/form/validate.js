@@ -1,59 +1,59 @@
 export default function validate(step,form) {
-  let errors = {};
 
+  let errors = {};
   let values = form.fields;
 
 
   switch (step) {
     case 1:
       if (!values.company ) {
-        errors.company = 'Field required';
+        errors.company = 'Company required';
       }
     
       if (!values.model ) {
-        errors.model = 'Field required';
+        errors.model = 'Model required';
       }
     
       if (!values.vhcid ) {
-        errors.vhcid = 'Field required';
+        errors.vhcid = 'Vehicle ID required';
       }
     
       if (!values.year ) {
-        errors.year = 'Field required';
+        errors.year = 'Year required';
       }
       break;
     case 2:
       if (!values.color ) {
-        errors.color = 'Field required';
+        errors.color = 'Color required';
       }
     
       if (!values.body ) {
-        errors.body = 'Field required';
+        errors.body = 'Body required';
       }
     
       if (!values.transmission ) {
-        errors.transmission = 'Field required';
+        errors.transmission = 'Transmission required';
       }
     
       if (!values.fuel ) {
-        errors.fuel = 'Field required';
+        errors.fuel = 'Fuel required';
       }
       break;
     case 3:
       if (!values.engine ) {
-        errors.engine = 'Field required';
+        errors.engine = 'Engine required';
       }
     
       if (!values.doors ) {
-        errors.doors = 'Field required';
+        errors.doors = 'Doors required';
       }
     
       if (!values.seats ) {
-        errors.seats = 'Field required';
+        errors.seats = 'Seats required';
       }
     
       if (!values.driver_side) {
-        errors.driver_side = 'Field required';
+        errors.driver_side = 'Driver side required';
       }
       break;
     case 4:
