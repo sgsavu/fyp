@@ -13,9 +13,9 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     Counters.Counter _tokenIds;
 
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 private constant ADMIN_FOR_MINTER_ROLE = keccak256("ADMIN_FOR_MINTER_ROLE");
+    bytes32 private constant MINTER_ROLE_ADMIN = keccak256("MINTER_ROLE_ADMIN");
     bytes32 private constant AUTHORITY_ROLE = keccak256("AUTHORITY_ROLE");
-    bytes32 private constant ADMIN_FOR_AUTHORITY_ROLE = keccak256("ADMIN_FOR_AUTHORITY_ROLE");
+    bytes32 private constant AUTHORITY_ROLE_ADMIN = keccak256("AUTHORITY_ROLE_ADMIN");
 
     mapping(uint256 => string) private _tokenURIs;
     mapping(string => bool) private _uriRegistered;
@@ -32,13 +32,13 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
 
     constructor() ERC721("Vehicle", "VHC") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_FOR_MINTER_ROLE, msg.sender);
+        _setupRole(MINTER_ROLE_ADMIN, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
         
-        _setRoleAdmin(ADMIN_FOR_MINTER_ROLE,DEFAULT_ADMIN_ROLE);
-        _setRoleAdmin(ADMIN_FOR_AUTHORITY_ROLE,DEFAULT_ADMIN_ROLE);
-        _setRoleAdmin(MINTER_ROLE,ADMIN_FOR_MINTER_ROLE);
-        _setRoleAdmin(AUTHORITY_ROLE,ADMIN_FOR_AUTHORITY_ROLE);
+        _setRoleAdmin(MINTER_ROLE_ADMIN,DEFAULT_ADMIN_ROLE);
+        _setRoleAdmin(AUTHORITY_ROLE_ADMIN,DEFAULT_ADMIN_ROLE);
+        _setRoleAdmin(MINTER_ROLE,MINTER_ROLE_ADMIN);
+        _setRoleAdmin(AUTHORITY_ROLE,AUTHORITY_ROLE_ADMIN);
     }
 
     modifier notAlreadyRegistered(string memory uri) {
@@ -98,7 +98,23 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         return _tokenURIs[tokenId];
     }
 
-    function mint(string memory uri) public onlyRole(MINTER_ROLE) notAlreadyRegistered(uri) returns (uint256) {
+    enum ROLE_CLASS{ MINTER, AUTHORITY, ADMIN }
+
+    modifier onlyClass(ROLE_CLASS class){
+
+        if (class == ROLE_CLASS.MINTER){
+            require (hasRole(MINTER_ROLE,msg.sender) || hasRole(MINTER_ROLE_ADMIN,msg.sender));
+        }
+        else if (class == ROLE_CLASS.AUTHORITY){
+            require (hasRole(AUTHORITY_ROLE,msg.sender) || hasRole(AUTHORITY_ROLE_ADMIN,msg.sender));
+        }
+        else if (class == ROLE_CLASS.ADMIN){
+            require (hasRole(MINTER_ROLE_ADMIN,msg.sender) || hasRole(AUTHORITY_ROLE_ADMIN,msg.sender) || hasRole(DEFAULT_ADMIN_ROLE,msg.sender));
+        }
+        _;
+    }
+
+    function mint(string memory uri) public onlyClass(ROLE_CLASS.MINTER) notAlreadyRegistered(uri) returns (uint256) {
         uint256 _id = _tokenIds.current();
         _mint(msg.sender, _id);
         _setTokenURI(_id, uri);

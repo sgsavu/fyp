@@ -1,3 +1,5 @@
+import { roles } from "../../pages/Permissions";
+
 const initialState = {
   loading: false,
   name: "",
@@ -5,7 +7,7 @@ const initialState = {
   error: false,
   errorMsg: "",
   forSaleTokensMetadata: [],
-  role: ""
+  role: roles.USER_ROLE
 };
 
 const dataReducer = (state = initialState, action) => {

@@ -1,4 +1,5 @@
 // log
+import { roles } from "../../pages/Permissions";
 import store from "../store";
 
 const keccak256 = require('keccak256')
@@ -51,39 +52,20 @@ async function getTokenURI (token){
 
 async function getExtraRoles (account){
 
-  if (await store
-    .getState()
-    .blockchain.smartContract.methods
-    .hasRole("0x00",account)
-    .call())
-    return "ADMIN"
-  else if (await store
+  for (const role in roles) {
+    if (
+      await store
       .getState()
       .blockchain.smartContract.methods
-      .hasRole(keccak256('AUTHORITY_ROLE'),account)
-      .call())
-      return "AUTHORITY"
-  else if (await store
-    .getState()
-    .blockchain.smartContract.methods
-    .hasRole(keccak256('MINTER_ROLE'),account)
-    .call())
-    return "MINTER"
-  else if (await store
-      .getState()
-      .blockchain.smartContract.methods
-      .hasRole(keccak256('ADMIN_FOR_MINTER_ROLE'),account)
-      .call())
-      return "MINTER_ADMIN"
-      else if (await store
-        .getState()
-        .blockchain.smartContract.methods
-        .hasRole(keccak256('ADMIN_FOR_AUTHORITY_ROLE'),account)
-        .call())
-        return "AUTHORITY_ADMIN"
-  else
-    return "USER"
-  
+      .hasRole(roles[role],account)
+      .call()
+    )
+    { console.log("what is returned",role)
+      return roles[role]
+    }
+  } 
+
+  return roles.USER_ROLE
 }
 
 export const fetchData = (account) => {
@@ -93,7 +75,7 @@ export const fetchData = (account) => {
 
 
       let role = await getExtraRoles(account)
-
+      console.log("therole",role,roles.DEFAULT_ADMIN_ROLE)
       let name = await store
         .getState()
         .blockchain.smartContract.methods.name()
@@ -136,7 +118,6 @@ export const fetchData = (account) => {
       }
 
       let myTokensMetadata = await fetchMetadata(myTokenURIs)
-      console.log(myTokensMetadata)
 
       let forSaleTokenURIs = []
 
@@ -147,8 +128,6 @@ export const fetchData = (account) => {
       }
     
       let forSaleTokensMetadata = await fetchMetadata(forSaleTokenURIs)
-
-      console.log("for sale",forSaleTokensMetadata)
     
       dispatch(
         fetchDataSuccess({

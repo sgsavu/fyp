@@ -3,6 +3,7 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 
+
 const UserSidebar = [
   {
     title: 'My Vehicles',
@@ -86,25 +87,16 @@ const AdminSidebar = [
   }
 ];
 
-export const getSidebarForRole = (userRole) => {
 
-  switch (userRole) {
-    case "USER":
-      return UserSidebar
-    case "AUTHORITY":
-      return AuthoritySidebar
-    case "MINTER":
-      return MinterSidebar
-    case "ADMIN":
-      return AdminSidebar
-    case "MINTER_ADMIN":
-      return MinterAdminSidebar
-    case "AUTHORITY_ADMIN":
-      return AuthorityAdminSidebar
-    case "":
-      return UserSidebar
-  }
-
+export const Sidebars = {
+  USER: UserSidebar,
+  MINTER: MinterSidebar,
+  AUTHORITY: AuthoritySidebar,
+  MINTER_ADMIN: MinterAdminSidebar,
+  AUTHORIT_ADMIN: AuthorityAdminSidebar,
+  DEFAULT_ADMIN: AdminSidebar
 }
+
+
 
 

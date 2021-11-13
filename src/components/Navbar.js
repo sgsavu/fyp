@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import { Link } from 'react-router-dom';
-import { getSidebarForRole} from './Sidebar';
+
 import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { useSelector } from "react-redux";
+import { getSidebarForRole } from '../pages/Permissions';
 
 function Navbar() {
   const data = useSelector((state) => state.data);
