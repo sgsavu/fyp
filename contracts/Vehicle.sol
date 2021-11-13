@@ -13,8 +13,9 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     Counters.Counter _tokenIds;
 
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 private constant AUTHORITY_ROLE = keccak256("AUTHORITY_ROLE");
     bytes32 private constant ADMIN_FOR_MINTER_ROLE = keccak256("ADMIN_FOR_MINTER_ROLE");
+    bytes32 private constant AUTHORITY_ROLE = keccak256("AUTHORITY_ROLE");
+    bytes32 private constant ADMIN_FOR_AUTHORITY_ROLE = keccak256("ADMIN_FOR_AUTHORITY_ROLE");
 
     mapping(uint256 => string) private _tokenURIs;
     mapping(string => bool) private _uriRegistered;
@@ -33,7 +34,11 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_FOR_MINTER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
+        
+        _setRoleAdmin(ADMIN_FOR_MINTER_ROLE,DEFAULT_ADMIN_ROLE);
+        _setRoleAdmin(ADMIN_FOR_AUTHORITY_ROLE,DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(MINTER_ROLE,ADMIN_FOR_MINTER_ROLE);
+        _setRoleAdmin(AUTHORITY_ROLE,ADMIN_FOR_AUTHORITY_ROLE);
     }
 
     modifier notAlreadyRegistered(string memory uri) {

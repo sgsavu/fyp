@@ -26,6 +26,7 @@ function App() {
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
 
+  console.log(data.role)
 
   useEffect(() => {
     

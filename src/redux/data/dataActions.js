@@ -69,6 +69,18 @@ async function getExtraRoles (account){
     .hasRole(keccak256('MINTER_ROLE'),account)
     .call())
     return "MINTER"
+  else if (await store
+      .getState()
+      .blockchain.smartContract.methods
+      .hasRole(keccak256('ADMIN_FOR_MINTER_ROLE'),account)
+      .call())
+      return "MINTER_ADMIN"
+      else if (await store
+        .getState()
+        .blockchain.smartContract.methods
+        .hasRole(keccak256('ADMIN_FOR_AUTHORITY_ROLE'),account)
+        .call())
+        return "AUTHORITY_ADMIN"
   else
     return "USER"
   

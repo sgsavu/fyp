@@ -34,12 +34,32 @@ const AuthoritySidebar = [
   }
 ];
 
+const AuthorityAdminSidebar = [
+  ...AuthoritySidebar,
+  {
+    title: 'Admin',
+    path: '/admin',
+    icon: <AiIcons.AiFillWarning />,
+    cName: 'nav-text'
+  }
+];
+
 const MinterSidebar = [
   ...UserSidebar,
   {
     title: 'Mint Vehicle',
     path: '/mint',
     icon: <FaIcons.FaPlusCircle />,
+    cName: 'nav-text'
+  }
+];
+
+const MinterAdminSidebar = [
+  ...MinterSidebar,
+  {
+    title: 'Admin',
+    path: '/admin',
+    icon: <AiIcons.AiFillWarning />,
     cName: 'nav-text'
   }
 ];
@@ -77,6 +97,10 @@ export const getSidebarForRole = (userRole) => {
       return MinterSidebar
     case "ADMIN":
       return AdminSidebar
+    case "MINTER_ADMIN":
+      return MinterAdminSidebar
+    case "AUTHORITY_ADMIN":
+      return AuthorityAdminSidebar
     case "":
       return UserSidebar
   }

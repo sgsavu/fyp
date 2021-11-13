@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { use } from 'chai';
 
 
-const whitelistMint = ["ADMIN","MINTER"]
-const whitelistVerify = ["ADMIN", "AUTHORITY"]
-const whitelistAdmin = ["ADMIN"]
+const whitelistMint = ["ADMIN","MINTER","MINTER_ADMIN"]
+const whitelistVerify = ["ADMIN", "AUTHORITY","AUTHORITY_ADMIN"]
+const whitelistAdmin = ["ADMIN","MINTER_ADMIN","AUTHORITY_ADMIN"]
 
 const checkIfMeetsPermission = (requiredPermission, userRole) => {
 
