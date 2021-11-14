@@ -2,26 +2,7 @@
 import React, { useState } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { use } from 'chai';
-
-
-const whitelistMint = ["ADMIN","MINTER","MINTER_ADMIN"]
-const whitelistVerify = ["ADMIN", "AUTHORITY","AUTHORITY_ADMIN"]
-const whitelistAdmin = ["ADMIN","MINTER_ADMIN","AUTHORITY_ADMIN"]
-
-const checkIfMeetsPermission = (requiredPermission, userRole) => {
-
-    switch (requiredPermission) {
-        case "/admin":
-            return whitelistAdmin.some(whitelistedRole => whitelistedRole==userRole)
-        case "/mint":
-            return whitelistMint.some(whitelistedRole => whitelistedRole==userRole)
-        case "/verify":
-            return whitelistVerify.some(whitelistedRole => whitelistedRole==userRole)
-        default:
-            return true
-    }
-}
+import { checkRoutePermissionFor } from '../pages/PermissionsAndRoles';
 
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
@@ -30,7 +11,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
     return (
         <Route {...rest} render={props => (
-            checkIfMeetsPermission(rest.path, data.role) ?
+            checkRoutePermissionFor(rest.path, data.myRole) ?
                 <Component {...props} />
                 : <Redirect to="/" />
         )} />

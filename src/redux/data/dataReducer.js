@@ -1,13 +1,12 @@
-import { roles } from "../../pages/Permissions";
+import { roles } from "../../pages/PermissionsAndRoles";
 
 const initialState = {
   loading: false,
-  name: "",
-  myTokensMetadata: [],
+  myVehicles: [],
   error: false,
   errorMsg: "",
-  forSaleTokensMetadata: [],
-  role: roles.USER_ROLE
+  vehiclesForSale: [],
+  myRole: roles.USER_ROLE
 };
 
 const dataReducer = (state = initialState, action) => {
@@ -21,10 +20,9 @@ const dataReducer = (state = initialState, action) => {
       return {
         ...initialState,
         loading: false,
-        name: action.payload.name,
-        myTokensMetadata: action.payload.myTokensMetadata,
-        forSaleTokensMetadata: action.payload.forSaleTokensMetadata,
-        role: action.payload.role,
+        myVehicles: action.payload.myVehicles,
+        vehiclesForSale: action.payload.vehiclesForSale,
+        myRole: action.payload.myRole,
       };
     case "CHECK_DATA_FAILED":
       return {

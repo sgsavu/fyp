@@ -26,7 +26,7 @@ function Marketplace() {
               </s.TextDescription>
             </>
           ) : (
-            data.forSaleTokensMetadata.map((nft, index) => {
+            data.vehiclesForSale.map((nft, index) => {
               
               return (
                 <s.Container key={index} style={{ padding: 16 }}>

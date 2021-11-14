@@ -1,8 +1,6 @@
 // log
-import { roles } from "../../pages/Permissions";
+import { roles } from "../../pages/PermissionsAndRoles";
 import store from "../store";
-
-const keccak256 = require('keccak256')
 
 const fetchDataRequest = () => {
   return {
@@ -24,48 +22,99 @@ const fetchDataFailed = (payload) => {
   };
 };
 
-async function fetchMetadata (nfts){
 
-  let fetchedTokens = []
 
-      for (const nft of nfts){
-        await fetch(nft)
-        .then((response) => response.json())
-        .then((metaData) => {
-          fetchedTokens = [...fetchedTokens,metaData]
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      }
 
-  return fetchedTokens
+async function requestMetadata(URIS) {
+
+  console.log(URIS)
+  let fetchedVehicles = []
+  for (const URI of URIS) {
+    await fetch(URI)
+      .then((response) => response.json())
+      .then((vehicleMetadata) => {
+        fetchedVehicles = [...fetchedVehicles, vehicleMetadata]
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  console.log(fetchedVehicles)
+  return fetchedVehicles
 }
 
-async function getTokenURI (token){
+async function getTokenURI(token) {
   return await store
-  .getState()
-  .blockchain.smartContract.methods
-  .tokenURI(token)
-  .call();
+    .getState()
+    .blockchain.smartContract.methods
+    .tokenURI(token)
+    .call();
 }
 
-async function getExtraRoles (account){
+async function getRole(account) {
 
   for (const role in roles) {
     if (
       await store
-      .getState()
-      .blockchain.smartContract.methods
-      .hasRole(roles[role],account)
-      .call()
+        .getState()
+        .blockchain.smartContract.methods
+        .hasRole(roles[role], account)
+        .call()
     )
-    { console.log("what is returned",role)
       return roles[role]
-    }
-  } 
+  }
 
   return roles.USER_ROLE
+}
+
+
+async function getAccountBalance(account) {
+  return await store
+    .getState()
+    .blockchain.smartContract.methods.balanceOf(account)
+    .call();
+}
+
+async function getAccountVehicleIDs(nrOfVehicles, account) {
+
+  let accountVehicleIDs = []
+  for (var i = 0; i < nrOfVehicles; i++) {
+    let vehicleID = await store
+      .getState()
+      .blockchain.smartContract.methods
+      .tokenOfOwnerByIndex(account, i)
+      .call();
+    accountVehicleIDs = [...accountVehicleIDs, vehicleID]
+  }
+  return accountVehicleIDs
+}
+
+async function getVehicleURIS(vehicleIDS) {
+
+  let accountVehicleMetadata = []
+  for (var i = 0; i < vehicleIDS.length; i++) {
+    let vehicleURI = await getTokenURI(vehicleIDS[i])
+    accountVehicleMetadata = [...accountVehicleMetadata, vehicleURI]
+  }
+  return accountVehicleMetadata
+}
+
+async function getVehiclesForAccount(account) {
+  let accountBalance = await getAccountBalance(account)
+  let accountVehicleIDs = await getAccountVehicleIDs(accountBalance, account)
+  let accountVehicleURIS = await getVehicleURIS(accountVehicleIDs)
+  let myVehicles = await requestMetadata(accountVehicleURIS)
+  return myVehicles
+}
+
+async function getVehiclesForSale() {
+  let vehiclesForSaleIds = await store
+    .getState()
+    .blockchain.smartContract.methods.getTokensForSale()
+    .call();
+  let vehiclesForSaleURIs = await getVehicleURIS(vehiclesForSaleIds)
+  let vehiclesForSale = await requestMetadata(vehiclesForSaleURIs)
+  return vehiclesForSale
 }
 
 export const fetchData = (account) => {
@@ -73,68 +122,20 @@ export const fetchData = (account) => {
     dispatch(fetchDataRequest());
     try {
 
-
-      let role = await getExtraRoles(account)
-      console.log("therole",role,roles.DEFAULT_ADMIN_ROLE)
-      let name = await store
-        .getState()
-        .blockchain.smartContract.methods.name()
-        .call();
-
-      let myTokenBalance = await store
-        .getState()
-        .blockchain.smartContract.methods.balanceOf(account)
-        .call();
-
-      let forSaleTokenIds = await store
-        .getState()
-        .blockchain.smartContract.methods.getTokensForSale()
-        .call();
-
-      let totalTokenSupply = await store
+      let totalNrOfVehicles = await store
         .getState()
         .blockchain.smartContract.methods.totalSupply()
         .call();
 
-      let myTokenIds = []
-      
-      for (var i = 0;i<myTokenBalance;i++)
-      {
-          let token = await store
-          .getState()
-          .blockchain.smartContract.methods
-          .tokenOfOwnerByIndex(account,i)
-          .call();
+      let myRole = await getRole(account)
+      let myVehicles = await getVehiclesForAccount(account)
+      let vehiclesForSale = await getVehiclesForSale()
 
-          myTokenIds = [...myTokenIds, token]
-      }
-
-      let myTokenURIs = []
-
-      for (var i = 0;i<myTokenBalance;i++)
-      {
-        let tokenURI = await getTokenURI(myTokenIds[i])
-        myTokenURIs = [...myTokenURIs, tokenURI]
-      }
-
-      let myTokensMetadata = await fetchMetadata(myTokenURIs)
-
-      let forSaleTokenURIs = []
-
-      for (var i = 0;i<totalTokenSupply;i++)
-      {
-        let tokenURI = await getTokenURI(forSaleTokenIds[i])
-        forSaleTokenURIs = [...forSaleTokenURIs, tokenURI]
-      }
-    
-      let forSaleTokensMetadata = await fetchMetadata(forSaleTokenURIs)
-    
       dispatch(
         fetchDataSuccess({
-          name,
-          myTokensMetadata,
-          forSaleTokensMetadata,
-          role,
+          myRole,
+          myVehicles,
+          vehiclesForSale,
         })
       );
     } catch (err) {

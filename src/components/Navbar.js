@@ -6,16 +6,15 @@ import { Link } from 'react-router-dom';
 import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { useSelector } from "react-redux";
-import { getSidebarForRole } from '../pages/Permissions';
+import { getSidebarFor } from '../pages/PermissionsAndRoles';
 
 function Navbar() {
   const data = useSelector((state) => state.data);
   const [visible, setVisible] = useState(false);
   const toggleVisibility = () => setVisible(!visible);
-  const sidebar = getSidebarForRole(data.role)
+  const sidebar = getSidebarFor(data.myRole)
 
   return (
-    <>
       <IconContext.Provider value={{ color: '#fff' }}>
         <div className='navbar'>
           <Link to='#' className='menu-bars'>
@@ -36,13 +35,12 @@ function Navbar() {
                     {item.icon}
                     <span>{item.title}</span>
                   </Link>
-            </li>
+                </li>
               );
             })}
           </ul>
         </nav>
       </IconContext.Provider>
-    </>
   );
 }
 

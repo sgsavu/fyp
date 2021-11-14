@@ -25,7 +25,7 @@ function MyVehicles() {
               </s.TextDescription>
             </>
           ) : (
-            data.myTokensMetadata.map((nft, index) => {
+            data.myVehicles.map((nft, index) => {
               
               return (
                 <s.Container key={index} style={{ padding: 16 }}>

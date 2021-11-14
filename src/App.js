@@ -14,6 +14,7 @@ import { fetchData } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
 
 import ControlledRoute from './components/ControlledRoute';
+import { roleToString } from "./pages/PermissionsAndRoles";
 
 
 
@@ -26,13 +27,14 @@ function App() {
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
 
+  console.log("MyRole:",roleToString(data.myRole))
+
   useEffect(() => {
     
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
       dispatch(fetchData(blockchain.account));
     }
   }, [blockchain.smartContract, dispatch]);
-
 
   return (
     
