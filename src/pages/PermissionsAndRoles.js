@@ -1,5 +1,5 @@
 
-import { Sidebar } from './SidebarData';
+import { Sidebar } from '../components/SidebarData';
 
 const keccak256 = require('keccak256')
 
@@ -26,8 +26,6 @@ export const string_roles = {
   USER_ROLE: "USER_ROLE"
 }
 
-
-
 export const getNumberOfRoles = () => {
   return Object.keys(roles).length
 }
@@ -50,7 +48,6 @@ export const roleToString = (role) => {
       return "NEW*(not defined)" + role
   }
 }
-
 
 const pageAccess = {
   MINT: [roles.MINTER_ROLE, roles.MINTER_ROLE_ADMIN, roles.DEFAULT_ADMIN_ROLE],

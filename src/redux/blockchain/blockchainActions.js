@@ -68,7 +68,7 @@ export const connect = () => {
           });
           
         } else {
-          dispatch(connectFailed("Change network to Polygon."));
+          dispatch(connectFailed("Change network to localhost:xxxx."));
         }
       } catch (err) {
         dispatch(connectFailed("Something went wrong."));

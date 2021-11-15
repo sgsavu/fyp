@@ -34,8 +34,6 @@ const Admin = () => {
       case actions.REVOKE:
         revokeRole(roles[values.role], values.userAddress)
         break;
-      default:
-        console.log('bruh')
     }
   }
 

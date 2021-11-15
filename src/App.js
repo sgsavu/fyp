@@ -27,10 +27,7 @@ function App() {
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
 
-  console.log("MyRole:",roleToString(data.myRole))
-
   useEffect(() => {
-    
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
       dispatch(fetchData(blockchain.account));
     }

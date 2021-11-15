@@ -23,11 +23,8 @@ const fetchDataFailed = (payload) => {
 };
 
 
-
-
 async function requestMetadata(URIS) {
 
-  console.log(URIS)
   let fetchedVehicles = []
   for (const URI of URIS) {
     await fetch(URI)
@@ -39,7 +36,6 @@ async function requestMetadata(URIS) {
         console.log(err);
       });
   }
-  console.log(fetchedVehicles)
   return fetchedVehicles
 }
 
@@ -48,6 +44,14 @@ async function getTokenURI(token) {
     .getState()
     .blockchain.smartContract.methods
     .tokenURI(token)
+    .call();
+}
+
+async function tokenByIndex(index) {
+  return await store
+    .getState()
+    .blockchain.smartContract.methods
+    .tokenByIndex(index)
     .call();
 }
 
@@ -117,25 +121,45 @@ async function getVehiclesForSale() {
   return vehiclesForSale
 }
 
+async function getAllTokensIDs(length) {
+  let allVehiclesIds = []
+  for (var i = 0; i < length; i++) {
+    let vehicleId = await tokenByIndex(i)
+    allVehiclesIds = [...allVehiclesIds, vehicleId]
+  }
+  return allVehiclesIds
+}
+
+async function getAllVehicles() {
+
+  let totalNrOfVehicles = await store
+    .getState()
+    .blockchain.smartContract.methods.totalSupply()
+    .call();
+
+  let allVehiclesIds = await getAllTokensIDs(totalNrOfVehicles)
+  let allVehiclesURIs = await getVehicleURIS(allVehiclesIds)
+  let allVehicles = await requestMetadata(allVehiclesURIs)
+  return allVehicles
+}
+
 export const fetchData = (account) => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
 
-      let totalNrOfVehicles = await store
-        .getState()
-        .blockchain.smartContract.methods.totalSupply()
-        .call();
 
       let myRole = await getRole(account)
       let myVehicles = await getVehiclesForAccount(account)
       let vehiclesForSale = await getVehiclesForSale()
+      let allVehicles = await getAllVehicles()
 
       dispatch(
         fetchDataSuccess({
           myRole,
           myVehicles,
           vehiclesForSale,
+          allVehicles
         })
       );
     } catch (err) {
