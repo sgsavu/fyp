@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import * as s from "../styles/globalStyles";
-
+import "../styles/MyVehicles.css";
+import { Link, Redirect } from 'react-router-dom';
 
 function MyVehicles() {
 
@@ -14,7 +15,7 @@ function MyVehicles() {
       ) : (
         data.myVehicles.map((nft, index) => {
           return (
-            <div key={index} style={{ padding: 16 }}>
+            <div key={index} className="my-vehicle" onClick={(e) => {<Redirect push to="/vehicle" />}}>
               <p>{nft.name}</p>
               <p>{nft.description}</p>
               <p>{nft.attributes[0].value}</p>
@@ -24,6 +25,12 @@ function MyVehicles() {
                 src={nft.image}
                 width={150}
               />
+              <Link to={{
+              pathname: "/vehicle",
+              state: { metadata: nft },
+            }}>
+              <p>VIEW </p>
+            </Link>
             </div>
           );
         })

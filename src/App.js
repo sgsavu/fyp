@@ -15,6 +15,7 @@ import * as s from "./styles/globalStyles";
 
 import ControlledRoute from './components/ControlledRoute';
 import { roleToString } from "./pages/PermissionsAndRoles";
+import Vehicle from "./pages/Vehicle";
 
 
 
@@ -62,6 +63,7 @@ function App() {
           <ControlledRoute path='/verify' component={Verify} />
           <ControlledRoute path='/mint' component={Mint} />
           <ControlledRoute path='/admin' component={Admin} />
+          <Route path='/vehicle' component={Vehicle}/>
         </Switch>
       </Router> }
       

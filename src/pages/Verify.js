@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from "react-redux";
 import Filter from './Filter';
+import { Link } from 'react-router-dom';
 
 function Verify() {
 
@@ -16,9 +17,12 @@ function Verify() {
       <div>
         {filtered.slice(0, 15).map((value, key) => {
           return (
-            <a key={key} href={value.image}>
+            <Link key={key} to={{
+              pathname: "/vehicle",
+              state: { metadata: value },
+            }}>
               <p>{value.name} </p>
-            </a>
+            </Link>
           );
         })}
       </div>

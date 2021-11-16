@@ -79,6 +79,13 @@ async function getAccountBalance(account) {
     .call();
 }
 
+async function isForSale(vehicle) {
+  return await store
+    .getState()
+    .blockchain.smartContract.methods.isForSale(vehicle)
+    .call();
+}
+
 async function getAccountVehicleIDs(nrOfVehicles, account) {
 
   let accountVehicleIDs = []
@@ -112,10 +119,20 @@ async function getVehiclesForAccount(account) {
 }
 
 async function getVehiclesForSale() {
-  let vehiclesForSaleIds = await store
+
+  let totalNrOfVehicles = await store
     .getState()
-    .blockchain.smartContract.methods.getTokensForSale()
+    .blockchain.smartContract.methods.totalSupply()
     .call();
+
+  let allVehiclesIds = await getAllTokensIDs(totalNrOfVehicles)
+
+  let vehiclesForSaleIds = []
+  for(var i = 0; i < allVehiclesIds.length; i++) {
+    if (await isForSale(allVehiclesIds[i]))
+      vehiclesForSaleIds = [...vehiclesForSaleIds,allVehiclesIds[i]]
+  }
+
   let vehiclesForSaleURIs = await getVehicleURIS(vehiclesForSaleIds)
   let vehiclesForSale = await requestMetadata(vehiclesForSaleURIs)
   return vehiclesForSale
@@ -151,8 +168,8 @@ export const fetchData = (account) => {
 
       let myRole = await getRole(account)
       let myVehicles = await getVehiclesForAccount(account)
-      let vehiclesForSale = await getVehiclesForSale()
       let allVehicles = await getAllVehicles()
+      let vehiclesForSale = await getVehiclesForSale()
 
       dispatch(
         fetchDataSuccess({
