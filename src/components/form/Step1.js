@@ -10,10 +10,10 @@ const Step1 = () => {
 
   return (
     <div>
-      <span className='page-status'>{form.step}/3</span>
+      <span className='page-status'>{form.step}/{form.nrOfSteps}</span>
       <form onSubmit={(e) => {
         dispatch(checkForErrors(e))
-        dispatch(nextStep(form.step))
+        dispatch(nextStep())
       }} className='form' noValidate>
         <h1>
           Step 1: Enter

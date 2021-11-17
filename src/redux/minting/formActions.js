@@ -1,57 +1,56 @@
-// log
 import store from "../store";
 import validate from "../../components/form/validate";
 
-
-
-const fetchNextStep = (payload) => {
+const formNextStep = () => {
   return {
     type: "NEXT_STEP",
-    payload: payload,
   };
 };
 
-const fetchPrevStep = (payload) => {
+const formPrevStep = () => {
   return {
     type: "PREV_STEP",
-    payload: payload,
   };
 };
 
-const fetchUpdate = (payload) => {
+const formUpdate = (payload) => {
   return {
     type: "UPDATE",
     payload: payload,
   };
 };
 
-const fetchUploadImage = (payload) => {
+const formUploadImage = (payload) => {
   return {
     type: "UPLOAD_IMAGE",
     payload: payload,
   };
 };
 
-
-const fetchStartSubmit = () => {
+const formStartSubmit = () => {
   return {
     type: "START_SUBMIT",
   };
 };
 
-const fetchFinishSubmit = () => {
+const formFinishSubmit = () => {
   return {
     type: "FINISH_SUBMIT",
   };
 };
 
-const fetchErrorUpdate = (payload) => {
+const formErrorSubmit = () => {
+  return {
+    type: "ERROR_SUBMIT",
+  };
+};
+
+const formUpdateErrors = (payload) => {
   return {
     type: "ERROR_UPDATE",
     payload: payload,
   };
 };
-
 
 const getStoreState = () => {
   return store.getState().form;
@@ -60,93 +59,73 @@ const getStoreState = () => {
 
 export const handleChange = e => {
   return async (dispatch) => {
-
     const { name, value } = e.target;
-
     dispatch(
-      fetchUpdate({ name, value })
+      formUpdate({ name, value })
     );
   }
 };
 
-export const nextStep = (step) => {
+export const nextStep = () => {
   return async (dispatch) => {
-
     const form = getStoreState();
-
     if (form.errors && Object.entries(form.errors).length === 0) {
       dispatch(
-        fetchNextStep({ step })
+        formNextStep()
       );
     }
-
   };
 };
 
 export const checkForErrors = e => {
   return async (dispatch) => {
-
     e.preventDefault();
-
     const form = getStoreState();
     let errors = validate(form.step, form)
-
     dispatch(
-      fetchErrorUpdate({ errors })
+      formUpdateErrors({ errors })
     );
-
   };
 };
 
-export const prevStep = (step) => {
+export const prevStep = () => {
   return async (dispatch) => {
-
     dispatch(
-      fetchPrevStep({ step })
+      formPrevStep()
     );
-
   };
 };
 
 export const startSubmit = e => {
   return async (dispatch) => {
-
     e.preventDefault();
-    /*
-
-    let es = validate(step,values)
- 
-    if (es && Object.entries(es).length === 0)
-    {
-      
-    }
-    */
-
     const form = getStoreState();
-
     if (form.errors && Object.entries(form.errors).length === 0) {
-  
-        dispatch(
-          fetchStartSubmit())
-  
+      dispatch(
+        formStartSubmit()
+      );
     }
-
-
   };
 };
 
 export const finishSubmit = e => {
   return async (dispatch) => {
-
     dispatch(
-      fetchFinishSubmit())
+      formFinishSubmit())
+  };
+};
+
+export const errorSubmit = e => {
+  return async (dispatch) => {
+    dispatch(
+      formErrorSubmit())
   };
 };
 
 export const uploadImage = (preview, buffer) => {
   return async (dispatch) => {
     dispatch(
-      fetchUploadImage({ preview, buffer })
+      formUploadImage({ preview, buffer })
     );
   };
 };

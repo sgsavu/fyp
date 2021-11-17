@@ -1,4 +1,4 @@
-import React, { useEffect} from 'react';
+import React, { useEffect } from 'react';
 import '../styles/Form.css';
 import '../styles/drop.css';
 import FormFields from '../components/form/FormFields';
@@ -6,7 +6,7 @@ import ImageUpload from '../components/form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
 import { fetchData } from "../redux/data/dataActions";
-import { finishSubmit } from '../redux/minting/formActions';
+import { finishSubmit, errorSubmit } from '../redux/minting/formActions';
 
 
 const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
@@ -28,6 +28,7 @@ const Mint = () => {
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
+                dispatch(errorSubmit())
             })
             .then((receipt) => {
                 console.log(receipt);
@@ -52,47 +53,38 @@ const Mint = () => {
         }
 
         console.log(NFT_attributes)
-
         const NFT_name = elements.company + elements.vhcid;
         const NFT_description = "This token represents a real life vehicle.";
-
         createMetaDataAndMint(NFT_name, NFT_description, form.buffer, NFT_attributes);
     };
 
     const scramble = (string) => {
 
-        //shuffle
-        var x = string.split('').sort(function(){return 0.5-Math.random()}).join('');
-
-        function substitute(str) { 
-            var pos = Math.floor(Math.random()*str.length); 
-            return str.substring(0, pos) + getRandomLetter() + str.substring(pos+1); 
-        } 
-        function getRandomLetter() { 
-            var  letters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; 
-            var pos = Math.floor(Math.random()*letters.length); 
-            return letters.charAt(pos); 
+        var x = string.split('').sort(function () { return 0.5 - Math.random() }).join('');
+        function substitute(str) {
+            var pos = Math.floor(Math.random() * str.length);
+            return str.substring(0, pos) + getRandomLetter() + str.substring(pos + 1);
         }
-
-        for(var i = 0; i < randomIntFromInterval(1,10); i++) {
-            x = string.split('').sort(function(){return 0.5-Math.random()}).join('');
+        function getRandomLetter() {
+            var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var pos = Math.floor(Math.random() * letters.length);
+            return letters.charAt(pos);
+        }
+        for (var i = 0; i < randomIntFromInterval(1, 10); i++) {
+            x = string.split('').sort(function () { return 0.5 - Math.random() }).join('');
             x = substitute(x)
         }
-
         return x
     }
 
-    function randomIntFromInterval(min, max) { // min and max included 
+    function randomIntFromInterval(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min)
-      }
-
-
+    }
 
     const createMetaDataAndMint = async (_name, _des, _imgBuffer, _attributes) => {
 
         try {
             const addedImage = await ipfsClient.add(_imgBuffer);
-
             const metaDataObj = {
                 name: _name,
                 description: _des,
@@ -101,7 +93,7 @@ const Mint = () => {
                 updated: Date.now(),
                 attributes: _attributes,
                 nonce1: scramble(blockchain.account),
-                nonce2: randomIntFromInterval(1,1000000)
+                nonce2: randomIntFromInterval(1, 1000000)
             };
 
             const addedMetaData = await ipfsClient.add(JSON.stringify(metaDataObj));
@@ -113,19 +105,13 @@ const Mint = () => {
         };
     };
 
-
-
-
-
     useEffect(() => {
         if (form.submitting === true) {
             startMintingProcess(form.fields)
         }
     }, [form.submitting, dispatch]);
 
-
     return (
-
         <div className='form-container'>
             <div className='form-content-left'>
                 <ImageUpload />
@@ -134,7 +120,6 @@ const Mint = () => {
                 <FormFields />
             </div>
         </div>
-        
     );
 };
 

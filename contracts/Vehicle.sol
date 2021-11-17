@@ -161,7 +161,7 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         _mint(msg.sender, _id);
         _setTokenURI(_id, uri);
         _uriRegistered[uri] = true;
-        setForSale(_id, true);
+        setForSale(_id, false);
         _tokenIds.increment();
         return _id;
     }

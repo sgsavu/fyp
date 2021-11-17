@@ -9,11 +9,8 @@ import Step4 from './Step4';
 const FormSignup = () => {
 
   const form = useSelector((state) => state.form);
-
   return (
-
     (() => {
-
       switch (form.step) {
         case 1: return (<Step1 />);
         case 2: return (<Step2 ></Step2>);
@@ -21,9 +18,7 @@ const FormSignup = () => {
         case 4: return (<Step4 ></Step4>);
         default: return null
       }
-
     })()
-
   );
 };
 

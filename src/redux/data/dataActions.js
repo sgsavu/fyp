@@ -4,50 +4,56 @@ import store from "../store";
 
 const fetchDataRequest = () => {
   return {
-    type: "CHECK_DATA_REQUEST",
+    type: "FETCH_DATA_REQUEST",
   };
 };
 
 const fetchDataSuccess = (payload) => {
   return {
-    type: "CHECK_DATA_SUCCESS",
+    type: "FETCH_DATA_SUCCESS",
     payload: payload,
   };
 };
 
 const fetchDataFailed = (payload) => {
   return {
-    type: "CHECK_DATA_FAILED",
+    type: "FETCH_DATA_FAILED",
     payload: payload,
   };
 };
 
-
-async function requestMetadata(URIS) {
+async function getVehiclesMetadata(vehicleURIS) {
 
   let fetchedVehicles = []
-  for (const URI of URIS) {
-    await fetch(URI)
-      .then((response) => response.json())
-      .then((vehicleMetadata) => {
-        fetchedVehicles = [...fetchedVehicles, vehicleMetadata]
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  function resultCallback(result){
+    fetchedVehicles.push(result)
+  }
+  for (const vehicleURI of vehicleURIS) {
+    await getVehicleMetadata(vehicleURI,resultCallback)
   }
   return fetchedVehicles
 }
 
-async function getTokenURI(token) {
+async function getVehicleMetadata(URI,callback) {
+  await fetch(URI)
+    .then((response) => response.json())
+    .then((vehicleMetadata) => {
+      callback(vehicleMetadata)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+async function getVehicleURI(vehicleID) {
   return await store
     .getState()
     .blockchain.smartContract.methods
-    .tokenURI(token)
+    .tokenURI(vehicleID)
     .call();
 }
 
-async function tokenByIndex(index) {
+async function getVehicleByIndex(index) {
   return await store
     .getState()
     .blockchain.smartContract.methods
@@ -67,10 +73,8 @@ async function getRole(account) {
     )
       return roles[role]
   }
-
   return roles.USER_ROLE
 }
-
 
 async function getAccountBalance(account) {
   return await store
@@ -86,7 +90,21 @@ async function isForSale(vehicle) {
     .call();
 }
 
-async function getAccountVehicleIDs(nrOfVehicles, account) {
+async function getTotalNrOfVehicles(){
+  return await store
+    .getState()
+    .blockchain.smartContract.methods.totalSupply()
+    .call();
+}
+
+async function injectTokenId(vehicleIDsList,vehicleObjectsList){
+  for (let i = 0; i < vehicleObjectsList.length; i++) {
+    vehicleObjectsList[i].injected = {}
+    vehicleObjectsList[i].injected.id = vehicleIDsList[i]
+  }
+}
+
+async function getVehicleIDsForAccount(nrOfVehicles, account) {
 
   let accountVehicleIDs = []
   for (var i = 0; i < nrOfVehicles; i++) {
@@ -104,7 +122,7 @@ async function getVehicleURIS(vehicleIDS) {
 
   let accountVehicleMetadata = []
   for (var i = 0; i < vehicleIDS.length; i++) {
-    let vehicleURI = await getTokenURI(vehicleIDS[i])
+    let vehicleURI = await getVehicleURI(vehicleIDS[i])
     accountVehicleMetadata = [...accountVehicleMetadata, vehicleURI]
   }
   return accountVehicleMetadata
@@ -112,51 +130,44 @@ async function getVehicleURIS(vehicleIDS) {
 
 async function getVehiclesForAccount(account) {
   let accountBalance = await getAccountBalance(account)
-  let accountVehicleIDs = await getAccountVehicleIDs(accountBalance, account)
+  let accountVehicleIDs = await getVehicleIDsForAccount(accountBalance, account)
   let accountVehicleURIS = await getVehicleURIS(accountVehicleIDs)
-  let myVehicles = await requestMetadata(accountVehicleURIS)
+  let myVehicles = await getVehiclesMetadata(accountVehicleURIS)
+  injectTokenId(accountVehicleIDs,myVehicles)
   return myVehicles
 }
 
-async function getVehiclesForSale() {
-
-  let totalNrOfVehicles = await store
-    .getState()
-    .blockchain.smartContract.methods.totalSupply()
-    .call();
-
-  let allVehiclesIds = await getAllTokensIDs(totalNrOfVehicles)
-
-  let vehiclesForSaleIds = []
-  for(var i = 0; i < allVehiclesIds.length; i++) {
-    if (await isForSale(allVehiclesIds[i]))
-      vehiclesForSaleIds = [...vehiclesForSaleIds,allVehiclesIds[i]]
-  }
-
-  let vehiclesForSaleURIs = await getVehicleURIS(vehiclesForSaleIds)
-  let vehiclesForSale = await requestMetadata(vehiclesForSaleURIs)
-  return vehiclesForSale
-}
-
-async function getAllTokensIDs(length) {
+async function getAllVehicleIDs(length) {
   let allVehiclesIds = []
   for (var i = 0; i < length; i++) {
-    let vehicleId = await tokenByIndex(i)
+    let vehicleId = await getVehicleByIndex(i)
     allVehiclesIds = [...allVehiclesIds, vehicleId]
   }
   return allVehiclesIds
 }
 
+async function getVehiclesForSale() {
+
+  let totalNrOfVehicles = await getTotalNrOfVehicles()
+  let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
+  let vehiclesForSaleIds = []
+  for (var i = 0; i < allVehiclesIds.length; i++) {
+    if (await isForSale(allVehiclesIds[i]))
+      vehiclesForSaleIds = [...vehiclesForSaleIds, allVehiclesIds[i]]
+  }
+  let vehiclesForSaleURIs = await getVehicleURIS(vehiclesForSaleIds)
+  let vehiclesForSale = await getVehiclesMetadata(vehiclesForSaleURIs)
+  injectTokenId(vehiclesForSaleIds,vehiclesForSale)
+  return vehiclesForSale
+}
+
 async function getAllVehicles() {
 
-  let totalNrOfVehicles = await store
-    .getState()
-    .blockchain.smartContract.methods.totalSupply()
-    .call();
-
-  let allVehiclesIds = await getAllTokensIDs(totalNrOfVehicles)
+  let totalNrOfVehicles = await getTotalNrOfVehicles()
+  let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
   let allVehiclesURIs = await getVehicleURIS(allVehiclesIds)
-  let allVehicles = await requestMetadata(allVehiclesURIs)
+  let allVehicles = await getVehiclesMetadata(allVehiclesURIs)
+  injectTokenId(allVehiclesIds,allVehicles)
   return allVehicles
 }
 
@@ -164,13 +175,11 @@ export const fetchData = (account) => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
-
-
       let myRole = await getRole(account)
       let myVehicles = await getVehiclesForAccount(account)
       let allVehicles = await getAllVehicles()
       let vehiclesForSale = await getVehiclesForSale()
-
+      console.log(vehiclesForSale)
       dispatch(
         fetchDataSuccess({
           myRole,

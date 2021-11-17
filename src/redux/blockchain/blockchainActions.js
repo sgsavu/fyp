@@ -1,7 +1,5 @@
-// constants
 import Web3 from "web3";
 import SmartContract from "../../abis/Vehicle.json";
-// log
 import { fetchData } from "../data/dataActions";
 import store from "../store";
 
