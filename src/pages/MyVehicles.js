@@ -7,7 +7,7 @@ import { Link, Redirect } from 'react-router-dom';
 function MyVehicles() {
 
   const data = useSelector((state) => state.data);
-
+  console.log(data.myVehicles)
   return (
     <div>
       {data.loading ? (
@@ -15,7 +15,7 @@ function MyVehicles() {
       ) : (
         data.myVehicles.map((nft, index) => {
           return (
-            <div key={index} className="my-vehicle" onClick={(e) => {<Redirect push to="/vehicle" />}}>
+            <div key={index} className="my-vehicle" onClick={(e) => { <Redirect push to="/vehicle" /> }}>
               <p>{nft.name}</p>
               <p>{nft.description}</p>
               <p>{nft.attributes[0].value}</p>
@@ -26,11 +26,11 @@ function MyVehicles() {
                 width={150}
               />
               <Link to={{
-              pathname: "/vehicle",
-              state: { metadata: nft },
-            }}>
-              <p>VIEW </p>
-            </Link>
+                pathname: "/vehicle",
+                state: { metadata: nft },
+              }}>
+                <p>VIEW </p>
+              </Link>
             </div>
           );
         })

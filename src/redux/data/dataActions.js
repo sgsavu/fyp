@@ -179,7 +179,6 @@ export const fetchData = (account) => {
       let myVehicles = await getVehiclesForAccount(account)
       let allVehicles = await getAllVehicles()
       let vehiclesForSale = await getVehiclesForSale()
-      console.log(vehiclesForSale)
       dispatch(
         fetchDataSuccess({
           myRole,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import Filter from './Filter';
 
 
@@ -51,6 +52,12 @@ const Marketplace = () => {
               <p>{vehicle.description}</p>
               <p>{vehicle.attributes[1].value}</p>
               <img alt={vehicle.name} src={vehicle.image} width={150}></img>
+              <Link to={{
+                pathname: "/vehicle",
+                state: { metadata: vehicle },
+              }}>
+                <p>VIEW </p>
+              </Link>
             </div>
           );
         }) : null}

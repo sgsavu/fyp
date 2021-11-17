@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as s from "../styles/globalStyles";
 import { useLocation } from 'react-router-dom'
 import { fetchData } from "../redux/data/dataActions";
@@ -24,7 +24,7 @@ const Vehicle = () => {
     const setForSale = (e, value) => {
         e.preventDefault()
         blockchain.smartContract.methods
-            .setForSale(0, value)
+            .setForSale(vehicle.injected.id, value)
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
@@ -33,6 +33,10 @@ const Vehicle = () => {
                 console.log(receipt);
                 dispatch(fetchData(blockchain.account));
             });
+    }
+
+    const buyVehicle = () => {
+
     }
 
     return (
@@ -55,20 +59,23 @@ const Vehicle = () => {
             </div>
             <div>
                 {checkIfIsForSale()
-                    ? checkIfOwner() ? 
-                    <button onClick={(e) => {
-                        setForSale(e, false)
+                    ? checkIfOwner() ?
+                        <button onClick={(e) => {
+                            setForSale(e, false)
                         }}>
-                        Remove from sale
-                    </button> :
-                        <button >
+                            Remove from sale
+                        </button> :
+                        <button onClick={(e) => {
+                            buyVehicle()
+                        }}>
                             Buy
                         </button>
-                    : checkIfOwner() ? <button onClick={(e) => {
-                        setForSale(e, true)
+                    : checkIfOwner() ?
+                        <button onClick={(e) => {
+                            setForSale(e, true)
                         }}>
-                        List for sale
-                    </button>: null
+                            List for sale
+                        </button> : null
                 }
             </div>
         </div>
