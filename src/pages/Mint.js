@@ -5,7 +5,7 @@ import FormFields from '../components/form/FormFields';
 import ImageUpload from '../components/form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
-import { fetchData } from "../redux/data/dataActions";
+import { fetchData, refreshMyVehicles } from "../redux/data/dataActions";
 import { finishSubmit, errorSubmit } from '../redux/minting/formActions';
 
 

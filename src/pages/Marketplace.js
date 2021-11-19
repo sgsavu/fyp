@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Filter from './Filter';
+import { priceToUserCurrency } from "./PricesCoinsExchange";
 
 
 
@@ -14,7 +15,7 @@ const Marketplace = () => {
   const [filteredPages, setFilteredPages] = useState([]);
   const [perPage, setPerPage] = useState(10);
   const [pageNr, setPageNr] = useState(0)
-
+  const myPrefferedCurrency = data.currency
 
   const nextPage = () => {
     if (pageNr != filteredPages.length-1)
@@ -40,11 +41,18 @@ const Marketplace = () => {
     filteredToPagesFiltered(vehicleList)
   }, [])
 
+  useEffect(() => {
+    console.log(vehicleList)
+  }, [data])
+
   return (
+    <div>
+      {data.loading? null: 
     <div>
       <Filter data={vehicleList} callback={filteredToPagesFiltered} empty_state={vehicleList} />
       <div>
         {filteredPages.length != 0 ? filteredPages[pageNr].map((vehicle, key) => {
+          console.log("in render",vehicle.injected.price_in_user_currency )
           return (
             <div key={key}>
               <a ></a>
@@ -56,8 +64,11 @@ const Marketplace = () => {
                 pathname: "/vehicle",
                 state: { metadata: vehicle },
               }}>
-                <p>VIEW </p>
+              <p>VIEW </p>
               </Link>
+              <p>{
+               vehicle.injected.price_in_user_currency 
+              } {myPrefferedCurrency}</p>
             </div>
           );
         }) : null}
@@ -65,6 +76,8 @@ const Marketplace = () => {
       <button onClick={prevPage}>Prev</button>
       <p>{pageNr}</p>
       <button onClick={nextPage}>Next</button>
+    </div>
+    }
     </div>
   );
 

@@ -11,7 +11,7 @@ import Options from './pages/Options';
 
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
-import { fetchData } from "./redux/data/dataActions";
+import { fetchData, refreshVehiclesForSale } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
 
 import ControlledRoute from './components/ControlledRoute';
@@ -28,15 +28,11 @@ function App() {
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
   useEffect(() => {
+
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
       dispatch(fetchData(blockchain.account));
     }
   }, [blockchain.smartContract, dispatch]);
-
-  const refresh = () => {
-      dispatch(fetchData(blockchain.account));
-  }
-
   return (
 
     <s.Screen>
@@ -60,9 +56,6 @@ function App() {
       ) : <Router>
         <Navbar>
         </Navbar>
-        <button onClick={refresh}>
-          Refresh
-        </button>
         <Switch>
           <ControlledRoute path='/' exact component={MyVehicles} />
           <ControlledRoute path='/marketplace' component={Marketplace} />

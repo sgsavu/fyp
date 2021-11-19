@@ -46,18 +46,6 @@ const Vehicle = () => {
             });
     }
 
-    useEffect( async () => {
-        if (vehicle!=undefined)
-        {
-            let x = convertWeiToEth(await getVehiclePrice())
-        let bruh = await convertCurrencyToCurrency(x,"ETH",myPrefferedCurrency)
-        let roundedPrice = (Math.round(bruh * 100) / 100).toFixed(2);
-        setPriceForSale(roundedPrice)
-        }
-      
-    }, [fetchData,dispatch])
-
-
     async function setVehiclePrice(price,fiat) {
 
         const priceInCrypto = await convertCurrencyToCurrency(price,fiat,"ETH")
@@ -119,7 +107,7 @@ const Vehicle = () => {
                             Remove from sale
                         </button> :
                         <div>
-                            <p>{priceForSale} {myPrefferedCurrency}</p>
+                            <p>{vehicle.injected.price_in_user_currency} {myPrefferedCurrency}</p>
                             <button onClick={(e) => {
                                 buyVehicle(e)
                             }}>
