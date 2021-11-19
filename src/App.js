@@ -1,4 +1,4 @@
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import './styles/App.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
@@ -7,6 +7,7 @@ import Marketplace from './pages/Marketplace';
 import Verify from './pages/Verify';
 import Mint from './pages/Mint';
 import Admin from './pages/Admin';
+import Options from './pages/Options';
 
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
@@ -23,7 +24,6 @@ import Vehicle from "./pages/Vehicle";
 
 function App() {
 
-
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
@@ -33,8 +33,12 @@ function App() {
     }
   }, [blockchain.smartContract, dispatch]);
 
+  const refresh = () => {
+      dispatch(fetchData(blockchain.account));
+  }
+
   return (
-    
+
     <s.Screen>
       {blockchain.account === "" || blockchain.smartContract === null ? (
         <s.Container flex={1} ai={"center"} jc={"center"}>
@@ -56,17 +60,21 @@ function App() {
       ) : <Router>
         <Navbar>
         </Navbar>
+        <button onClick={refresh}>
+          Refresh
+        </button>
         <Switch>
-          <ControlledRoute path='/' exact component={MyVehicles}/>
+          <ControlledRoute path='/' exact component={MyVehicles} />
           <ControlledRoute path='/marketplace' component={Marketplace} />
           <ControlledRoute path='/verify' component={Verify} />
           <ControlledRoute path='/mint' component={Mint} />
           <ControlledRoute path='/admin' component={Admin} />
-          <Route path='/vehicle' component={Vehicle}/>
+          <Route path='/vehicle' component={Vehicle} />
+          <Route path='/options' component={Options} />
         </Switch>
-      </Router> }
-      
-    
+      </Router>}
+
+
     </s.Screen>
   );
 }

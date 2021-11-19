@@ -17,6 +17,12 @@ const UserSidebar = [
         cName: 'nav-text'
     },
     {
+        title: 'Options',
+        path: '/options',
+        icon: <IoIcons.IoMdOptions />,
+        cName: 'nav-text'
+    },
+    {
         title: 'Support',
         path: '/support',
         icon: <IoIcons.IoMdHelpCircle />,

@@ -5,6 +5,7 @@ const initialState = {
   myVehicles: [],
   vehiclesForSale: [],
   allVehicles: [],
+  currency: "GBP",
   myRole: roles.USER_ROLE,
   error: false,
   errorMsg: ""
@@ -33,6 +34,11 @@ const dataReducer = (state = initialState, action) => {
         error: true,
         errorMsg: action.payload,
       };
+      case "UPDATE_FAV_CURRENCY":
+        return {
+          ...state,
+          currency: action.payload
+        };
     default:
       return state;
   }

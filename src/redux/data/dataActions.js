@@ -22,6 +22,13 @@ const fetchDataFailed = (payload) => {
   };
 };
 
+const accountUpdateFavCurrency = (payload) => {
+  return {
+    type: "UPDATE_FAV_CURRENCY",
+    payload: payload,
+  };
+};
+
 async function getVehiclesMetadata(vehicleURIS) {
 
   let fetchedVehicles = []
@@ -191,5 +198,15 @@ export const fetchData = (account) => {
       console.log(err);
       dispatch(fetchDataFailed("Could not load data from contract."));
     }
+  };
+};
+
+export const updatePrefferedCurrency = (e) => {
+  return async (dispatch) => {
+    e.preventDefault();
+    const { value } = e.target
+    dispatch(
+      accountUpdateFavCurrency(value)
+    );
   };
 };

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as s from "../styles/globalStyles";
 import { useLocation } from 'react-router-dom'
+import { convertEthToWei, convertCurrencyToCurrency, convertWeiToEth } from './PricesCoinsExchange'
 import { fetchData } from "../redux/data/dataActions";
+import web3 from "web3";
+
 
 const Vehicle = () => {
 
@@ -10,15 +13,23 @@ const Vehicle = () => {
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
     const location = useLocation()
+    const [priceForSale, setPriceForSale] = useState(0);
     const vehicle = location.state?.metadata
+    const myPrefferedCurrency = data.currency
 
-    console.log(vehicle)
     const checkIfOwner = () => {
         return data.myVehicles.some(myVehicle => myVehicle.name === vehicle.name)
     }
 
     const checkIfIsForSale = () => {
         return data.vehiclesForSale.some(vehicleForSale => vehicleForSale.name === vehicle.name)
+    }
+
+
+    const getVehiclePrice = async (e) => {
+        return await blockchain.smartContract.methods
+            .getVehiclePrice(vehicle.injected.id)
+            .call()
     }
 
     const setForSale = (e, value) => {
@@ -35,12 +46,54 @@ const Vehicle = () => {
             });
     }
 
-    const buyVehicle = () => {
+    useEffect( async () => {
+        if (vehicle!=undefined)
+        {
+            let x = convertWeiToEth(await getVehiclePrice())
+        let bruh = await convertCurrencyToCurrency(x,"ETH",myPrefferedCurrency)
+        let roundedPrice = (Math.round(bruh * 100) / 100).toFixed(2);
+        setPriceForSale(roundedPrice)
+        }
+      
+    }, [fetchData,dispatch])
 
+
+    async function setVehiclePrice(price,fiat) {
+
+        const priceInCrypto = await convertCurrencyToCurrency(price,fiat,"ETH")
+        const priceInWei = convertEthToWei(priceInCrypto)
+        blockchain.smartContract.methods
+            .setVehiclePrice(vehicle.injected.id, priceInWei)
+            .send({ from: blockchain.account })
+            .once("error", (err) => {
+                console.log(err);
+            })
+            .then((receipt) => {
+                console.log(receipt);
+            });
     }
+
+    async function buyVehicle(e) {
+
+        e.preventDefault()
+        let vehiclePrice = await getVehiclePrice()
+        blockchain.smartContract.methods
+            .payForVehicle(vehicle.injected.id)
+            .send({ from: blockchain.account, value: vehiclePrice })
+            .once("error", (err) => {
+                console.log(err);
+            })
+            .then((receipt) => {
+                console.log(receipt);
+                dispatch(fetchData(blockchain.account));
+            });
+    }
+
 
     return (
         <div>
+            {vehicle!=undefined?
+            <div>
             <div>
                 <img
                     alt={vehicle.name}
@@ -65,19 +118,28 @@ const Vehicle = () => {
                         }}>
                             Remove from sale
                         </button> :
-                        <button onClick={(e) => {
-                            buyVehicle()
-                        }}>
-                            Buy
-                        </button>
+                        <div>
+                            <p>{priceForSale} {myPrefferedCurrency}</p>
+                            <button onClick={(e) => {
+                                buyVehicle(e)
+                            }}>
+                                Buy
+                            </button>
+                        </div>
                     : checkIfOwner() ?
                         <button onClick={(e) => {
                             setForSale(e, true)
+                            setVehiclePrice(1000,myPrefferedCurrency)
                         }}>
                             List for sale
                         </button> : null
                 }
             </div>
+            </div>
+            :null
+            
+            }
+            
         </div>
     );
 }

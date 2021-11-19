@@ -20,6 +20,7 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     mapping(uint256 => string) private _tokenURIs;
     mapping(string => bool) private _uriRegistered;
     mapping(uint256 => uint256) private _forSale;
+    mapping(uint256 => uint256) private _vehicleToPrice;
 
     function supportsInterface(bytes4 interfaceId)
         public
@@ -70,7 +71,6 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     }
 
     /*
-
     function getTokensForSale() public view returns (uint256[] memory) {
         uint256 lastToken = _tokenIds.current();
         uint256 counter = 0;
@@ -87,8 +87,47 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
 
         return tokensForSale;
     }
-
     */
+
+    event Received(address, uint);
+
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
+    function depositInContract() public payable {
+        (bool sent, bytes memory data) = address(this).call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+    }
+
+    function payForVehicle(uint256 tokenId) public payable {
+        require (isForSale(tokenId));
+        require (msg.value == _vehicleToPrice[tokenId]);
+        address payable _to = payable(ownerOf(tokenId));
+
+        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+        _transfer(_to, msg.sender, tokenId);
+        setForSale(tokenId, false);
+    }
+
+    function getConBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function withdrawETH(address payable recipient) public {
+        recipient.transfer(address(this).balance);
+    }
+
+    function setVehiclePrice(uint256 tokenId, uint256 _price) public onlyOwnerOf(tokenId) {
+        _vehicleToPrice[tokenId] = _price;
+    }
+
+    function getVehiclePrice(uint256 tokenId) public view returns (uint256) {
+        require(_exists(tokenId));
+        return _vehicleToPrice[tokenId];
+    }
+
 
     function setForSale(uint256 tokenId, bool value)
         public
@@ -163,6 +202,7 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         _uriRegistered[uri] = true;
         setForSale(_id, false);
         _tokenIds.increment();
+        //setVehiclePrice(_id,1);
         return _id;
     }
 }
