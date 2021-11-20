@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import SmartContract from "../../abis/Vehicle.json";
-import { fetchData } from "../data/dataActions";
+import { fetchAllData } from "../data/dataActions";
 import store from "../store";
 
 const connectRequest = () => {
@@ -80,6 +80,6 @@ export const connect = () => {
 export const updateAccount = (account) => {
   return async (dispatch) => {
     dispatch(updateAccountRequest({ account: account }));
-    dispatch(fetchData(account));
+    dispatch(fetchAllData(account));
   };
 };

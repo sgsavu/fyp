@@ -22,11 +22,14 @@ export const convertCurrencyToCurrency = async (amount, fromCurrency, toCurrency
     return amount / rate
 }
 
-export const priceToUserCurrency = async (price) => {
+export const convertToDisplayCurrency = async (price) => {
+    
     let myPrefferedCurrency = await store
         .getState()
-        .data.currency
+        .data.displayCurrency
+    
     let princeInEth = convertWeiToEth(price)
     let priceInUserCurrency = await convertCurrencyToCurrency(princeInEth, "ETH", myPrefferedCurrency)
+    
     return (Math.round(priceInUserCurrency * 100) / 100).toFixed(2)
 }

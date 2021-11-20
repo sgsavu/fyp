@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as s from "../styles/globalStyles";
 import { useLocation } from 'react-router-dom'
 import { convertEthToWei, convertCurrencyToCurrency, convertWeiToEth } from './PricesCoinsExchange'
-import { fetchData } from "../redux/data/dataActions";
+import { fetchAllData, refreshVehiclesForSale } from "../redux/data/dataActions";
 import web3 from "web3";
 
 
@@ -15,7 +15,7 @@ const Vehicle = () => {
     const location = useLocation()
     const [priceForSale, setPriceForSale] = useState(0);
     const vehicle = location.state?.metadata
-    const myPrefferedCurrency = data.currency
+    const myPrefferedCurrency = data.displayCurrency
 
     const checkIfOwner = () => {
         return data.myVehicles.some(myVehicle => myVehicle.name === vehicle.name)
@@ -24,7 +24,6 @@ const Vehicle = () => {
     const checkIfIsForSale = () => {
         return data.vehiclesForSale.some(vehicleForSale => vehicleForSale.name === vehicle.name)
     }
-
 
     const getVehiclePrice = async (e) => {
         return await blockchain.smartContract.methods
@@ -42,7 +41,7 @@ const Vehicle = () => {
             })
             .then((receipt) => {
                 console.log(receipt);
-                dispatch(fetchData(blockchain.account));
+                dispatch(fetchAllData(blockchain.account));
             });
     }
 
@@ -58,6 +57,7 @@ const Vehicle = () => {
             })
             .then((receipt) => {
                 console.log(receipt);
+                dispatch(refreshVehiclesForSale());
             });
     }
 
@@ -73,7 +73,7 @@ const Vehicle = () => {
             })
             .then((receipt) => {
                 console.log(receipt);
-                dispatch(fetchData(blockchain.account));
+                dispatch(fetchAllData(blockchain.account));
             });
     }
 
@@ -107,7 +107,7 @@ const Vehicle = () => {
                             Remove from sale
                         </button> :
                         <div>
-                            <p>{vehicle.injected.price_in_user_currency} {myPrefferedCurrency}</p>
+                            <p>{vehicle.injected.display_price} {myPrefferedCurrency}</p>
                             <button onClick={(e) => {
                                 buyVehicle(e)
                             }}>
@@ -117,7 +117,7 @@ const Vehicle = () => {
                     : checkIfOwner() ?
                         <button onClick={(e) => {
                             setForSale(e, true)
-                            setVehiclePrice(1000,myPrefferedCurrency)
+                            setVehiclePrice(2000,myPrefferedCurrency)
                         }}>
                             List for sale
                         </button> : null

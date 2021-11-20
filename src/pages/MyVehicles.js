@@ -7,14 +7,20 @@ import { Link, Redirect } from 'react-router-dom';
 function MyVehicles() {
 
   const data = useSelector((state) => state.data);
+  const vehicleList = data.myVehicles
+
+  useEffect(() => {
+    console.log("refresh on myvehicls")
+  }, [vehicleList])
+
   return (
     <div>
       {data.loading ? (
         <p>loading...</p>
       ) : (
-        data.myVehicles.map((nft, index) => {
+        vehicleList.map((nft, index) => {
           return (
-            <div key={index} className="my-vehicle" onClick={(e) => { <Redirect push to="/vehicle" /> }}>
+            <div key={index} className="my-vehicle">
               <p>{nft.name}</p>
               <p>{nft.description}</p>
               <p>{nft.attributes[0].value}</p>

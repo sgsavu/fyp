@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../pages/PermissionsAndRoles';
-import { fetchData, refreshAllVehicles, refreshMyVehicles, refreshVehiclesForSale } from '../redux/data/dataActions';
+import { fetchAllData, refreshAllVehicles, refreshMyVehicles, refreshVehiclesForSale, refreshDisplayPrices } from '../redux/data/dataActions';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -31,7 +31,7 @@ function Navbar() {
         dispatch(refreshAllVehicles())
         break;
       case "/vehicle":
-        dispatch(fetchData(blockchain.account))
+        dispatch(fetchAllData(blockchain.account))
         break;
     }
   }

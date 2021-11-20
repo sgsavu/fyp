@@ -76,6 +76,9 @@ const EMPTY_OPTIONS = {
   roles: []
 }
 
+export const viewAllPrivileged = [roles.DEFAULT_ADMIN_ROLE,roles.AUTHORITY_ROLE,roles.AUTHORITY_ROLE_ADMIN]
+
+
 export const getAdminOptionsFor = (role) => {
   switch (role) {
     case roles.MINTER_ROLE_ADMIN:

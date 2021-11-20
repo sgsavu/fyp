@@ -11,11 +11,10 @@ const Marketplace = () => {
 
   const data = useSelector((state) => state.data);
   const vehicleList = data.vehiclesForSale
-
-  const [filteredPages, setFilteredPages] = useState([]);
   const [perPage, setPerPage] = useState(10);
   const [pageNr, setPageNr] = useState(0)
-  const myPrefferedCurrency = data.currency
+  const myPrefferedCurrency = data.displayCurrency
+  const [filteredPages, setFilteredPages] = useState([]);
 
   const nextPage = () => {
     if (pageNr != filteredPages.length-1)
@@ -27,8 +26,7 @@ const Marketplace = () => {
       setPageNr(pageNr - 1)
   }
 
-  function filteredToPagesFiltered(filtered) {
-
+  function listToPages(filtered) {
     const copy = filtered.filter(element => element);
     var temp = []
     while (copy.length) {
@@ -38,21 +36,16 @@ const Marketplace = () => {
   }
 
   useEffect(() => {
-    filteredToPagesFiltered(vehicleList)
-  }, [])
-
-  useEffect(() => {
-    console.log(vehicleList)
-  }, [data])
+    listToPages(vehicleList)
+  }, [vehicleList])
 
   return (
     <div>
       {data.loading? null: 
     <div>
-      <Filter data={vehicleList} callback={filteredToPagesFiltered} empty_state={vehicleList} />
+      <Filter data={vehicleList} callback={listToPages} empty_state={vehicleList} />
       <div>
         {filteredPages.length != 0 ? filteredPages[pageNr].map((vehicle, key) => {
-          console.log("in render",vehicle.injected.price_in_user_currency )
           return (
             <div key={key}>
               <a ></a>
@@ -67,14 +60,14 @@ const Marketplace = () => {
               <p>VIEW </p>
               </Link>
               <p>{
-               vehicle.injected.price_in_user_currency 
+               vehicle?.injected.display_price 
               } {myPrefferedCurrency}</p>
             </div>
           );
         }) : null}
       </div>
       <button onClick={prevPage}>Prev</button>
-      <p>{pageNr}</p>
+      <p>{pageNr+1}</p>
       <button onClick={nextPage}>Next</button>
     </div>
     }

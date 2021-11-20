@@ -5,7 +5,7 @@ const initialState = {
   myVehicles: [],
   vehiclesForSale: [],
   allVehicles: [],
-  currency: "GBP",
+  displayCurrency: "GBP",
   myRole: roles.USER_ROLE,
   error: false,
   errorMsg: ""
@@ -34,28 +34,33 @@ const dataReducer = (state = initialState, action) => {
         error: true,
         errorMsg: action.payload,
       };
-    case "REFRESH_MY_VEHICLES":
+    case "UPDATE_MY_VEHICLES":
       return {
         ...state,
         loading: false,
         myVehicles: action.payload
       };
-    case "REFRESH_VEHICLES_FOR_SALE":
+    case "UPDATE_VEHICLES_FOR_SALE":
       return {
         ...state,
         loading: false,
         vehiclesForSale: action.payload
       };
-    case "REFRESH_ALL_VEHICLES":
+    case "UPDATE_ALL_VEHICLES":
       return {
         ...state,
         loading: false,
         allVehicles: action.payload
       };
-    case "UPDATE_FAV_CURRENCY":
+    case "UPDATE_DISPLAY_CURRENCY":
       return {
         ...state,
-        currency: action.payload
+        displayCurrency: action.payload
+      };
+    case "UPDATE_ROLE":
+      return {
+        ...state,
+        myRole: action.payload
       };
     default:
       return state;
