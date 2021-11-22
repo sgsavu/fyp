@@ -8,7 +8,8 @@ const initialState = {
   displayCurrency: "GBP",
   myRole: roles.USER_ROLE,
   error: false,
-  errorMsg: ""
+  errorMsg: "",
+  myBids: []
 };
 
 const dataReducer = (state = initialState, action) => {
@@ -62,6 +63,11 @@ const dataReducer = (state = initialState, action) => {
         ...state,
         myRole: action.payload
       };
+      case "UPDATE_MY_BIDS":
+        return {
+          ...state,
+          myBids: action.payload
+        };
     default:
       return state;
   }

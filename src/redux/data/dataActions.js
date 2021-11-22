@@ -17,6 +17,13 @@ const fetchDataSuccess = (payload) => {
   };
 };
 
+const updateMyBids = (payload) => {
+  return {
+    type: "UPDATE_MY_BIDS",
+    payload: payload,
+  };
+};
+
 const updateRole = (payload) => {
   return {
     type: "UPDATE_ROLE",
@@ -134,6 +141,13 @@ async function getTotalNrOfVehicles() {
     .call();
 }
 
+async function getBidForAccount(id,account) {
+  return await store
+    .getState()
+    .blockchain.smartContract.methods.getBidForAccount(id,account)
+    .call();
+}
+
 async function injectTokenId(vehicleIDsList, vehicleObjectsList) {
   for (let i = 0; i < vehicleObjectsList.length; i++) {
     vehicleObjectsList[i].injected = {}
@@ -226,6 +240,28 @@ async function getAllVehicles() {
 }
 
 
+async function getMyBids(account) {
+  let totalNrOfVehicles = await getTotalNrOfVehicles()
+  let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
+  let myBids = []
+  for (var i = 0; i < allVehiclesIds.length; i++){
+    let bid = await getBidForAccount(i,account)
+    if (bid!=0)
+    {
+      let vURI = await getVehicleURIS([i])
+      let vhcl = await getVehiclesMetadata(vURI)
+      myBids = [...myBids,{vehicle: vhcl[0], amount: bid}]
+    }
+  } 
+
+  myBids.map(async (object)=>{
+    await injectTokenId(allVehiclesIds,[object.vehicle])
+  })
+
+  
+  return myBids;
+}
+
 
 export const fetchAllData = (account) => {
   return async (dispatch) => {
@@ -245,6 +281,7 @@ export const fetchAllData = (account) => {
       }
 
       dispatch(refreshRole());
+      dispatch(refreshMyBids());
 
     } catch (err) {
       console.log(err);
@@ -260,6 +297,27 @@ export const updatePrefferedCurrency = (e) => {
     dispatch(
       updateDisplayCurrency(value)
     );
+  };
+};
+
+export const refreshMyBids = () => {
+  return async (dispatch) => {
+    dispatch(fetchDataRequest());
+    try {
+
+      let account = await store
+        .getState()
+        .blockchain.account
+
+      dispatch(
+        updateMyBids(
+          await getMyBids(account)
+        )
+      );
+    } catch (err) {
+      console.log(err);
+      dispatch(fetchDataFailed("Could not load data from contract."));
+    }
   };
 };
 

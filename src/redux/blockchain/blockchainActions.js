@@ -52,14 +52,15 @@ export const connect = () => {
           );
           dispatch(
             connectSuccess({
-              account: accounts[0],
+              account: Web3.utils.toChecksumAddress(accounts[0]),
               smartContract: SmartContractObj,
               web3: web3,
             })
           );
           
           window.ethereum.on("accountsChanged", (accounts) => {
-            dispatch(updateAccount(accounts[0]));
+
+            dispatch(updateAccount(Web3.utils.toChecksumAddress(accounts[0])));
           });
           window.ethereum.on("chainChanged", () => {
             window.location.reload();

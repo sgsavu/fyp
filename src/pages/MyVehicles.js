@@ -10,7 +10,7 @@ function MyVehicles() {
   const vehicleList = data.myVehicles
 
   useEffect(() => {
-    console.log("refresh on myvehicls")
+  
   }, [vehicleList])
 
   return (

@@ -3,6 +3,15 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 
+
+export const MyBids = {
+    title: 'My Bids',
+    path: '/mybids',
+    icon: <AiIcons.AiFillCar />,
+    cName: 'nav-text'
+}
+
+
 const UserSidebar = [
     {
         title: 'My Vehicles',

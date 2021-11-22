@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as s from "../styles/globalStyles";
 import { useLocation } from 'react-router-dom'
-import { convertEthToWei, convertCurrencyToCurrency, convertWeiToEth } from './PricesCoinsExchange'
+import { convertEthToWei, convertCurrencyToCurrency, convertWeiToEth, convertToDisplayCurrency } from './PricesCoinsExchange'
 import { fetchAllData, refreshVehiclesForSale } from "../redux/data/dataActions";
 import web3 from "web3";
 
@@ -16,7 +16,9 @@ const Vehicle = () => {
     const [priceForSale, setPriceForSale] = useState(0);
     const vehicle = location.state?.metadata
     const myPrefferedCurrency = data.displayCurrency
-    const [isAuction,setIsAuction] = useState(false);
+    const [isAuction, setIsAuction] = useState(false);
+    const [myBid, setMyBid] = useState(0);
+    const [displayPrice, setDisplayPrice] = useState(0);
 
     const checkIfOwner = () => {
         return data.myVehicles.some(myVehicle => myVehicle.name === vehicle.name)
@@ -32,9 +34,9 @@ const Vehicle = () => {
             .call()
     }
 
-    
+
     const checkIfIsAuction = async () => {
-      
+
         return await blockchain.smartContract.methods
             .isAuction(vehicle.injected.id)
             .call()
@@ -170,11 +172,16 @@ const Vehicle = () => {
             });
     }
 
-    getMyBid()
     async function getMyBid() {
-        console.log(await blockchain.smartContract.methods
+        return await blockchain.smartContract.methods
             .getBidForAccount(vehicle.injected.id, blockchain.account)
-            .call())
+            .call()
+    }
+
+    async function getTopBidder() {
+        return await blockchain.smartContract.methods
+            .getTopBidder(vehicle.injected.id)
+            .call()
     }
 
     getConBalance()
@@ -185,17 +192,23 @@ const Vehicle = () => {
     }
 
     useEffect(async () => {
-        console.log("thisis",await checkIfIsAuction())
+        setDisplayPrice(await convertToDisplayCurrency(await getVehiclePrice()))
         setSaleOption("INSTANT")
         setIsAuction(await checkIfIsAuction())
+        setMyBid(await convertToDisplayCurrency(await getMyBid()))
+        setTopBidder(await getTopBidder())
+        console.log("topbidder",await getTopBidder())
+        console.log(blockchain.account)
     }, [data])
 
 
     const [saleOption, setSaleOption] = useState("INSTANT")
     const [price, setPrice] = useState("")
+    const [topBidder, setTopBidder] = useState("0x0")
 
     return (
         <div>
+            
             {vehicle != undefined ?
                 <div>
                     <div>
@@ -219,96 +232,97 @@ const Vehicle = () => {
                         {checkIfOwner()
                             ? <div>
 
-                               
-                                    {checkIfIsForSale() ?
-                                        
-                                        <div>
-                                            <p>
+
+                                {checkIfIsForSale() ?
+
+                                    <div>
+                                        <p>
                                             {isAuction ? "Highest Bid: " : "Price: "}
-                                            {vehicle.injected.display_price} {myPrefferedCurrency}</p>
-                                            {isAuction ? <div>
+                                            {displayPrice} {myPrefferedCurrency}</p>
 
-                                                <button onClick={(e) => {
-                                                    e.preventDefault()
-                                                    auctionEnd()
-                                                }}>
-                                                    Finish Auction
-                                                </button>
-                                                <button onClick={(e) => {
-                                                    e.preventDefault()
-                                                    delistAuction()
-                                                }}>
-                                                    Cancel Auction
-                                                </button>
-                                            </div> : <div>
-                                                <div>
-                                                    <input type="number" value={price} onChange={(e) => { setPrice(e.target.value) }}></input>
-                                                    <label>{myPrefferedCurrency}</label>
-                                                </div>
-                                                <button onClick={(e) => {
-                                                    e.preventDefault()
-                                                    setVehiclePrice(price)
-                                                }}>
-                                                    Update Price
-                                                </button>
-                                                <button onClick={(e) => {
-                                                    e.preventDefault()
-                                                    removeFromSale()
-                                                }}>
-                                                    Remove from sale
-                                                </button>
-                                            </div>}
-
-
-                                        </div>
-                                        :
-                                        <div>
+                                        {isAuction ? <div>
+                                            {topBidder!="0x0000000000000000000000000000000000000000"? <button onClick={(e) => {
+                                                e.preventDefault()
+                                                auctionEnd()
+                                            }}>
+                                                Finish Auction
+                                            </button>: null }
+                                            
+                                            <button onClick={(e) => {
+                                                e.preventDefault()
+                                                delistAuction()
+                                            }}>
+                                                Cancel Auction
+                                            </button>
+                                        </div> : <div>
                                             <div>
-                                                <label>{saleOption == "INSTANT" ? "Price: " : "Starting Price: "}</label>
-
                                                 <input type="number" value={price} onChange={(e) => { setPrice(e.target.value) }}></input>
                                                 <label>{myPrefferedCurrency}</label>
                                             </div>
-                                            <div>
-                                                <select onChange={(e) => { setSaleOption(e.target.value) }}>
-                                                    <option value="INSTANT">INSTANT</option>
-                                                    <option value="AUCTION">AUCTION</option>
-                                                </select>
-                                            </div>
-                                            <div>
-
-                                                {saleOption == "INSTANT" ?
-                                                    <button onClick={(e) => {
-                                                        console.log("sale")
-                                                        e.preventDefault()
-                                                        if (price > 0) {
-                                                            listForSale(price)
-                                                        }
-                                                    }}>
-                                                        List for sale
-                                                    </button>
-                                                    :
-                                                    <button onClick={(e) => {
-                                                        console.log("auction")
-                                                        e.preventDefault()
-                                                        if (price > 0) {
-                                                            listAuction(price)
-                                                        }
-                                                    }}>
-                                                        List auction
-                                                    </button>
-                                                }
-
-                                            </div>
+                                            <button onClick={(e) => {
+                                                e.preventDefault()
+                                                setVehiclePrice(price)
+                                            }}>
+                                                Update Price
+                                            </button>
+                                            <button onClick={(e) => {
+                                                e.preventDefault()
+                                                removeFromSale()
+                                            }}>
+                                                Remove from sale
+                                            </button>
                                         </div>}
-      
+
+
+                                    </div>
+                                    :
+                                    <div>
+                                        <div>
+                                            <label>{saleOption == "INSTANT" ? "Price: " : "Starting Price: "}</label>
+
+                                            <input type="number" value={price} onChange={(e) => { setPrice(e.target.value) }}></input>
+                                            <label>{myPrefferedCurrency}</label>
+                                        </div>
+                                        <div>
+                                            <select onChange={(e) => { setSaleOption(e.target.value) }}>
+                                                <option value="INSTANT">INSTANT</option>
+                                                <option value="AUCTION">AUCTION</option>
+                                            </select>
+                                        </div>
+                                        <div>
+
+                                            {saleOption == "INSTANT" ?
+                                                <button onClick={(e) => {
+                                                    console.log("sale")
+                                                    e.preventDefault()
+                                                    if (price > 0) {
+                                                        listForSale(price)
+                                                    }
+                                                }}>
+                                                    List for sale
+                                                </button>
+                                                :
+                                                <button onClick={(e) => {
+                                                    console.log("auction")
+                                                    e.preventDefault()
+                                                    if (price > 0) {
+                                                        listAuction(price)
+                                                    }
+                                                }}>
+                                                    List auction
+                                                </button>
+                                            }
+
+                                        </div>
+                                    </div>}
+
                             </div>
                             : checkIfIsForSale() ?
 
                                 <div>
                                     <p>
-                                            {isAuction ? "Highest Bid: " : "Price: "}
-                                            {vehicle.injected.display_price} {myPrefferedCurrency}</p>
+                                        {isAuction ? "Highest Bid: " : "Price: "}
+                                        {displayPrice} {myPrefferedCurrency}</p>
                                     {isAuction ?
                                         <div>
                                             <input type="number" value={price} onChange={(e) => { setPrice(e.target.value) }}></input>
@@ -320,12 +334,7 @@ const Vehicle = () => {
                                             }}>
                                                 Bid
                                             </button>
-                                            <button onClick={(e) => {
-                                                e.preventDefault()
-                                                withdrawBid()
-                                            }}>
-                                                Withdraw Bid
-                                            </button>
+
                                         </div> :
                                         <div>
 
@@ -338,7 +347,7 @@ const Vehicle = () => {
                                         </div>
                                     }
 
-                                </div> 
+                                </div>
                                 : null
 
 
@@ -350,6 +359,18 @@ const Vehicle = () => {
 
             }
 
+            {myBid != 0 ?
+                <div>
+                    <p>Your bid: {myBid}</p>
+                    {topBidder!=blockchain.account? <button onClick={(e) => {
+                        e.preventDefault()
+                        withdrawBid()
+                    }}>
+                        Withdraw Bid
+                    </button> : null}
+                    
+                </div>
+                : null}
         </div>
     );
 }

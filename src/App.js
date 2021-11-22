@@ -8,6 +8,7 @@ import Verify from './pages/Verify';
 import Mint from './pages/Mint';
 import Admin from './pages/Admin';
 import Options from './pages/Options';
+import MyBids from './pages/MyBids';
 
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
@@ -65,6 +66,7 @@ function App() {
           <ControlledRoute path='/admin' component={Admin} />
           <Route path='/vehicle' component={Vehicle} />
           <Route path='/options' component={Options} />
+          <Route path='/mybids' component={MyBids} />
         </Switch>
       </Router>}
 

@@ -9,6 +9,7 @@ import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../pages/PermissionsAndRoles';
 import { fetchAllData, refreshAllVehicles, refreshMyVehicles, refreshVehiclesForSale, refreshDisplayPrices } from '../redux/data/dataActions';
+import { MyBids } from './SidebarData';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -16,7 +17,10 @@ function Navbar() {
   const blockchain = useSelector((state) => state.blockchain);
   const [visible, setVisible] = useState(false);
   const toggleVisibility = () => setVisible(!visible);
-  const sidebar = getSidebarFor(data.myRole)
+  var sidebar = getSidebarFor(data.myRole)
+
+  if (data.myBids.length!=0)
+    sidebar = [...sidebar,MyBids]
 
   const refresh = () => {
     switch (window.location.pathname)
@@ -48,6 +52,9 @@ function Navbar() {
             <AiIcons.AiOutlineClose className='menu-bars' />
           </li>
           {sidebar.map((item, index) => {
+            if (item.path=="/mybids")
+              if (data.myBids.length==0)
+                console.log("bruh")
             return (
               <li key={index} className={item.cName}>
                 <Link to={item.path}>

@@ -86,15 +86,19 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     }
     */
 
+    function getTopBidder(uint256 tokenId) public returns (address) {
+        return _topBidder[tokenId];
+    }
 
 
     function auctionEnd(uint256 tokenId) public onlyOwnerOf(tokenId) {
-        require (_topBidder[tokenId]!=address(0));
-        _transfer(msg.sender, payable(_topBidder[tokenId]), tokenId);
-        payable(msg.sender).transfer(_collectedPayments[tokenId][_topBidder[tokenId]]);
+        address topBidder = _topBidder[tokenId];
+        require (topBidder!=address(0));
+        _transfer(msg.sender, payable(topBidder), tokenId);
+        payable(msg.sender).transfer(_collectedPayments[tokenId][topBidder]);
         _setIsForSale(tokenId, false);
+        _collectedPayments[tokenId][topBidder] = 0;   
         _topBidder[tokenId] = address(0);
-        _collectedPayments[tokenId][_topBidder[tokenId]] = 0;   
     }
 
     function bidVehicle(uint256 tokenId) public payable {
@@ -131,6 +135,7 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     }
 
     function withdrawBid(uint256 tokenId) public {
+        require (getTopBidder(tokenId)!=msg.sender);
         uint256 bid = _collectedPayments[tokenId][msg.sender];
         require (bid>0);
         _collectedPayments[tokenId][msg.sender] = 0;
@@ -147,7 +152,6 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
 
     function getVehiclePrice(uint256 tokenId) public view returns (uint256) {
         require(_exists(tokenId));
-        require (isForSale(tokenId));
         return _vehicleToPrice[tokenId];
     }
 
@@ -197,6 +201,8 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
 
     function delistAuction(uint256 tokenId) public onlyOwnerOf(tokenId) {
         require(isAuction(tokenId));
+        if (_topBidder[tokenId] != address(0))
+            _topBidder[tokenId] = address(0);
         removeFromSale(tokenId);
         _setIsAuction(tokenId,false);
     }
