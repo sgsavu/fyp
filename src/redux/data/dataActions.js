@@ -141,10 +141,10 @@ async function getTotalNrOfVehicles() {
     .call();
 }
 
-async function getBidForAccount(id,account) {
+async function getBid(id,account) {
   return await store
     .getState()
-    .blockchain.smartContract.methods.getBidForAccount(id,account)
+    .blockchain.smartContract.methods.getBid(id,account)
     .call();
 }
 
@@ -245,7 +245,7 @@ async function getMyBids(account) {
   let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
   let myBids = []
   for (var i = 0; i < allVehiclesIds.length; i++){
-    let bid = await getBidForAccount(i,account)
+    let bid = await getBid(i,account)
     if (bid!=0)
     {
       let vURI = await getVehicleURIS([i])

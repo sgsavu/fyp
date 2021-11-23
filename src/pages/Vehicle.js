@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { convertEthToWei, convertCurrencyToCurrency, convertWeiToEth, convertToDisplayCurrency } from './PricesCoinsExchange'
 import { fetchAllData, refreshVehiclesForSale } from "../redux/data/dataActions";
 import web3 from "web3";
+import { use } from "chai";
 
 
 const Vehicle = () => {
@@ -20,12 +21,14 @@ const Vehicle = () => {
     const [myBid, setMyBid] = useState(0);
     const [displayPrice, setDisplayPrice] = useState(0);
 
-    const checkIfOwner = () => {
-        return data.myVehicles.some(myVehicle => myVehicle.name === vehicle.name)
+    const checkIfOwner = async () => {
+        return (blockchain.account == await ownerOf(vehicle.injected.id))
     }
 
-    const checkIfIsForSale = () => {
-        return data.vehiclesForSale.some(vehicleForSale => vehicleForSale.name === vehicle.name)
+    const checkIfIsForSale = async () => {
+        return await blockchain.smartContract.methods
+            .isForSale(vehicle.injected.id)
+            .call()
     }
 
     const getVehiclePrice = async () => {
@@ -57,19 +60,6 @@ const Vehicle = () => {
             });
     }
 
-    const delistAuction = async () => {
-
-        blockchain.smartContract.methods
-            .delistAuction(vehicle.injected.id)
-            .send({ from: blockchain.account })
-            .once("error", (err) => {
-                console.log(err);
-            })
-            .then((receipt) => {
-                console.log(receipt);
-                dispatch(fetchAllData(blockchain.account));
-            });
-    }
 
     const listForSale = async (price) => {
 
@@ -122,7 +112,7 @@ const Vehicle = () => {
 
         let vehiclePrice = await getVehiclePrice()
         blockchain.smartContract.methods
-            .payForVehicle(vehicle.injected.id)
+            .buyVehicle(vehicle.injected.id)
             .send({ from: blockchain.account, value: vehiclePrice })
             .once("error", (err) => {
                 console.log(err);
@@ -159,9 +149,9 @@ const Vehicle = () => {
             });
     }
 
-    async function auctionEnd() {
+    async function concludeAuction() {
         blockchain.smartContract.methods
-            .auctionEnd(vehicle.injected.id)
+            .concludeAuction(vehicle.injected.id)
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
@@ -174,7 +164,13 @@ const Vehicle = () => {
 
     async function getMyBid() {
         return await blockchain.smartContract.methods
-            .getBidForAccount(vehicle.injected.id, blockchain.account)
+            .getBid(vehicle.injected.id, blockchain.account)
+            .call()
+    }
+
+    async function ownerOf(token) {
+        return await blockchain.smartContract.methods
+            .ownerOf(token)
             .call()
     }
 
@@ -184,27 +180,38 @@ const Vehicle = () => {
             .call()
     }
 
-    getConBalance()
-    async function getConBalance() {
-        console.log("conbalance", await blockchain.smartContract.methods
-            .getConBalance()
-            .call())
+    async function getContractBalance() {
+        return await blockchain.smartContract.methods
+            .getContractBalance()
+            .call()
     }
 
     useEffect(async () => {
-        setDisplayPrice(await convertToDisplayCurrency(await getVehiclePrice()))
+        setIsForSale(await checkIfIsForSale())
+        setIsOwner(await checkIfOwner())
+        if (await checkIfIsForSale())
+        {   
+            console.log("it is for sale")
+            setDisplayPrice(await convertToDisplayCurrency(await getVehiclePrice()))
+        }
         setSaleOption("INSTANT")
         setIsAuction(await checkIfIsAuction())
         setMyBid(await convertToDisplayCurrency(await getMyBid()))
-        setTopBidder(await getTopBidder())
-        console.log("topbidder",await getTopBidder())
-        console.log(blockchain.account)
+        if (await checkIfIsAuction())
+        {
+            setTopBidder(await getTopBidder())
+            console.log("topbidder",await getTopBidder())
+        }
+        console.log("ownerofvehicle",await ownerOf(vehicle.injected.id));
+        console.log("con balance", await getContractBalance())
     }, [data])
 
 
     const [saleOption, setSaleOption] = useState("INSTANT")
     const [price, setPrice] = useState("")
     const [topBidder, setTopBidder] = useState("0x0")
+    const [isForSale, setIsForSale] = useState(false)
+    const [isOwner, setIsOwner] = useState(false)
 
     return (
         <div>
@@ -229,11 +236,11 @@ const Vehicle = () => {
 
                     </div>
                     <div>
-                        {checkIfOwner()
+                        {isOwner
                             ? <div>
 
 
-                                {checkIfIsForSale() ?
+                                {isForSale ?
 
                                     <div>
                                         <p>
@@ -243,14 +250,14 @@ const Vehicle = () => {
                                         {isAuction ? <div>
                                             {topBidder!="0x0000000000000000000000000000000000000000"? <button onClick={(e) => {
                                                 e.preventDefault()
-                                                auctionEnd()
+                                                concludeAuction()
                                             }}>
                                                 Finish Auction
                                             </button>: null }
-                                            
+                                           
                                             <button onClick={(e) => {
                                                 e.preventDefault()
-                                                delistAuction()
+                                                removeFromSale()
                                             }}>
                                                 Cancel Auction
                                             </button>
@@ -317,7 +324,7 @@ const Vehicle = () => {
                                     </div>}
 
                             </div>
-                            : checkIfIsForSale() ?
+                            : isForSale ?
 
                                 <div>
                                     <p>

@@ -4,18 +4,12 @@ pragma solidity >=0.6.0 <0.9.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./BoolBitStorage.sol";
+import "./RolesAndPermissions.sol";
 
-contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
+contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
-
-    enum ROLE_CLASS {
-        MINTER,
-        AUTHORITY,
-        ADMIN
-    }
 
     event Received(address, uint256);
 
@@ -23,18 +17,12 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         emit Received(msg.sender, msg.value);
     }
 
-    bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 private constant MINTER_ROLE_ADMIN = keccak256("MINTER_ROLE_ADMIN");
-    bytes32 private constant AUTHORITY_ROLE = keccak256("AUTHORITY_ROLE");
-    bytes32 private constant AUTHORITY_ROLE_ADMIN =
-        keccak256("AUTHORITY_ROLE_ADMIN");
-
-    mapping(uint256 => string) private _tokenURIs;
+    mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
-    mapping(uint256 => uint256) private _isForSale;
-    mapping(uint256 => uint256) private _isAuction;
-    mapping(uint256 => uint256) private _vehicleToPrice;
-    mapping(uint256 => mapping (address => uint256)) private _collectedPayments;
+    mapping(uint256 => uint256) private _forSale;
+    mapping(uint256 => uint256) private _auction;
+    mapping(uint256 => uint256) private _vehiclePrice;
+    mapping(uint256 => mapping(address => uint256)) private _bids;
     mapping(uint256 => address) private _topBidder;
 
     function supportsInterface(bytes4 interfaceId)
@@ -46,24 +34,51 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
         return super.supportsInterface(interfaceId);
     }
 
-    constructor() ERC721("Vehicle", "VHC") {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(MINTER_ROLE_ADMIN, msg.sender);
-        _setupRole(MINTER_ROLE, msg.sender);
+    constructor() ERC721("Vehicle", "VHC") {}
 
-        _setRoleAdmin(MINTER_ROLE_ADMIN, DEFAULT_ADMIN_ROLE);
-        _setRoleAdmin(AUTHORITY_ROLE_ADMIN, DEFAULT_ADMIN_ROLE);
-        _setRoleAdmin(MINTER_ROLE, MINTER_ROLE_ADMIN);
-        _setRoleAdmin(AUTHORITY_ROLE, AUTHORITY_ROLE_ADMIN);
-    }
-
-    modifier notAlreadyRegistered(string memory uri) {
-        require(_uriRegistered[uri] == false);
+    modifier onlyIfNotRegistered(string memory uri) {
+        require(_uriRegistered[uri] == false, "Duplicate URI's detected.");
         _;
     }
 
     modifier onlyOwnerOf(uint256 tokenId) {
-        require(ownerOf(tokenId) == msg.sender);
+        require(
+            ownerOf(tokenId) == msg.sender,
+            "Message sender is not the owner/authorized for the tokenId provided."
+        );
+        _;
+    }
+
+    modifier onlyIfExists(uint256 tokenId) {
+        require(_exists(tokenId), "Token/Vehicle does not exist.");
+        _;
+    }
+
+    modifier onlyIfAuction(uint256 tokenId) {
+        require(_isAuction(tokenId), "Vehicle is not an auction.");
+        _;
+    }
+
+    modifier onlyIfForSale(uint256 tokenId) {
+        require(_isForSale(tokenId), "Vehicle is not for sale.");
+        _;
+    }
+
+    modifier onlyIfNotForSale(uint256 tokenId) {
+        require(!_isForSale(tokenId), "Vehicle is already for sale.");
+        _;
+    }
+
+    modifier onlyIfNotAuction(uint256 tokenId) {
+        require(!_isAuction(tokenId), "Vehicle is already an auction.");
+        _;
+    }
+
+    modifier onlyIfNotTopBidder(uint256 tokenId) {
+        require(
+            _getTopBidder(tokenId) != msg.sender,
+            "Cannot withdraw bid while being top bidder."
+        );
         _;
     }
 
@@ -86,197 +101,146 @@ contract Vehicle is ERC721Enumerable, Ownable, AccessControl {
     }
     */
 
-    function getTopBidder(uint256 tokenId) public returns (address) {
-        return _topBidder[tokenId];
-    }
+    // MONEY TRANSFERING AND BALANCE
 
-
-    function auctionEnd(uint256 tokenId) public onlyOwnerOf(tokenId) {
-        address topBidder = _topBidder[tokenId];
-        require (topBidder!=address(0));
-        _transfer(msg.sender, payable(topBidder), tokenId);
-        payable(msg.sender).transfer(_collectedPayments[tokenId][topBidder]);
-        _setIsForSale(tokenId, false);
-        _collectedPayments[tokenId][topBidder] = 0;   
-        _topBidder[tokenId] = address(0);
-    }
-
-    function bidVehicle(uint256 tokenId) public payable {
-        require (msg.value>getVehiclePrice(tokenId));
-        if (_collectedPayments[tokenId][msg.sender]!=0)
-            payable(msg.sender).transfer(_collectedPayments[tokenId][msg.sender]);
-        (bool sent, bytes memory data) = address(this).call{value: msg.value}(
-            ""
-        );
-        _collectedPayments[tokenId][msg.sender] = msg.value;
-        _vehicleToPrice[tokenId] = msg.value;
-        _topBidder[tokenId] = msg.sender;
-        require(sent, "Failed to send Ether");
-    }
-
-    function getBidForAccount(uint256 tokenId,address _account) public view returns (uint256){
-        return _collectedPayments[tokenId][_account];
-    }
-
-    function payForVehicle(uint256 tokenId) public payable {
-        require(isForSale(tokenId));
-        require(!isAuction(tokenId));
-        require(msg.value == _vehicleToPrice[tokenId]);
-        address payable _to = payable(ownerOf(tokenId));
-
-        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
-        require(sent, "Failed to send Ether");
-        _transfer(_to, msg.sender, tokenId);
-        _setIsForSale(tokenId, false);
-    }
-
-    function getConBalance() public view returns (uint256) {
+    function getContractBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
-    function withdrawBid(uint256 tokenId) public {
-        require (getTopBidder(tokenId)!=msg.sender);
-        uint256 bid = _collectedPayments[tokenId][msg.sender];
-        require (bid>0);
-        _collectedPayments[tokenId][msg.sender] = 0;
-        payable(msg.sender).transfer(bid);
+    function _secureMoneyTransfer(address beneficiary, uint256 money) internal {
+        address payable _beneficiary = payable(beneficiary);
+        (bool sent, bytes memory data) = _beneficiary.call{value: money}("");
+        require(sent, "Failed to send money to beneficiary");
     }
 
-    function setVehiclePrice(uint256 tokenId, uint256 _price)
-        public
-        onlyOwnerOf(tokenId)
-    {
-        require (!isAuction(tokenId));
-        _vehicleToPrice[tokenId] = _price;
+    function _classicExchange(
+        address seller,
+        address buyer,
+        uint256 vehicle,
+        uint256 money
+    ) internal {
+        _secureMoneyTransfer(seller, money);
+        _transfer(seller, buyer, vehicle);
+        require(
+            ownerOf(vehicle) == buyer,
+            "Failed to transfer vehicle to buyer"
+        );
     }
 
-    function getVehiclePrice(uint256 tokenId) public view returns (uint256) {
-        require(_exists(tokenId));
-        return _vehicleToPrice[tokenId];
+    // AUCTIONING
+
+    function _concludeAuction(uint256 tokenId) internal {
+        address topBidder = _getTopBidder(tokenId);
+        require(topBidder != address(0));
+        uint256 topBid = _getBid(tokenId, topBidder);
+        _removeFromSale(tokenId);
+        _classicExchange(
+            msg.sender,
+            topBidder,
+            tokenId,
+            topBid
+        );
+        _setBid(tokenId, topBidder, 0);
     }
 
-    function _getBoolean(uint256 _packedBools, uint256 _boolNumber)
+    function _setBid(
+        uint256 tokenId,
+        address _account,
+        uint256 amount
+    ) internal {
+        _bids[tokenId][_account] = amount;
+    }
+
+    function _getBid(uint256 tokenId, address _account)
         internal
-        pure
-        returns (bool)
+        view
+        returns (uint256)
     {
-        uint256 flag = (_packedBools >> _boolNumber) & uint256(1);
-        return (flag == 1 ? true : false);
+        return _bids[tokenId][_account];
     }
 
-    function _setBoolean(
-        uint256 _packedBools,
-        uint256 _boolNumber,
-        bool _value
-    ) internal pure returns (uint256) {
-        if (_value) return _packedBools | (uint256(1) << _boolNumber);
-        else return _packedBools & ~(uint256(1) << _boolNumber);
+    function _getTopBidder(uint256 tokenId) internal view returns (address) {
+        return _topBidder[tokenId];
     }
 
-    function _setIsForSale(uint256 tokenId, bool value) internal {
-        require(_exists(tokenId));
-        uint256 multiplier = tokenId / 256;
-        _isForSale[multiplier] = _setBoolean(
-            _isForSale[multiplier],
-            tokenId - (256 * multiplier),
-            value
-        );
+    function _setTopBidder(uint256 tokenId, address _account) internal {
+        _topBidder[tokenId] = _account;
     }
 
-    function _setIsAuction(uint256 tokenId, bool value) internal {
-        require(_exists(tokenId));
-        uint256 multiplier = tokenId / 256;
-        _isAuction[multiplier] = _setBoolean(
-            _isAuction[multiplier],
-            tokenId - (256 * multiplier),
-            value
-        );
+    function _listAuction(uint256 tokenId, uint256 price) internal {
+        _listForSale(tokenId, price);
+        _setIsAuction(tokenId, true);
     }
 
-    function listAuction(uint256 tokenId, uint256 price) public onlyOwnerOf(tokenId) {
-        require(!isAuction(tokenId));
-        listForSale(tokenId, price);
-        _setIsAuction(tokenId,true);
+    // BUYING SELLING
+
+    function _getVehiclePrice(uint256 tokenId) internal view returns (uint256) {
+        return _vehiclePrice[tokenId];
     }
 
-    function delistAuction(uint256 tokenId) public onlyOwnerOf(tokenId) {
-        require(isAuction(tokenId));
-        if (_topBidder[tokenId] != address(0))
-            _topBidder[tokenId] = address(0);
-        removeFromSale(tokenId);
-        _setIsAuction(tokenId,false);
+    function _setVehiclePrice(uint256 tokenId, uint256 _price) internal {
+        _vehiclePrice[tokenId] = _price;
     }
 
-    function listForSale(uint256 tokenId, uint256 price) public onlyOwnerOf(tokenId) {
-        require(!isForSale(tokenId));
+    function _listForSale(uint256 tokenId, uint256 price) internal {
         _setIsForSale(tokenId, true);
-        setVehiclePrice(tokenId, price);
+        _setVehiclePrice(tokenId, price);
     }
 
-    function removeFromSale(uint256 tokenId) public onlyOwnerOf(tokenId) {
-        require(isForSale(tokenId));
+    function _removeFromSale(uint256 tokenId) internal {
+        if (_isAuction(tokenId)) {
+            if (_topBidder[tokenId] != address(0))
+                _topBidder[tokenId] = address(0);
+            _setIsAuction(tokenId, false);
+        }
         _setIsForSale(tokenId, false);
     }
 
-    function isForSale(uint256 tokenId) public view returns (bool) {
-        require(_exists(tokenId));
-        uint256 multiplier = tokenId / 256;
-        return _getBoolean(_isForSale[multiplier], tokenId - (256 * multiplier));
+    //BOOL BIT STORAGE
+
+    function _isForSale(uint256 tokenId) internal view returns (bool) {
+        uint256 multiplier;
+        uint256 bit;
+        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
+        return _getBoolean(_forSale[multiplier], bit);
     }
 
-    function isAuction(uint256 tokenId) public view returns (bool) {
-        require(_exists(tokenId));
-        uint256 multiplier = tokenId / 256;
-        return _getBoolean(_isAuction[multiplier], tokenId - (256 * multiplier));
+    function _isAuction(uint256 tokenId) internal view returns (bool) {
+        uint256 multiplier;
+        uint256 bit;
+        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
+        return _getBoolean(_auction[multiplier], bit);
     }
+
+    function _setIsForSale(uint256 tokenId, bool value) internal {
+        uint256 multiplier;
+        uint256 bit;
+        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
+        _forSale[multiplier] = _setBoolean(_forSale[multiplier], bit, value);
+    }
+
+    function _setIsAuction(uint256 tokenId, bool value) internal {
+        uint256 multiplier;
+        uint256 bit;
+        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
+        _auction[multiplier] = _setBoolean(_auction[multiplier], bit, value);
+    }
+
+    //URI
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
         _tokenURIs[tokenId] = _tokenURI;
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        require(_exists(tokenId));
-        return _tokenURIs[tokenId];
-    }
-
-    modifier onlyClass(ROLE_CLASS class) {
-        if (class == ROLE_CLASS.MINTER) {
-            require(
-                hasRole(MINTER_ROLE, msg.sender) ||
-                    hasRole(MINTER_ROLE_ADMIN, msg.sender)
-            );
-        } else if (class == ROLE_CLASS.AUTHORITY) {
-            require(
-                hasRole(AUTHORITY_ROLE, msg.sender) ||
-                    hasRole(AUTHORITY_ROLE_ADMIN, msg.sender)
-            );
-        } else if (class == ROLE_CLASS.ADMIN) {
-            require(
-                hasRole(MINTER_ROLE_ADMIN, msg.sender) ||
-                    hasRole(AUTHORITY_ROLE_ADMIN, msg.sender) ||
-                    hasRole(DEFAULT_ADMIN_ROLE, msg.sender)
-            );
-        }
-        _;
-    }
+    //MINT
 
     function mint(string memory uri)
-        public
-        onlyClass(ROLE_CLASS.MINTER)
-        notAlreadyRegistered(uri)
-        returns (uint256)
+        internal
     {
-        uint256 _id = _tokenIds.current();
-        _mint(msg.sender, _id);
-        _setTokenURI(_id, uri);
+        uint256 _tokenId = _tokenIds.current();
+        _mint(msg.sender, _tokenId);
+        _setTokenURI(_tokenId, uri);
         _uriRegistered[uri] = true;
         _tokenIds.increment();
-        return _id;
     }
 }

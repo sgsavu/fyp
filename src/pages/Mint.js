@@ -24,7 +24,7 @@ const Mint = () => {
 
     const mint = (_uri) => {
         blockchain.smartContract.methods
-            .mint(_uri)
+            .createVehicle(_uri)
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
