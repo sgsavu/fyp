@@ -2,11 +2,9 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "./Vehicle.sol";
 
-contract PublicGateway is Vehicle{
-
-
+contract ExternalGateway is Vehicle {
     function createVehicle(string memory uri)
-        public
+        external
         onlyClass(ROLE_CLASS.MINTER)
         onlyIfNotRegistered(uri)
     {
@@ -25,7 +23,7 @@ contract PublicGateway is Vehicle{
     }
 
     function getVehiclePrice(uint256 tokenId)
-        public
+        external
         view
         onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
@@ -35,16 +33,15 @@ contract PublicGateway is Vehicle{
     }
 
     function getBid(uint256 tokenId, address _account)
-        public
+        external
         view
         returns (uint256)
     {
-        return _getBid(tokenId,_account);
+        return _getBid(tokenId, _account);
     }
 
-
     function getTopBidder(uint256 tokenId)
-        public
+        external
         view
         onlyIfExists(tokenId)
         onlyIfAuction(tokenId)
@@ -54,7 +51,7 @@ contract PublicGateway is Vehicle{
     }
 
     function isAuction(uint256 tokenId)
-        public
+        external
         view
         onlyIfExists(tokenId)
         returns (bool)
@@ -63,7 +60,7 @@ contract PublicGateway is Vehicle{
     }
 
     function isForSale(uint256 tokenId)
-        public
+        external
         view
         onlyIfExists(tokenId)
         returns (bool)
@@ -72,7 +69,7 @@ contract PublicGateway is Vehicle{
     }
 
     function concludeAuction(uint256 tokenId)
-        public
+        external
         onlyOwnerOf(tokenId)
         onlyIfAuction(tokenId)
     {
@@ -80,26 +77,28 @@ contract PublicGateway is Vehicle{
     }
 
     function listAuction(uint256 tokenId, uint256 price)
-        public
+        external
         onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
         onlyIfNotAuction(tokenId)
+        onlyIfPriceNonNull(price)
     {
-        _listAuction(tokenId,price);
+        _listAuction(tokenId, price);
     }
-    
+
     function listForSale(uint256 tokenId, uint256 price)
-        public
+        external
         onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
+        onlyIfPriceNonNull(price)
     {
-        _listForSale(tokenId,price);
+        _listForSale(tokenId, price);
     }
 
     function removeFromSale(uint256 tokenId)
-        public
+        external
         onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         onlyOwnerOf(tokenId)
@@ -108,31 +107,40 @@ contract PublicGateway is Vehicle{
     }
 
     function setVehiclePrice(uint256 tokenId, uint256 _price)
-        public
+        external
         onlyOwnerOf(tokenId)
         onlyIfNotAuction(tokenId)
+        onlyIfPriceNonNull(_price)
     {
-        _setVehiclePrice(tokenId,_price);
+        _setVehiclePrice(tokenId, _price);
     }
 
     function buyVehicle(uint256 tokenId)
-        public
+        external
         payable
         onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         onlyIfNotAuction(tokenId)
     {
-        require(msg.value == _getVehiclePrice(tokenId),"Money sent either not enough or too much.");
+        require(
+            msg.value == _getVehiclePrice(tokenId),
+            "Money sent either not enough or too much."
+        );
 
         _classicExchange(ownerOf(tokenId), msg.sender, tokenId, msg.value);
         _removeFromSale(tokenId);
     }
 
-    function bidVehicle(uint256 tokenId) public payable onlyIfExists(tokenId) onlyIfAuction(tokenId) {
+    function bidVehicle(uint256 tokenId)
+        external
+        payable
+        onlyIfExists(tokenId)
+        onlyIfAuction(tokenId)
+    {
         require(msg.value > _getVehiclePrice(tokenId));
         require(msg.sender != ownerOf(tokenId));
 
-        uint256 currentBid = getBid(tokenId, msg.sender);
+        uint256 currentBid = _getBid(tokenId, msg.sender);
         if (currentBid != 0) _secureMoneyTransfer(msg.sender, currentBid);
 
         _secureMoneyTransfer(address(this), msg.value);
@@ -141,12 +149,23 @@ contract PublicGateway is Vehicle{
         _setTopBidder(tokenId, msg.sender);
     }
 
-    function withdrawBid(uint256 tokenId) public onlyIfNotTopBidder(tokenId) {
-        uint256 bid = getBid(tokenId, msg.sender);
+    function withdrawBid(uint256 tokenId) external onlyIfNotTopBidder(tokenId) {
+        uint256 bid = _getBid(tokenId, msg.sender);
         require(bid > 0, "No bid to retrieve");
         _setBid(tokenId, msg.sender, 0);
         _secureMoneyTransfer(msg.sender, bid);
     }
-    
+
+    function destroyVehicle(uint256 _tokenId) external {
+        burn(_tokenId);
+    }
+
+    function getTotalNrOfRegisteredVehicles() external view returns (uint256) {
+        return getTokenIdsCurrent();
+    }
+
+    function getIfTokenExists(uint256 tokenId) external view returns (bool) {
+        return _exists(tokenId);
+    }
 
 }

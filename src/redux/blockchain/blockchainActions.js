@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import VehicleContract from "../../abis/Vehicle.json";
-import PublicGatewayContract from "../../abis/PublicGateway.json";
+import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchAllData } from "../data/dataActions";
 import store from "../store";
 
@@ -38,6 +38,9 @@ export const connect = () => {
     dispatch(connectRequest());
     if (window.ethereum) {
       let web3 = new Web3(window.ethereum);
+      
+
+
       try {
         const accounts = await window.ethereum.request({
           method: "eth_accounts",
@@ -45,10 +48,10 @@ export const connect = () => {
         const networkId = await window.ethereum.request({
           method: "net_version",
         });
-        const NetworkData = await PublicGatewayContract.networks[networkId];
+        const NetworkData = await ExternalGatewayContract.networks[networkId];
         if (NetworkData) {
           const SmartContractObj = new web3.eth.Contract(
-            PublicGatewayContract.abi,
+            ExternalGatewayContract.abi,
             NetworkData.address
           );
           dispatch(

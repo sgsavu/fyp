@@ -9,7 +9,6 @@ import Mint from './pages/Mint';
 import Admin from './pages/Admin';
 import Options from './pages/Options';
 import MyBids from './pages/MyBids';
-
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchAllData, refreshVehiclesForSale } from "./redux/data/dataActions";
@@ -18,6 +17,7 @@ import * as s from "./styles/globalStyles";
 import ControlledRoute from './components/ControlledRoute';
 import { roleToString } from "./pages/PermissionsAndRoles";
 import Vehicle from "./pages/Vehicle";
+import Support from "./pages/Support";
 
 
 
@@ -28,7 +28,7 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
-
+ 
   useEffect(() => {
 
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
@@ -67,6 +67,7 @@ function App() {
           <Route path='/vehicle' component={Vehicle} />
           <Route path='/options' component={Options} />
           <Route path='/mybids' component={MyBids} />
+          <Route path='/support' component={Support} />
         </Switch>
       </Router>}
 

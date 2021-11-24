@@ -166,6 +166,8 @@ async function injectPrice(vehicleObjectsList) {
   }
 }
 
+
+
 async function getVehicleIDsForAccount(nrOfVehicles, account) {
 
   let accountVehicleIDs = []
@@ -209,24 +211,21 @@ async function getAllVehicleIDs(length) {
   return allVehiclesIds
 }
 
-async function getVehiclesForSale() {
-
-  let totalNrOfVehicles = await getTotalNrOfVehicles()
-  let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
-  let vehiclesForSaleIds = []
-  for (var i = 0; i < allVehiclesIds.length; i++) {
-    if (await isForSale(allVehiclesIds[i]))
-      vehiclesForSaleIds = [...vehiclesForSaleIds, allVehiclesIds[i]]
+async function getVehiclesForSale(allVehicles) {
+  
+  let onlyVehiclesForSale = []
+  for (var i = 0; i < allVehicles.length; i++) {
+    if (allVehicles[i].injected.hasOwnProperty('price'))
+      onlyVehiclesForSale = [...onlyVehiclesForSale,allVehicles[i]]
   }
-  let vehiclesForSaleURIs = await getVehicleURIS(vehiclesForSaleIds)
-  let vehiclesForSale = await getVehiclesMetadata(vehiclesForSaleURIs)
-  await injectTokenId(vehiclesForSaleIds, vehiclesForSale)
-  await injectPrice(vehiclesForSale)
-  return vehiclesForSale
+  return onlyVehiclesForSale
 }
 
 async function getAllVehicles() {
 
+  let acc = await store
+      .getState()
+      .blockchain.account
   let totalNrOfVehicles = await getTotalNrOfVehicles()
   let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
   let allVehiclesURIs = await getVehicleURIS(allVehiclesIds)
@@ -235,31 +234,42 @@ async function getAllVehicles() {
   for (var i = 0; i < allVehiclesIds.length; i++) {
     if (await isForSale(allVehiclesIds[i]))
       await injectPrice([allVehicles[i]])
+    let bid = await getBid(i,acc)
+    if (bid!=0)
+      allVehicles[i].injected.bid = bid
   }
+  console.log(allVehicles)
   return allVehicles
 }
 
 
-async function getMyBids(account) {
-  let totalNrOfVehicles = await getTotalNrOfVehicles()
-  let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
-  let myBids = []
-  for (var i = 0; i < allVehiclesIds.length; i++){
-    let bid = await getBid(i,account)
-    if (bid!=0)
-    {
-      let vURI = await getVehicleURIS([i])
-      let vhcl = await getVehiclesMetadata(vURI)
-      myBids = [...myBids,{vehicle: vhcl[0], amount: bid}]
-    }
-  } 
-
-  myBids.map(async (object)=>{
-    await injectTokenId(allVehiclesIds,[object.vehicle])
-  })
-
+async function getMyBids(allVehicles) {
   
-  return myBids;
+  let onlyMyBids = []
+  for (var i = 0; i < allVehicles.length; i++) {
+    if (allVehicles[i].injected.hasOwnProperty('bid'))
+    onlyMyBids = [...onlyMyBids,allVehicles[i]]
+  }
+
+  return onlyMyBids
+}
+
+
+async function getPersistentBids() {
+  
+  let acc = await store
+      .getState()
+      .blockchain.account
+  let totalNrOfVehicles = await getTotalNrOfVehicles()
+  let deletedBids = []
+  for (var i = 0; i < totalNrOfVehicles; i++) {
+    let bid = await getBid(i,acc)
+    if (bid!=0)
+      deletedBids = [...deletedBids,{id: i, bid:bid}]
+  
+  }
+
+  return deletedBids
 }
 
 
@@ -272,8 +282,8 @@ export const fetchAllData = (account) => {
 
       if (viewAllPrivileged.some(privilegedRole => privilegedRole === myRole)) {
         dispatch(refreshMyVehicles());
-        dispatch(refreshVehiclesForSale());
         dispatch(refreshAllVehicles());
+        dispatch(refreshVehiclesForSale());
       }
       else {
         dispatch(refreshMyVehicles());
@@ -305,13 +315,10 @@ export const refreshMyBids = () => {
     dispatch(fetchDataRequest());
     try {
 
-      let account = await store
-        .getState()
-        .blockchain.account
-
+  
       dispatch(
         updateMyBids(
-          await getMyBids(account)
+          await getPersistentBids()
         )
       );
     } catch (err) {
@@ -365,7 +372,7 @@ export const refreshVehiclesForSale = () => {
     try {
       dispatch(
         updateVehiclesForSale(
-          await getVehiclesForSale()
+          await getVehiclesForSale(await getAllVehicles())
         )
       );
     } catch (err) {

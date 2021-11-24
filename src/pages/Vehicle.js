@@ -183,21 +183,24 @@ const Vehicle = () => {
         let isForSale = await checkIfIsForSale()
         let isOwner = await checkIfOwner()
         let isAuction = await checkIfIsAuction()
+        let myBid = await getMyBid()
         setIsForSale(isForSale)
         setIsAuction(isAuction)
         setIsOwner(isOwner)
         setListingType("INSTANT")
-        if (isForSale == true) {
+        setMyBid(await convertToDisplayCurrency(myBid))
+        if (isForSale == true)
+        {   
             setDisplayPrice(await convertToDisplayCurrency(await getVehiclePrice()))
         }
-        if (isAuction == true) {
-            setMyBid(await convertToDisplayCurrency(await getMyBid()))
+        if (isAuction == true)
+        {
             setTopBidder(await getTopBidder())
-            console.log("topbidder", await getTopBidder())
+            console.log("topbidder",await getTopBidder())
         }
-        console.log("ownerofvehicle", await ownerOf(vehicle.injected.id));
+        console.log("ownerofvehicle",await ownerOf(vehicle.injected.id));
         console.log("con balance", await getContractBalance())
-
+     
     }, [data])
 
 
@@ -212,7 +215,7 @@ const Vehicle = () => {
 
     return (
         <div>
-
+            
             {vehicle != undefined ?
                 <div>
                     <div>
@@ -245,13 +248,13 @@ const Vehicle = () => {
                                             {displayPrice} {myPrefferedCurrency}</p>
 
                                         {isAuction ? <div>
-                                            {topBidder != "0x0000000000000000000000000000000000000000" ? <button onClick={(e) => {
+                                            {topBidder!="0x0000000000000000000000000000000000000000"? <button onClick={(e) => {
                                                 e.preventDefault()
                                                 concludeAuction()
                                             }}>
                                                 Conclude Auction
-                                            </button> : null}
-
+                                            </button>: null }
+                                           
                                             <button onClick={(e) => {
                                                 e.preventDefault()
                                                 removeFromSale()
@@ -297,7 +300,7 @@ const Vehicle = () => {
 
                                             {listingType == "INSTANT" ?
                                                 <button onClick={(e) => {
-                                                    console.log("sale")
+    
                                                     e.preventDefault()
                                                     if (desiredPrice > 0) {
                                                         listForSale(desiredPrice)
@@ -307,11 +310,11 @@ const Vehicle = () => {
                                                 </button>
                                                 :
                                                 <button onClick={(e) => {
-                                                    console.log("auction")
+                                             
                                                     e.preventDefault()
-                                                    if (desiredPrice > 0) {
+                                                    
                                                         listAuction(desiredPrice)
-                                                    }
+                                                    
                                                 }}>
                                                     List auction
                                                 </button>
@@ -366,13 +369,13 @@ const Vehicle = () => {
             {myBid != 0 ?
                 <div>
                     <p>Your bid: {myBid}</p>
-                    {topBidder != blockchain.account ? <button onClick={(e) => {
+                    {topBidder!=blockchain.account? <button onClick={(e) => {
                         e.preventDefault()
                         withdrawBid()
                     }}>
                         Withdraw Bid
                     </button> : null}
-
+                    
                 </div>
                 : null}
         </div>

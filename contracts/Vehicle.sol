@@ -82,24 +82,13 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _;
     }
 
-    /*
-    function getTokensForSale() public view returns (uint256[] memory) {
-        uint256 lastToken = _tokenIds.current();
-        uint256 counter = 0;
-        uint256[] memory tokensForSale = new uint256[](lastToken);
-
-        for (uint256 i = 0; i < lastToken; i++) {
-            if (_exists(i)) {
-                if (isForSale(i)) {
-                    tokensForSale[counter] = i;
-                    counter = counter + 1;
-                }
-            }
-        }
-
-        return tokensForSale;
+    modifier onlyIfPriceNonNull(uint256 price) {
+        require(
+            price > 0,
+            "Cannot set price to 0."
+        );
+        _;
     }
-    */
 
     // MONEY TRANSFERING AND BALANCE
 
@@ -190,7 +179,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     function _removeFromSale(uint256 tokenId) internal {
         if (_isAuction(tokenId)) {
             if (_topBidder[tokenId] != address(0))
-                _topBidder[tokenId] = address(0);
+                _setTopBidder(tokenId, address(0));
             _setIsAuction(tokenId, false);
         }
         _setIsForSale(tokenId, false);
@@ -234,6 +223,10 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
 
     //MINT
 
+    function getTokenIdsCurrent() internal view returns (uint256) {
+        return _tokenIds.current();
+    }
+
     function mint(string memory uri)
         internal
     {
@@ -242,5 +235,12 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _setTokenURI(_tokenId, uri);
         _uriRegistered[uri] = true;
         _tokenIds.increment();
+    }
+
+    function burn(uint256 _tokenId)
+        internal
+    {
+        _burn(_tokenId);
+        _setTokenURI(_tokenId, "Vehicle Deleted");
     }
 }

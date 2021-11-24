@@ -37,7 +37,14 @@ const Admin = () => {
     }
   }
 
+  const burnVehicle = () => {
+    blockchain.smartContract.methods
+      .destroyVehicle(0)
+      .send({ from: blockchain.account })
+  }
+
   return (
+    <div>
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register("userAddress")} placeholder="User Address" />
       <select {...register("action")}>
@@ -58,6 +65,9 @@ const Admin = () => {
       </select>
       <input type="submit" />
     </form>
+
+    <button onClick={burnVehicle}>Press</button>
+    </div>
   );
 }
 
