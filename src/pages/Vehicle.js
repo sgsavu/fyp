@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
-import { convertEthToWei, convertCurrencyToCurrency, convertWeiToEth, convertToDisplayCurrency } from './PricesCoinsExchange'
-import { fetchAllData, refreshVehiclesForSale } from "../redux/data/dataActions";
+import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from '../utils/PricesCoinsExchange'
+import { fetchAllData, refresh } from "../redux/data/dataActions";
+import { ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid } from "../redux/blockchain/blockchainUtils";
+
 
 const Vehicle = () => {
 
@@ -13,35 +15,24 @@ const Vehicle = () => {
     const vehicle = location.state?.metadata
     const myPrefferedCurrency = data.displayCurrency
 
+    const [listingType, setListingType] = useState("INSTANT")
+    const [isForSale, setIsForSale] = useState(false)
+    const [isOwner, setIsOwner] = useState(false)
+    const [topBidder, setTopBidder] = useState("0x0")
+    const [isAuction, setIsAuction] = useState(false);
+    const [topBid, setTopBid] = useState(0);
+    const [displayPrice, setDisplayPrice] = useState(0);
+    const [desiredPrice, setDesiredPrice] = useState(0)
+    const [owner, setOwner] = useState("");
+
     const checkIfOwner = async () => {
         return (blockchain.account == await ownerOf(vehicle.injected.id))
     }
 
-    const checkIfIsForSale = async () => {
-        return await blockchain.smartContract.methods
-            .isForSale(vehicle.injected.id)
-            .call()
-    }
-
-    const getVehiclePrice = async () => {
-        return await blockchain.smartContract.methods
-            .getVehiclePrice(vehicle.injected.id)
-            .call()
-    }
-
-
-    const checkIfIsAuction = async () => {
-
-        return await blockchain.smartContract.methods
-            .isAuction(vehicle.injected.id)
-            .call()
-    }
-
-
     const listAuction = async (price) => {
 
         blockchain.smartContract.methods
-            .listAuction(vehicle.injected.id, await displayPriceToBlockchainPrice(price))
+            .listAuction(vehicle.injected.id, await myCurrencyToWei(price))
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
@@ -56,7 +47,7 @@ const Vehicle = () => {
     const listForSale = async (price) => {
 
         blockchain.smartContract.methods
-            .listForSale(vehicle.injected.id, await displayPriceToBlockchainPrice(price))
+            .listForSale(vehicle.injected.id, await myCurrencyToWei(price))
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
@@ -81,22 +72,16 @@ const Vehicle = () => {
             });
     }
 
-    const displayPriceToBlockchainPrice = async (price) => {
-        const priceInCrypto = await convertCurrencyToCurrency(price, myPrefferedCurrency, "ETH")
-        const priceInWei = convertEthToWei(priceInCrypto)
-        return priceInWei
-    }
-
     async function setVehiclePrice(price) {
         blockchain.smartContract.methods
-            .setVehiclePrice(vehicle.injected.id, await displayPriceToBlockchainPrice(price))
+            .setVehiclePrice(vehicle.injected.id, await myCurrencyToWei(price))
             .send({ from: blockchain.account })
             .once("error", (err) => {
                 console.log(err);
             })
             .then((receipt) => {
                 console.log(receipt);
-                dispatch(refreshVehiclesForSale());
+                dispatch(refresh("FORSALE_VEHICLES"));
             });
     }
 
@@ -118,7 +103,7 @@ const Vehicle = () => {
     async function bidVehicle(price) {
         blockchain.smartContract.methods
             .bidVehicle(vehicle.injected.id)
-            .send({ from: blockchain.account, value: await displayPriceToBlockchainPrice(price) })
+            .send({ from: blockchain.account, value: await myCurrencyToWei(price) })
             .once("error", (err) => {
                 console.log(err);
             })
@@ -128,18 +113,6 @@ const Vehicle = () => {
             });
     }
 
-    async function withdrawBid() {
-        blockchain.smartContract.methods
-            .withdrawBid(vehicle.injected.id)
-            .send({ from: blockchain.account })
-            .once("error", (err) => {
-                console.log(err);
-            })
-            .then((receipt) => {
-                console.log(receipt);
-                dispatch(fetchAllData(blockchain.account));
-            });
-    }
 
     async function concludeAuction() {
         blockchain.smartContract.methods
@@ -154,68 +127,35 @@ const Vehicle = () => {
             });
     }
 
-    async function getMyBid() {
-        return await blockchain.smartContract.methods
-            .getBid(vehicle.injected.id, blockchain.account)
-            .call()
-    }
 
-    async function ownerOf(token) {
-        return await blockchain.smartContract.methods
-            .ownerOf(token)
-            .call()
-    }
-
-    async function getTopBidder() {
-        return await blockchain.smartContract.methods
-            .getTopBidder(vehicle.injected.id)
-            .call()
-    }
-
-    async function getContractBalance() {
-        return await blockchain.smartContract.methods
-            .getContractBalance()
-            .call()
-    }
 
     useEffect(async () => {
 
-        let isForSale = await checkIfIsForSale()
+        let isForSale = await getIfForSale(vehicle.injected.id)
         let isOwner = await checkIfOwner()
-        let isAuction = await checkIfIsAuction()
-        let myBid = await getMyBid()
+        let isAuction = await getIfAuction(vehicle.injected.id)
+        let topBid = await getTopBid(vehicle.injected.id)
         setIsForSale(isForSale)
         setIsAuction(isAuction)
+        setOwner(await ownerOf(vehicle.injected.id))
         setIsOwner(isOwner)
         setListingType("INSTANT")
-        setMyBid(await convertToDisplayCurrency(myBid))
-        if (isForSale == true)
-        {   
-            setDisplayPrice(await convertToDisplayCurrency(await getVehiclePrice()))
+        setTopBid(await weiToMyCurrency(topBid))
+        if (isForSale == true) {
+            setDisplayPrice(await weiToMyCurrency(await getVehiclePrice(vehicle.injected.id)))
         }
-        if (isAuction == true)
-        {
-            setTopBidder(await getTopBidder())
-            console.log("topbidder",await getTopBidder())
+        if (isAuction == true) {
+            setTopBidder(await getTopBidder(vehicle.injected.id))
+            console.log("topbidder", await getTopBidder(vehicle.injected.id))
         }
-        console.log("ownerofvehicle",await ownerOf(vehicle.injected.id));
         console.log("con balance", await getContractBalance())
-     
+
     }, [data])
 
 
-    const [listingType, setListingType] = useState("INSTANT")
-    const [isForSale, setIsForSale] = useState(false)
-    const [isOwner, setIsOwner] = useState(false)
-    const [topBidder, setTopBidder] = useState("0x0")
-    const [isAuction, setIsAuction] = useState(false);
-    const [myBid, setMyBid] = useState(0);
-    const [displayPrice, setDisplayPrice] = useState(0);
-    const [desiredPrice, setDesiredPrice] = useState(0)
-
     return (
         <div>
-            
+
             {vehicle != undefined ?
                 <div>
                     <div>
@@ -248,13 +188,13 @@ const Vehicle = () => {
                                             {displayPrice} {myPrefferedCurrency}</p>
 
                                         {isAuction ? <div>
-                                            {topBidder!="0x0000000000000000000000000000000000000000"? <button onClick={(e) => {
+                                            {topBidder != "0x0000000000000000000000000000000000000000" ? <button onClick={(e) => {
                                                 e.preventDefault()
                                                 concludeAuction()
                                             }}>
                                                 Conclude Auction
-                                            </button>: null }
-                                           
+                                            </button> : null}
+
                                             <button onClick={(e) => {
                                                 e.preventDefault()
                                                 removeFromSale()
@@ -300,7 +240,7 @@ const Vehicle = () => {
 
                                             {listingType == "INSTANT" ?
                                                 <button onClick={(e) => {
-    
+
                                                     e.preventDefault()
                                                     if (desiredPrice > 0) {
                                                         listForSale(desiredPrice)
@@ -310,11 +250,11 @@ const Vehicle = () => {
                                                 </button>
                                                 :
                                                 <button onClick={(e) => {
-                                             
+
                                                     e.preventDefault()
-                                                    
-                                                        listAuction(desiredPrice)
-                                                    
+
+                                                    listAuction(desiredPrice)
+
                                                 }}>
                                                     List auction
                                                 </button>
@@ -361,23 +301,18 @@ const Vehicle = () => {
 
                         }
                     </div>
+                    {topBidder == blockchain.account ?
+                        <div>
+                            <p>You are the top bidder with {topBid} {myPrefferedCurrency} </p>
+
+
+                        </div>
+                        : null}
                 </div>
+
                 : null
 
             }
-
-            {myBid != 0 ?
-                <div>
-                    <p>Your bid: {myBid}</p>
-                    {topBidder!=blockchain.account? <button onClick={(e) => {
-                        e.preventDefault()
-                        withdrawBid()
-                    }}>
-                        Withdraw Bid
-                    </button> : null}
-                    
-                </div>
-                : null}
         </div>
     );
 }

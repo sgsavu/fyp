@@ -3,7 +3,7 @@ import Filter from './Filter';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { refreshMyVehicles, refreshDisplayPrices, updatePrefferedCurrency, fetchAllData } from '../redux/data/dataActions';
-import { convertToDisplayCurrency } from './PricesCoinsExchange';
+import { convertToDisplayCurrency } from '../utils/PricesCoinsExchange';
 
 
 const MyBids = () => {

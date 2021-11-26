@@ -1,8 +1,9 @@
 // log
-import { roles, viewAllPrivileged } from "../../pages/PermissionsAndRoles";
-import { convertToDisplayCurrency } from "../../pages/PricesCoinsExchange";
+import { roles, viewAllPrivileged } from "../../utils/PermissionsAndRoles";
+import { weiToMyCurrency } from "../../utils/PricesCoinsExchange";
 import store from "../store";
 import dataReducer from "./dataReducer";
+import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTopBid, getTotalNrOfVehicles, getVehicleByIndex, getRole } from "../blockchain/blockchainUtils";
 
 const fetchDataRequest = () => {
   return {
@@ -66,210 +67,96 @@ const updateDisplayCurrency = (payload) => {
   };
 };
 
-async function getVehiclesMetadata(vehicleURIS) {
 
-  let fetchedVehicles = []
-  function resultCallback(result) {
-    fetchedVehicles.push(result)
-  }
-  for (const vehicleURI of vehicleURIS) {
-    await getVehicleMetadata(vehicleURI, resultCallback)
-  }
-  return fetchedVehicles
+
+
+
+async function injectTokenId(vehicle, tokenId) {
+  vehicle.injected = {}
+  vehicle.injected.id = tokenId
 }
 
-async function getVehicleMetadata(URI, callback) {
-  await fetch(URI)
-    .then((response) => response.json())
-    .then((vehicleMetadata) => {
-      callback(vehicleMetadata)
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
-
-async function getVehicleURI(vehicleID) {
-  return await store
+async function injectPrice(vehicle) {
+  let price = await store
     .getState()
-    .blockchain.smartContract.methods
-    .tokenURI(vehicleID)
+    .blockchain.smartContract.methods.getVehiclePrice(vehicle.injected.id)
     .call();
+  vehicle.injected.price = price
+  vehicle.injected.display_price = await weiToMyCurrency(price)
 }
 
-async function getVehicleByIndex(index) {
-  return await store
-    .getState()
-    .blockchain.smartContract.methods
-    .tokenByIndex(index)
-    .call();
-}
-
-async function getRole(account) {
-
-  for (const role in roles) {
-    if (
-      await store
-        .getState()
-        .blockchain.smartContract.methods
-        .hasRole(roles[role], account)
-        .call()
-    )
-      return roles[role]
-  }
-  return roles.USER_ROLE
-}
-
-async function getAccountBalance(account) {
-  return await store
-    .getState()
-    .blockchain.smartContract.methods.balanceOf(account)
-    .call();
-}
-
-async function isForSale(vehicle) {
-  return await store
-    .getState()
-    .blockchain.smartContract.methods.isForSale(vehicle)
-    .call();
-}
-
-async function getTotalNrOfVehicles() {
-  return await store
-    .getState()
-    .blockchain.smartContract.methods.totalSupply()
-    .call();
-}
-
-async function getBid(id,account) {
-  return await store
-    .getState()
-    .blockchain.smartContract.methods.getBid(id,account)
-    .call();
-}
-
-async function injectTokenId(vehicleIDsList, vehicleObjectsList) {
-  for (let i = 0; i < vehicleObjectsList.length; i++) {
-    vehicleObjectsList[i].injected = {}
-    vehicleObjectsList[i].injected.id = vehicleIDsList[i]
-  }
-}
-
-async function injectPrice(vehicleObjectsList) {
-  for (let i = 0; i < vehicleObjectsList.length; i++) {
-    let price = await store
-      .getState()
-      .blockchain.smartContract.methods.getVehiclePrice(vehicleObjectsList[i].injected.id)
-      .call();
-    vehicleObjectsList[i].injected.price = price
-    vehicleObjectsList[i].injected.display_price = await convertToDisplayCurrency(price)
-  }
-}
-
-
-
-async function getVehicleIDsForAccount(nrOfVehicles, account) {
-
-  let accountVehicleIDs = []
-  for (var i = 0; i < nrOfVehicles; i++) {
-    let vehicleID = await store
-      .getState()
-      .blockchain.smartContract.methods
-      .tokenOfOwnerByIndex(account, i)
-      .call();
-    accountVehicleIDs = [...accountVehicleIDs, vehicleID]
-  }
-  return accountVehicleIDs
-}
-
-async function getVehicleURIS(vehicleIDS) {
-
-  let accountVehicleMetadata = []
-  for (var i = 0; i < vehicleIDS.length; i++) {
-    let vehicleURI = await getVehicleURI(vehicleIDS[i])
-    accountVehicleMetadata = [...accountVehicleMetadata, vehicleURI]
-  }
-  return accountVehicleMetadata
-}
 
 async function getVehiclesForAccount(account) {
-  let accountBalance = await getAccountBalance(account)
 
-  let accountVehicleIDs = await getVehicleIDsForAccount(accountBalance, account)
-  let accountVehicleURIS = await getVehicleURIS(accountVehicleIDs)
-  let myVehicles = await getVehiclesMetadata(accountVehicleURIS)
-  await injectTokenId(accountVehicleIDs, myVehicles)
+  let accountBalance = await getAccountBalance(account)
+  let myVehicles = []
+  for (var i = 0; i < accountBalance; i++) {
+    let vehicleID = await getVehicleOfOwnerByIndex(account, i)
+    let vehicleURI = await getVehicleURI(vehicleID)
+    let vehicleMetadata = await getVehicleMetadata(vehicleURI)
+    injectTokenId(vehicleMetadata, vehicleID)
+    if (await getIfForSale(vehicleID)) {
+      injectPrice(vehicleMetadata)
+      if (await getIfAuction(vehicleID))
+        if (await getTopBidder(vehicleID) == await store.getState().blockchain.account)
+          vehicleMetadata.injected.bid = await getTopBid(vehicleID)
+    }
+    myVehicles.push(vehicleMetadata)
+  }
+
+  console.log("pull in my vehicles", myVehicles)
   return myVehicles
 }
 
-async function getAllVehicleIDs(length) {
-  let allVehiclesIds = []
-  for (var i = 0; i < length; i++) {
-    let vehicleId = await getVehicleByIndex(i)
-    allVehiclesIds = [...allVehiclesIds, vehicleId]
-  }
-  return allVehiclesIds
-}
 
-async function getVehiclesForSale(allVehicles) {
-  
-  let onlyVehiclesForSale = []
-  for (var i = 0; i < allVehicles.length; i++) {
-    if (allVehicles[i].injected.hasOwnProperty('price'))
-      onlyVehiclesForSale = [...onlyVehiclesForSale,allVehicles[i]]
-  }
-  return onlyVehiclesForSale
-}
 
 async function getAllVehicles() {
 
-  let acc = await store
-      .getState()
-      .blockchain.account
   let totalNrOfVehicles = await getTotalNrOfVehicles()
-  let allVehiclesIds = await getAllVehicleIDs(totalNrOfVehicles)
-  let allVehiclesURIs = await getVehicleURIS(allVehiclesIds)
-  let allVehicles = await getVehiclesMetadata(allVehiclesURIs)
-  await injectTokenId(allVehiclesIds, allVehicles)
-  for (var i = 0; i < allVehiclesIds.length; i++) {
-    if (await isForSale(allVehiclesIds[i]))
-      await injectPrice([allVehicles[i]])
-    let bid = await getBid(i,acc)
-    if (bid!=0)
-      allVehicles[i].injected.bid = bid
+  let allVehicles = []
+  for (var i = 0; i < totalNrOfVehicles; i++) {
+    let vehicleID = await getVehicleByIndex(i)
+    let vehicleURI = await getVehicleURI(vehicleID)
+    let vehicleMetadata = await getVehicleMetadata(vehicleURI)
+    injectTokenId(vehicleMetadata, vehicleID)
+    if (await getIfForSale(vehicleID)) {
+      await injectPrice(vehicleMetadata)
+      if (await getIfAuction(vehicleID)) {
+        vehicleMetadata.injected.auction = true
+        if (await getTopBidder(vehicleID) == await store.getState().blockchain.account)
+          vehicleMetadata.injected.bid = await getTopBid(vehicleID)
+      }
+    }
+    allVehicles.push(vehicleMetadata)
   }
-  console.log(allVehicles)
+
+  console.log("pull in all vehicles", allVehicles)
   return allVehicles
 }
 
 
 async function getMyBids(allVehicles) {
-  
   let onlyMyBids = []
   for (var i = 0; i < allVehicles.length; i++) {
     if (allVehicles[i].injected.hasOwnProperty('bid'))
-    onlyMyBids = [...onlyMyBids,allVehicles[i]]
+      onlyMyBids = [...onlyMyBids, allVehicles[i]]
   }
-
   return onlyMyBids
 }
 
+async function getForSaleVehicles(allVehicles) {
 
-async function getPersistentBids() {
-  
-  let acc = await store
-      .getState()
-      .blockchain.account
-  let totalNrOfVehicles = await getTotalNrOfVehicles()
-  let deletedBids = []
-  for (var i = 0; i < totalNrOfVehicles; i++) {
-    let bid = await getBid(i,acc)
-    if (bid!=0)
-      deletedBids = [...deletedBids,{id: i, bid:bid}]
-  
+  let onlyVehiclesForSale = { instant: [], auctions: [] }
+  for (var i = 0; i < allVehicles.length; i++) {
+    if (allVehicles[i].injected.hasOwnProperty('price')) {
+      if (allVehicles[i].injected.hasOwnProperty('auction'))
+        onlyVehiclesForSale.auctions.push(allVehicles[i])
+      else
+        onlyVehiclesForSale.instant.push(allVehicles[i])
+    }
   }
-
-  return deletedBids
+  console.log("forsale", onlyVehiclesForSale)
+  return onlyVehiclesForSale
 }
 
 
@@ -281,17 +168,17 @@ export const fetchAllData = (account) => {
       const myRole = await getRole(account)
 
       if (viewAllPrivileged.some(privilegedRole => privilegedRole === myRole)) {
-        dispatch(refreshMyVehicles());
-        dispatch(refreshAllVehicles());
-        dispatch(refreshVehiclesForSale());
+        dispatch(refresh("MY_VEHICLES"));
+        dispatch(refresh("ALL_VEHICLES"));
+        dispatch(refresh("FORSALE_VEHICLES"));
       }
       else {
-        dispatch(refreshMyVehicles());
-        dispatch(refreshVehiclesForSale());
+        dispatch(refresh("MY_VEHICLES"));
+        dispatch(refresh("FORSALE_VEHICLES"));
       }
 
-      dispatch(refreshRole());
-      dispatch(refreshMyBids());
+      dispatch(refresh("ROLE"));
+      dispatch(refresh("BIDS"));
 
     } catch (err) {
       console.log(err);
@@ -299,6 +186,63 @@ export const fetchAllData = (account) => {
     }
   };
 };
+
+
+
+export const refresh = (code) => {
+  return async (dispatch) => {
+    dispatch(fetchDataRequest());
+    try {
+      switch (code) {
+        case "MY_VEHICLES":
+          dispatch(
+            updateMyVehicles(
+              await getVehiclesForAccount(await store
+                .getState()
+                .blockchain.account)
+            )
+          );
+          break;
+        case "FORSALE_VEHICLES":
+          dispatch(
+            updateVehiclesForSale(
+              await getForSaleVehicles(await getAllVehicles())
+            )
+          );
+          break;
+        case "ALL_VEHICLES":
+          dispatch(
+            updateAllVehicles(
+              await getAllVehicles()
+            )
+          );
+          break;
+        case "ROLE":
+          dispatch(
+            updateRole(
+              await getRole(await store
+                .getState()
+                .blockchain.account)
+            )
+          );
+          break;
+        case "BIDS":
+          dispatch(
+            updateMyBids(
+              await getMyBids(await getAllVehicles())
+            )
+          );
+          break;
+
+
+      }
+    } catch (err) {
+      console.log(err);
+      dispatch(fetchDataFailed("Could not load data from contract."));
+    }
+  };
+}
+
 
 export const updatePrefferedCurrency = (e) => {
   return async (dispatch) => {
@@ -310,95 +254,6 @@ export const updatePrefferedCurrency = (e) => {
   };
 };
 
-export const refreshMyBids = () => {
-  return async (dispatch) => {
-    dispatch(fetchDataRequest());
-    try {
-
-  
-      dispatch(
-        updateMyBids(
-          await getPersistentBids()
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
-    }
-  };
-};
-
-export const refreshRole = () => {
-  return async (dispatch) => {
-    dispatch(fetchDataRequest());
-    try {
-
-      let account = await store
-        .getState()
-        .blockchain.account
-      let role = await getRole(account)
-
-      dispatch(
-        updateRole(
-          role
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
-    }
-  };
-};
-
-export const refreshAllVehicles = () => {
-  return async (dispatch) => {
-    dispatch(fetchDataRequest());
-    try {
-      dispatch(
-        updateAllVehicles(
-          await getAllVehicles()
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
-    }
-  };
-};
-
-export const refreshVehiclesForSale = () => {
-  return async (dispatch) => {
-    dispatch(fetchDataRequest());
-    try {
-      dispatch(
-        updateVehiclesForSale(
-          await getVehiclesForSale(await getAllVehicles())
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
-    }
-  };
-};
-
-export const refreshMyVehicles = () => {
-  return async (dispatch) => {
-    dispatch(fetchDataRequest());
-    try {
-      dispatch(
-        updateMyVehicles(
-          await getVehiclesForAccount(await store
-            .getState()
-            .blockchain.account)
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
-    }
-  };
-};
 
 export const refreshDisplayPrices = () => {
   return async (dispatch) => {
@@ -408,7 +263,7 @@ export const refreshDisplayPrices = () => {
         .getState()
         .data.vehiclesForSale
       for (const element in forsale) {
-        forsale[element].injected.display_price = await convertToDisplayCurrency(forsale[element].injected.price)
+        forsale[element].injected.display_price = await weiToMyCurrency(forsale[element].injected.price)
       }
       dispatch(
         updateVehiclesForSale(

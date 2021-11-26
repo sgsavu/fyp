@@ -32,12 +32,8 @@ contract ExternalGateway is Vehicle {
         return _getVehiclePrice(tokenId);
     }
 
-    function getBid(uint256 tokenId, address _account)
-        external
-        view
-        returns (uint256)
-    {
-        return _getBid(tokenId, _account);
+    function getTopBid(uint256 tokenId) external view returns (uint256) {
+        return _getTopBid(tokenId);
     }
 
     function getTopBidder(uint256 tokenId)
@@ -137,26 +133,25 @@ contract ExternalGateway is Vehicle {
         onlyIfExists(tokenId)
         onlyIfAuction(tokenId)
     {
-        require(msg.value > _getVehiclePrice(tokenId));
-        require(msg.sender != ownerOf(tokenId));
+        require(
+            msg.value > _getVehiclePrice(tokenId),
+            "Bid must be higher than the current price."
+        );
+        require(
+            msg.sender != ownerOf(tokenId),
+            "You cannot bid on your own auction."
+        );
 
-        uint256 currentBid = _getBid(tokenId, msg.sender);
-        if (currentBid != 0) _secureMoneyTransfer(msg.sender, currentBid);
+        _refundCurentTopBidder(tokenId);
 
         _secureMoneyTransfer(address(this), msg.value);
-        _setBid(tokenId, msg.sender, msg.value);
         _setVehiclePrice(tokenId, msg.value);
+        _setTopBid(tokenId, msg.value);
         _setTopBidder(tokenId, msg.sender);
     }
 
-    function withdrawBid(uint256 tokenId) external onlyIfNotTopBidder(tokenId) {
-        uint256 bid = _getBid(tokenId, msg.sender);
-        require(bid > 0, "No bid to retrieve");
-        _setBid(tokenId, msg.sender, 0);
-        _secureMoneyTransfer(msg.sender, bid);
-    }
-
     function destroyVehicle(uint256 _tokenId) external {
+        _removeFromSale(_tokenId);
         burn(_tokenId);
     }
 
@@ -167,5 +162,4 @@ contract ExternalGateway is Vehicle {
     function getIfTokenExists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
-
 }

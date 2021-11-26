@@ -22,7 +22,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     mapping(uint256 => uint256) private _forSale;
     mapping(uint256 => uint256) private _auction;
     mapping(uint256 => uint256) private _vehiclePrice;
-    mapping(uint256 => mapping(address => uint256)) private _bids;
+    mapping(uint256 => uint256) private _topBid;
     mapping(uint256 => address) private _topBidder;
 
     function supportsInterface(bytes4 interfaceId)
@@ -83,10 +83,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     }
 
     modifier onlyIfPriceNonNull(uint256 price) {
-        require(
-            price > 0,
-            "Cannot set price to 0."
-        );
+        require(price > 0, "Cannot set price to 0.");
         _;
     }
 
@@ -118,34 +115,35 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
 
     // AUCTIONING
 
+    function _refundCurentTopBidder(uint256 tokenId) internal {
+        address currentTopBidder = _getTopBidder(tokenId);
+        uint256 currentTopBid = _getTopBid(tokenId);
+        if (currentTopBid != 0 && currentTopBidder != address(0))
+            _secureMoneyTransfer(currentTopBidder, currentTopBid);
+    }
+
+    function _resetAuction(uint256 tokenId) internal {
+        if (_getTopBidder(tokenId) != address(0))
+                _setTopBidder(tokenId, address(0));
+            if (_getTopBid(tokenId) != 0)
+                _setTopBid(tokenId, 0);
+    }
+
     function _concludeAuction(uint256 tokenId) internal {
         address topBidder = _getTopBidder(tokenId);
         require(topBidder != address(0));
-        uint256 topBid = _getBid(tokenId, topBidder);
+        uint256 topBid = _getTopBid(tokenId);
+        _classicExchange(msg.sender, topBidder, tokenId, topBid);
+        _resetAuction(tokenId);
         _removeFromSale(tokenId);
-        _classicExchange(
-            msg.sender,
-            topBidder,
-            tokenId,
-            topBid
-        );
-        _setBid(tokenId, topBidder, 0);
     }
 
-    function _setBid(
-        uint256 tokenId,
-        address _account,
-        uint256 amount
-    ) internal {
-        _bids[tokenId][_account] = amount;
+    function _setTopBid(uint256 tokenId, uint256 amount) internal {
+        _topBid[tokenId] = amount;
     }
 
-    function _getBid(uint256 tokenId, address _account)
-        internal
-        view
-        returns (uint256)
-    {
-        return _bids[tokenId][_account];
+    function _getTopBid(uint256 tokenId) internal view returns (uint256) {
+        return _topBid[tokenId];
     }
 
     function _getTopBidder(uint256 tokenId) internal view returns (address) {
@@ -178,8 +176,8 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
 
     function _removeFromSale(uint256 tokenId) internal {
         if (_isAuction(tokenId)) {
-            if (_topBidder[tokenId] != address(0))
-                _setTopBidder(tokenId, address(0));
+            _refundCurentTopBidder(tokenId);
+            _resetAuction(tokenId);
             _setIsAuction(tokenId, false);
         }
         _setIsForSale(tokenId, false);
@@ -227,9 +225,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         return _tokenIds.current();
     }
 
-    function mint(string memory uri)
-        internal
-    {
+    function mint(string memory uri) internal {
         uint256 _tokenId = _tokenIds.current();
         _mint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, uri);
@@ -237,9 +233,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _tokenIds.increment();
     }
 
-    function burn(uint256 _tokenId)
-        internal
-    {
+    function burn(uint256 _tokenId) internal {
         _burn(_tokenId);
         _setTokenURI(_tokenId, "Vehicle Deleted");
     }

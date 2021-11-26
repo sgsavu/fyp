@@ -3,6 +3,7 @@ import VehicleContract from "../../abis/Vehicle.json";
 import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchAllData } from "../data/dataActions";
 import store from "../store";
+import {} from "./blockchainUtils";
 
 const connectRequest = () => {
   return {
@@ -67,8 +68,12 @@ export const connect = () => {
             dispatch(updateAccount(Web3.utils.toChecksumAddress(accounts[0])));
           });
           window.ethereum.on("chainChanged", () => {
+
             window.location.reload();
+            
           });
+
+        
           
         } else {
           dispatch(connectFailed("Change network to localhost:xxxx."));

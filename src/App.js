@@ -15,7 +15,7 @@ import { fetchAllData, refreshVehiclesForSale } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
 
 import ControlledRoute from './components/ControlledRoute';
-import { roleToString } from "./pages/PermissionsAndRoles";
+import { roleToString } from "./utils/PermissionsAndRoles";
 import Vehicle from "./pages/Vehicle";
 import Support from "./pages/Support";
 

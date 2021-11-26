@@ -1,4 +1,4 @@
-import { actions, roles } from "../../pages/PermissionsAndRoles";
+import { actions, roles } from "../../utils/PermissionsAndRoles";
 
 const initialState = {
   loading: false,
