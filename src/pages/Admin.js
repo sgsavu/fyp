@@ -13,6 +13,7 @@ const Admin = () => {
   const data = useSelector((state) => state.data);
   const { register, handleSubmit } = useForm();
   const myAdminOptions = getAdminOptionsFor(data.myRole)
+  const [vehicleToBurn,setVehicleToBurn] = useState("")
 
   async function grantRole(role, address) {
     await blockchain.smartContract.methods
@@ -39,7 +40,7 @@ const Admin = () => {
 
   const burnVehicle = () => {
     blockchain.smartContract.methods
-      .destroyVehicle(2)
+      .destroyVehicle(vehicleToBurn)
       .send({ from: blockchain.account })
   }
 
@@ -65,8 +66,8 @@ const Admin = () => {
       </select>
       <input type="submit" />
     </form>
-
-    <button onClick={burnVehicle}>Press</button>
+      <input onChange={(e) => {setVehicleToBurn(e.target.value)}} value= {vehicleToBurn} placeholder="Vehicle To Burn"></input>
+    <button onClick={() =>burnVehicle(vehicleToBurn)}>Burn</button>
     </div>
   );
 }

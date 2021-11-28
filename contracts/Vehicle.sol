@@ -24,6 +24,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     mapping(uint256 => uint256) private _vehiclePrice;
     mapping(uint256 => uint256) private _topBid;
     mapping(uint256 => address) private _topBidder;
+    mapping(uint256 => mapping(uint256 => address)) internal _ownerHistory;
 
     function supportsInterface(bytes4 interfaceId)
         public
@@ -87,6 +88,21 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _;
     }
 
+    //OWNER HISTORY
+
+    function _addToVehicleHistory(uint256 tokenId, address owner) internal {
+        uint256 vehicleHistoryLength = _getNumberOfOwners(tokenId);
+        _ownerHistory[tokenId][vehicleHistoryLength] = owner;
+    }
+
+    function _getNumberOfOwners(uint256 tokenId) internal view returns (uint256) {
+        uint256 index = 0;
+        while (_ownerHistory[tokenId][index] != address(0)) {
+            index++;
+        }
+        return index;
+    }
+
     // MONEY TRANSFERING AND BALANCE
 
     function getContractBalance() public view returns (uint256) {
@@ -124,9 +140,8 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
 
     function _resetAuction(uint256 tokenId) internal {
         if (_getTopBidder(tokenId) != address(0))
-                _setTopBidder(tokenId, address(0));
-            if (_getTopBid(tokenId) != 0)
-                _setTopBid(tokenId, 0);
+            _setTopBidder(tokenId, address(0));
+        if (_getTopBid(tokenId) != 0) _setTopBid(tokenId, 0);
     }
 
     function _concludeAuction(uint256 tokenId) internal {
@@ -134,6 +149,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         require(topBidder != address(0));
         uint256 topBid = _getTopBid(tokenId);
         _classicExchange(msg.sender, topBidder, tokenId, topBid);
+        _addToVehicleHistory(tokenId,topBidder);
         _resetAuction(tokenId);
         _removeFromSale(tokenId);
     }
@@ -229,6 +245,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         uint256 _tokenId = _tokenIds.current();
         _mint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, uri);
+        _addToVehicleHistory(_tokenId,msg.sender);
         _uriRegistered[uri] = true;
         _tokenIds.increment();
     }

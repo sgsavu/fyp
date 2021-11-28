@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from "react-redux";
-import Filter from './Filter';
+import SearchFilter from '../components/filters/SearchFilter';
 import { Link } from 'react-router-dom';
 
 function Verify() {
@@ -13,7 +13,7 @@ function Verify() {
 
   return (
     <div>
-      <Filter data={vehicleList} callback={setFiltered} empty_state={[]} />
+      <SearchFilter in={vehicleList} out={setFiltered} empty={[]} />
       <div>
         {filtered.slice(0, 15).map((value, key) => {
           return (

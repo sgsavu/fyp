@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useDispatch, useSelector } from "react-redux";
 
-const Filter = ({ data: data, callback: callback, empty_state: empty }) => {
+const SearchFilter = ({ in: data, out: callback, default: dflt }) => {
 
     const [wordEntered, setWordEntered] = useState("");
 
@@ -12,14 +12,14 @@ const Filter = ({ data: data, callback: callback, empty_state: empty }) => {
             return element.name.toLowerCase().includes(searchWord.toLowerCase());
         });
         if (searchWord === "") {
-            callback(empty);
+            callback(dflt);
         } else {
             callback(newFilter);
         }
     };
 
     const clearInput = () => {
-        callback(empty);
+        callback(dflt);
         setWordEntered("");
     };
 
@@ -28,7 +28,7 @@ const Filter = ({ data: data, callback: callback, empty_state: empty }) => {
             <div className="searchInputs">
                 <input
                     type="text"
-                    placeholder="search bruh"
+                    placeholder="search vehicles"
                     value={wordEntered}
                     onChange={handleFilter}
                 />
@@ -38,4 +38,4 @@ const Filter = ({ data: data, callback: callback, empty_state: empty }) => {
     );
 }
 
-export default Filter;
+export default SearchFilter;

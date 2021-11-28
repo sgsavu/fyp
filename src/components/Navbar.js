@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../utils/PermissionsAndRoles';
-import { fetchAllData } from '../redux/data/dataActions';
+import { fetchAllData, refresh } from '../redux/data/dataActions';
 import { MyBids } from './SidebarData';
 
 function Navbar() {
@@ -22,7 +22,7 @@ function Navbar() {
   if (data.myBids.length!=0)
     sidebar = [...sidebar,MyBids]
 
-  const refresh = () => {
+  const refreshData = () => {
     switch (window.location.pathname)
     {
       case "/marketplace":
@@ -44,7 +44,7 @@ function Navbar() {
     <IconContext.Provider value={{ color: '#fff' }}>
       <div className='navbar'>
         <FaIcons.FaBars className='menu-bars' onClick={toggleVisibility} />
-        <IoIcons.IoMdRefresh className='refresh' onClick={refresh} />
+        <IoIcons.IoMdRefresh className='refresh' onClick={refreshData} />
       </div>
       <nav className={visible ? 'nav-menu active' : 'nav-menu'}>
         <ul className='nav-menu-items' onClick={toggleVisibility}>

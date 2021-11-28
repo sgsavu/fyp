@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Filter from './Filter';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { refreshMyVehicles, refreshDisplayPrices, updatePrefferedCurrency, fetchAllData } from '../redux/data/dataActions';

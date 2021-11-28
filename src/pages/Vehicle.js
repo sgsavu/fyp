@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
 import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { fetchAllData, refresh } from "../redux/data/dataActions";
-import { ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid } from "../redux/blockchain/blockchainUtils";
+import { getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists } from "../redux/blockchain/blockchainUtils";
 
 
 const Vehicle = () => {
@@ -15,6 +15,7 @@ const Vehicle = () => {
     const vehicle = location.state?.metadata
     const myPrefferedCurrency = data.displayCurrency
 
+    const [exists, setExists] = useState(false)
     const [listingType, setListingType] = useState("INSTANT")
     const [isForSale, setIsForSale] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
@@ -23,7 +24,8 @@ const Vehicle = () => {
     const [topBid, setTopBid] = useState(0);
     const [displayPrice, setDisplayPrice] = useState(0);
     const [desiredPrice, setDesiredPrice] = useState(0)
-    const [owner, setOwner] = useState("");
+    const [currentOwner, setCurrentOwner] = useState("");
+    const [vehicleHistory, setVehicleHistory] = useState([]);
 
     const checkIfOwner = async () => {
         return (blockchain.account == await ownerOf(vehicle.injected.id))
@@ -87,10 +89,9 @@ const Vehicle = () => {
 
     async function buyVehicle() {
 
-        let vehiclePrice = await getVehiclePrice()
         blockchain.smartContract.methods
             .buyVehicle(vehicle.injected.id)
-            .send({ from: blockchain.account, value: vehiclePrice })
+            .send({ from: blockchain.account, value: await getVehiclePrice(vehicle.injected.id) })
             .once("error", (err) => {
                 console.log(err);
             })
@@ -131,32 +132,40 @@ const Vehicle = () => {
 
     useEffect(async () => {
 
-        let isForSale = await getIfForSale(vehicle.injected.id)
-        let isOwner = await checkIfOwner()
-        let isAuction = await getIfAuction(vehicle.injected.id)
-        let topBid = await getTopBid(vehicle.injected.id)
-        setIsForSale(isForSale)
-        setIsAuction(isAuction)
-        setOwner(await ownerOf(vehicle.injected.id))
-        setIsOwner(isOwner)
-        setListingType("INSTANT")
-        setTopBid(await weiToMyCurrency(topBid))
-        if (isForSale == true) {
-            setDisplayPrice(await weiToMyCurrency(await getVehiclePrice(vehicle.injected.id)))
-        }
-        if (isAuction == true) {
-            setTopBidder(await getTopBidder(vehicle.injected.id))
-            console.log("topbidder", await getTopBidder(vehicle.injected.id))
-        }
-        console.log("con balance", await getContractBalance())
+        let exists = await getIfExists(vehicle.injected.id)
+        setExists(await getIfExists(vehicle.injected.id))
 
-    }, [data])
+        if (exists){
+            let isForSale = await getIfForSale(vehicle.injected.id)
+            let isOwner = await checkIfOwner()
+            let isAuction = await getIfAuction(vehicle.injected.id)
+            let topBid = await getTopBid(vehicle.injected.id)
+            let vehicleHistory = await getVehicleHistory(vehicle.injected.id)
+            setVehicleHistory(vehicleHistory)
+            setIsForSale(isForSale)
+            setIsAuction(isAuction)
+            setCurrentOwner(await ownerOf(vehicle.injected.id))
+            setIsOwner(isOwner)
+            setListingType("INSTANT")
+            setTopBid(await weiToMyCurrency(topBid))
+            if (isForSale == true) {
+                setDisplayPrice(await weiToMyCurrency(await getVehiclePrice(vehicle.injected.id)))
+            }
+            if (isAuction == true) {
+                setTopBidder(await getTopBidder(vehicle.injected.id))
+                console.log("topbidder", await getTopBidder(vehicle.injected.id))
+            }
+            console.log("con balance", await getContractBalance())
+        }
+        
+
+    }, [data.myVehicles,data.vehiclesForSale,data.allVehicles])
 
 
     return (
         <div>
 
-            {vehicle != undefined ?
+            {exists?
                 <div>
                     <div>
                         <img
@@ -172,6 +181,15 @@ const Vehicle = () => {
                                     <p>{attribute.trait_type}: {attribute.value}</p>
                                 </div>
                             );
+                        })}
+                        <p>Current owner: {currentOwner}</p>
+                        Vehicle History:
+                        {vehicleHistory.map((owner,index)=>{
+                            return (
+                                <div key={owner,index}>
+                                    <p>{owner}</p>
+                                    </div>
+                            )
                         })}
 
                     </div>
@@ -310,7 +328,13 @@ const Vehicle = () => {
                         : null}
                 </div>
 
-                : null
+                : <div>
+                    <p>Sorry, this vehicle does no longer exist</p>
+                    <button onClick={()=> {
+                        window.location.reload();
+                        window.location.replace("/")
+                    }}>Back To Home</button>
+                </div>
 
             }
         </div>

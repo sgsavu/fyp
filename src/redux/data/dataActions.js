@@ -262,9 +262,14 @@ export const refreshDisplayPrices = () => {
       let forsale = await store
         .getState()
         .data.vehiclesForSale
-      for (const element in forsale) {
-        forsale[element].injected.display_price = await weiToMyCurrency(forsale[element].injected.price)
+    
+      for (const element in forsale.auctions) {
+        forsale.auctions[element].injected.display_price = await weiToMyCurrency(forsale.auctions[element].injected.price)
       }
+      for (const element in forsale.instant) {
+        forsale.instant[element].injected.display_price = await weiToMyCurrency(forsale.instant[element].injected.price)
+      }
+
       dispatch(
         updateVehiclesForSale(
           forsale

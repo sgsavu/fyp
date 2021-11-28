@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Filter from './Filter';
+import SearchFilter from '../components/filters/SearchFilter';
 import { priceToUserCurrency } from "../utils/PricesCoinsExchange";
 import { getIfExists } from "../redux/blockchain/blockchainUtils";
 import store from "../redux/store";
+import SortFilter from "../components/filters/SortFilter";
 
 
 
@@ -17,6 +18,7 @@ const Marketplace = () => {
   const [perPage, setPerPage] = useState(10);
   const [pageNr, setPageNr] = useState(0)
   const myPrefferedCurrency = data.displayCurrency
+  const [filtered, setFiltered] = useState([]);
   const [filteredPages, setFilteredPages] = useState([]);
 
   const nextPage = () => {
@@ -39,18 +41,27 @@ const Marketplace = () => {
     setFilteredPages(temp)
   }
 
+  /*
   const checkIfStillExists = async (id) => {
     if (!await getIfExists(id))
       window.location.reload();
       window.location.replace("/")
   }
 
+  */
 
   useEffect(() => {
     if (vehicleList != undefined)
+    {
       listToPages(vehicleList)
-
+      setFiltered(vehicleList)
+    }
   }, [vehicleList])
+
+  useEffect(() => {
+      listToPages(filtered)
+  }, [filtered,setFiltered])
+
 
   return (
     <div>
@@ -58,14 +69,14 @@ const Marketplace = () => {
         <div>
           <button onClick={() => {
             setPageType("instant")
-            vehicleList = []
 
           }}>INSTANT BUY</button>
           <button onClick={() => {
             setPageType("auctions")
 
           }}>AUCTIONS</button>
-          <Filter data={vehicleList} callback={listToPages} empty_state={vehicleList} />
+          <SearchFilter in={vehicleList} out={setFiltered} default={vehicleList} />
+          <SortFilter in={filtered} out={listToPages}/>
           <div>
             {filteredPages.length != 0 ? filteredPages[pageNr].map((vehicle, key) => {
               return (
@@ -75,7 +86,7 @@ const Marketplace = () => {
                   <p>{vehicle.description}</p>
                   <p>{vehicle.attributes[1].value}</p>
                   <img alt={vehicle.name} src={vehicle.image} width={150}></img>
-                  <Link onClick={() => checkIfStillExists(vehicle.injected.id)} to={{
+                  <Link to={{
                     pathname: "/vehicle",
                     state: { metadata: vehicle },
                   }}>

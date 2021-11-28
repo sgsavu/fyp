@@ -85,7 +85,7 @@ export async function getVehicleOfOwnerByIndex(account, i) {
         .call();
 }
 
-export const getVehiclePrice = async (id) => {
+export async function getVehiclePrice (id){
     return await store.getState().blockchain.smartContract.methods
         .getVehiclePrice(id)
         .call()
@@ -107,4 +107,28 @@ export async function getIfExists(token) {
     return await store.getState().blockchain.smartContract.methods
         .getIfTokenExists(token)
         .call()
+}
+
+export async function getTotalNrOfOwners(token) {
+    return await store.getState().blockchain.smartContract.methods
+        .getTotalNrOfOwners(token)
+        .call()
+}
+
+export async function getOwnerAtIndex(token,i) {
+    return await store.getState().blockchain.smartContract.methods
+        .getOwnerAtIndex(token,i)
+        .call()
+}
+
+export async function getVehicleHistory(token) {
+
+    let listOfOwners = []
+    const vehicleHistoryLength = await getTotalNrOfOwners(token)
+    for (var i = 0 ; i< vehicleHistoryLength;i++ )
+    {
+        listOfOwners.push(await getOwnerAtIndex(token,i))
+    }
+
+    return listOfOwners;
 }
