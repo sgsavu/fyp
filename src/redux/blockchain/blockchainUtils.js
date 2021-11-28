@@ -1,5 +1,13 @@
 import { roles } from "../../utils/PermissionsAndRoles";
 import store from "../store";
+import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from '../../utils/PricesCoinsExchange'
+
+
+export async function getUserAccount() {
+    return await store
+        .getState()
+        .blockchain.account
+}
 
 export async function getVehicleMetadata(URI) {
     return await (await fetch(URI)).json();
@@ -131,4 +139,111 @@ export async function getVehicleHistory(token) {
     }
 
     return listOfOwners;
+}
+
+export async function buyVehicle(vehicleId) {
+
+    await store.getState().blockchain.smartContract.methods
+        .buyVehicle(vehicleId)
+        .send({ from: await getUserAccount(), value: await getVehiclePrice(vehicleId) })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //dispatch(fetchAllData(blockchain.account));
+        });
+}
+
+export async function bidVehicle(vehicleId,price) {
+    await store.getState().blockchain.smartContract.methods
+        .bidVehicle(vehicleId)
+        .send({ from: await getUserAccount(), value: await myCurrencyToWei(price) })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //dispatch(fetchAllData(blockchain.account));
+        });
+}
+
+
+export const listAuction = async (vehicleId,price) => {
+
+    await store.getState().blockchain.smartContract.methods
+        .listAuction(vehicleId, await myCurrencyToWei(price))
+        .send({ from: await getUserAccount() })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //dispatch(fetchAllData(blockchain.account));
+        });
+}
+
+
+export const listForSale = async (vehicleId,price) => {
+
+    await store.getState().blockchain.smartContract.methods
+        .listForSale(vehicleId, await myCurrencyToWei(price))
+        .send({ from: await getUserAccount() })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //(fetchAllData(blockchain.account));
+        });
+}
+
+export const removeFromSale = async (vehicleId) => {
+
+    await store.getState().blockchain.smartContract.methods
+        .removeFromSale(vehicleId)
+        .send({ from: await getUserAccount() })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //dispatch(fetchAllData(blockchain.account));
+        });
+}
+
+export async function setVehiclePrice(vehicleId,price) {
+    await store.getState().blockchain.smartContract.methods
+        .setVehiclePrice(vehicleId, await myCurrencyToWei(price))
+        .send({ from: await getUserAccount() })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //dispatch(refresh("FORSALE_VEHICLES"));
+        });
+}
+
+
+export async function concludeAuction(vehicleId) {
+    await store.getState().blockchain.smartContract.methods
+        .concludeAuction(vehicleId)
+        .send({ from: await getUserAccount() })
+        .once("error", (err) => {
+            console.log(err);
+        })
+        .then((receipt) => {
+            console.log(receipt);
+            //dispatch(fetchAllData(blockchain.account));
+        });
+}
+
+export async function isTopBidder() {
+    return await getTopBidder() == await getUserAccount()
+}
+
+export async function getIfIsOwner(vehicleId) {
+        console.log(await getUserAccount())
+        return (await getUserAccount() == await ownerOf(vehicleId))
 }
