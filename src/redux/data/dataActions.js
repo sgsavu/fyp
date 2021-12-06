@@ -3,7 +3,7 @@ import { roles, viewAllPrivileged } from "../../utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../utils/PricesCoinsExchange";
 import store from "../store";
 import dataReducer from "./dataReducer";
-import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTopBid, getTotalNrOfVehicles, getVehicleByIndex, getRole } from "../blockchain/blockchainUtils";
+import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTopBid, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount } from "../../utils/BlockchainGateway";
 
 const fetchDataRequest = () => {
   return {
@@ -99,7 +99,7 @@ async function getVehiclesForAccount(account) {
       injectPrice(vehicleMetadata)
       if (await getIfAuction(vehicleID))
         if (await getTopBidder(vehicleID) == await store.getState().blockchain.account)
-          vehicleMetadata.injected.bid = await getTopBid(vehicleID)
+          vehicleMetadata.injected.bid = true
     }
     myVehicles.push(vehicleMetadata)
   }
@@ -115,20 +115,23 @@ async function getAllVehicles() {
   let totalNrOfVehicles = await getTotalNrOfVehicles()
   let allVehicles = []
   for (var i = 0; i < totalNrOfVehicles; i++) {
+
     let vehicleID = await getVehicleByIndex(i)
     let vehicleURI = await getVehicleURI(vehicleID)
     let vehicleMetadata = await getVehicleMetadata(vehicleURI)
+
     injectTokenId(vehicleMetadata, vehicleID)
     if (await getIfForSale(vehicleID)) {
       await injectPrice(vehicleMetadata)
       if (await getIfAuction(vehicleID)) {
         vehicleMetadata.injected.auction = true
         if (await getTopBidder(vehicleID) == await store.getState().blockchain.account)
-          vehicleMetadata.injected.bid = await getTopBid(vehicleID)
+          vehicleMetadata.injected.bid = true
       }
     }
     allVehicles.push(vehicleMetadata)
   }
+
 
   console.log("pull in all vehicles", allVehicles)
   return allVehicles
@@ -160,11 +163,12 @@ async function getForSaleVehicles(allVehicles) {
 }
 
 
-export const fetchAllData = (account) => {
+export const fetchAllData = () => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
 
+      const account = await getUserAccount()
       const myRole = await getRole(account)
 
       if (viewAllPrivileged.some(privilegedRole => privilegedRole === myRole)) {

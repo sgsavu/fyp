@@ -1,5 +1,5 @@
 import store from "../store";
-import validate from "../../components/form/validate";
+import validate from "../../components/minting_form/validate";
 
 const formNextStep = () => {
   return {

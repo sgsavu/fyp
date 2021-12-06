@@ -30,8 +30,12 @@ export const weiToMyCurrency = async (price) => {
     
     let princeInEth = WeiToEth(price)
     let priceInUserCurrency = await currencyToCurrency(princeInEth, "ETH", myPrefferedCurrency)
+
+    function roundToTwo(num) {
+        return +(Math.round(num + "e+2")  + "e-2");
+    }
     
-    return (Math.round(priceInUserCurrency * 100) / 100).toFixed(2)
+    return roundToTwo(priceInUserCurrency)
 }
 
 export const myCurrencyToWei = async (price) => {

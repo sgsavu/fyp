@@ -32,10 +32,6 @@ contract ExternalGateway is Vehicle {
         return _getVehiclePrice(tokenId);
     }
 
-    function getTopBid(uint256 tokenId) external view returns (uint256) {
-        return _getTopBid(tokenId);
-    }
-
     function getTopBidder(uint256 tokenId)
         external
         view
@@ -124,7 +120,7 @@ contract ExternalGateway is Vehicle {
         );
 
         _classicExchange(ownerOf(tokenId), msg.sender, tokenId, msg.value);
-        _addToVehicleHistory(tokenId,msg.sender);
+        _addToVehicleHistory(tokenId, msg.sender);
         _removeFromSale(tokenId);
     }
 
@@ -143,11 +139,9 @@ contract ExternalGateway is Vehicle {
             "You cannot bid on your own auction."
         );
 
-        _refundCurentTopBidder(tokenId);
-
         _secureMoneyTransfer(address(this), msg.value);
+        _refundCurentTopBidder(tokenId);
         _setVehiclePrice(tokenId, msg.value);
-        _setTopBid(tokenId, msg.value);
         _setTopBidder(tokenId, msg.sender);
     }
 
@@ -156,19 +150,25 @@ contract ExternalGateway is Vehicle {
         burn(_tokenId);
     }
 
-    function getTotalNrOfRegisteredVehicles() external view returns (uint256) {
-        return getTokenIdsCurrent();
-    }
-
     function getIfTokenExists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
 
-    function getOwnerAtIndex(uint256 tokenId, uint256 index) external view returns (address) {
+    function getOwnerAtIndex(uint256 tokenId, uint256 index)
+        external
+        view
+        onlyIfExists(tokenId)
+        returns (address)
+    {
         return _ownerHistory[tokenId][index];
     }
 
-    function getTotalNrOfOwners(uint256 tokenId) external view returns (uint256) {
+    function getTotalNrOfOwners(uint256 tokenId)
+        external
+        view
+        onlyIfExists(tokenId)
+        returns (uint256)
+    {
         return _getNumberOfOwners(tokenId);
     }
 }

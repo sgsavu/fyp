@@ -18,7 +18,6 @@ const formFields = {
     doors: '',
     seats: '',
     driver_side: '',
-    mileage: 0,
   },
   errors: {}
 };

@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from "react-redux";
-import { listForSale, listAuction, setVehiclePrice, removeFromSale, getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists } from "../../redux/blockchain/blockchainUtils";
+import { listForSale, listAuction } from "../../utils/BlockchainGateway";
+import { useDispatch } from 'react-redux';
+import { fetchAllData } from '../../redux/data/dataActions';
 
-function ListingOptions({vehicle,settings}) {
 
-    const data = useSelector((state) => state.data);
+function ListingOptions({ vehicle, settings }) {
+
+    const dispatch = useDispatch();
+    const myPrefferedCurrency = settings.myCurrency
 
     const [listingType, setListingType] = useState("INSTANT")
     const [desiredPrice, setDesiredPrice] = useState(0)
-    const myPrefferedCurrency = settings.myCurrency
 
     useEffect(() => {
-
-       
     }, [])
 
     return (
         <div>
             <div>
                 <label>{listingType == "INSTANT" ? "Price: " : "Starting Price: "}</label>
-
                 <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
                 <label>{myPrefferedCurrency}</label>
             </div>
@@ -30,29 +29,29 @@ function ListingOptions({vehicle,settings}) {
                 </select>
             </div>
             <div>
-
                 {listingType == "INSTANT" ?
-                    <button onClick={(e) => {
-
-                        e.preventDefault()
+                    <button onClick={() => {
                         if (desiredPrice > 0) {
-                            listForSale(vehicle.injected.id,desiredPrice)
+                            listForSale(vehicle.injected.id, desiredPrice).then((receipt) => {
+                                console.log(receipt);
+                                dispatch(fetchAllData());
+                            });
                         }
                     }}>
                         List for sale
                     </button>
                     :
-                    <button onClick={(e) => {
-
-                        e.preventDefault()
-
-                        listAuction(vehicle.injected.id,desiredPrice)
-
+                    <button onClick={() => {
+                        if (desiredPrice > 0) {
+                            listAuction(vehicle.injected.id, desiredPrice).then((receipt) => {
+                                console.log(receipt);
+                                dispatch(fetchAllData());
+                            });
+                        }
                     }}>
                         List auction
                     </button>
                 }
-
             </div>
         </div>
     );

@@ -1,3 +1,4 @@
+
 import Web3 from "web3";
 import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchAllData } from "../data/dataActions";
@@ -30,9 +31,11 @@ const updateAccountRequest = (payload) => {
 };
 
 
-
 export const connect = () => {
   return async (dispatch) => {
+
+    
+
     dispatch(connectRequest());
     if (window.ethereum) {
       if (await window.ethereum._metamask.isUnlocked()) {

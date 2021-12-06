@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import * as s from "../styles/globalStyles";
 import "../styles/MyVehicles.css";
-import { Link, Redirect } from 'react-router-dom';
+import VehicleCard from "../components/vehicle_sections/VehicleCard";
 
 function MyVehicles() {
 
@@ -18,25 +17,9 @@ function MyVehicles() {
       {data.loading ? (
         <p>loading...</p>
       ) : (
-        vehicleList.map((nft, index) => {
+        vehicleList.map((vehicle, index) => {
           return (
-            <div key={index} className="my-vehicle">
-              <p>{nft.name}</p>
-              <p>{nft.description}</p>
-              <p>{nft.attributes[0].value}</p>
-              <p>{nft.name}</p>
-              <img
-                alt={nft.name}
-                src={nft.image}
-                width={150}
-              />
-              <Link to={{
-                pathname: "/vehicle",
-                state: { metadata: nft },
-              }}>
-                <p>VIEW </p>
-              </Link>
-            </div>
+            <VehicleCard key={index} vehicle={vehicle}/>
           );
         })
       )}

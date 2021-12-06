@@ -17,12 +17,18 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         emit Received(msg.sender, msg.value);
     }
 
+    struct Vehiclee {
+        address _topBidder; 
+        uint256 price;
+        mapping(uint256 => address) history;
+    }
+
+    mapping(uint256 => Vehiclee) internal _vehicles;
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
     mapping(uint256 => uint256) private _forSale;
     mapping(uint256 => uint256) private _auction;
     mapping(uint256 => uint256) private _vehiclePrice;
-    mapping(uint256 => uint256) private _topBid;
     mapping(uint256 => address) private _topBidder;
     mapping(uint256 => mapping(uint256 => address)) internal _ownerHistory;
 
@@ -95,7 +101,11 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _ownerHistory[tokenId][vehicleHistoryLength] = owner;
     }
 
-    function _getNumberOfOwners(uint256 tokenId) internal view returns (uint256) {
+    function _getNumberOfOwners(uint256 tokenId)
+        internal
+        view
+        returns (uint256)
+    {
         uint256 index = 0;
         while (_ownerHistory[tokenId][index] != address(0)) {
             index++;
@@ -133,7 +143,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
 
     function _refundCurentTopBidder(uint256 tokenId) internal {
         address currentTopBidder = _getTopBidder(tokenId);
-        uint256 currentTopBid = _getTopBid(tokenId);
+        uint256 currentTopBid = _getVehiclePrice(tokenId);
         if (currentTopBid != 0 && currentTopBidder != address(0))
             _secureMoneyTransfer(currentTopBidder, currentTopBid);
     }
@@ -141,25 +151,21 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     function _resetAuction(uint256 tokenId) internal {
         if (_getTopBidder(tokenId) != address(0))
             _setTopBidder(tokenId, address(0));
-        if (_getTopBid(tokenId) != 0) _setTopBid(tokenId, 0);
+        if (_getVehiclePrice(tokenId) != 0) _setVehiclePrice(tokenId, 0);
     }
 
     function _concludeAuction(uint256 tokenId) internal {
         address topBidder = _getTopBidder(tokenId);
         require(topBidder != address(0));
-        uint256 topBid = _getTopBid(tokenId);
-        _classicExchange(msg.sender, topBidder, tokenId, topBid);
-        _addToVehicleHistory(tokenId,topBidder);
+        _classicExchange(
+            msg.sender,
+            topBidder,
+            tokenId,
+            _getVehiclePrice(tokenId)
+        );
+        _addToVehicleHistory(tokenId, topBidder);
         _resetAuction(tokenId);
         _removeFromSale(tokenId);
-    }
-
-    function _setTopBid(uint256 tokenId, uint256 amount) internal {
-        _topBid[tokenId] = amount;
-    }
-
-    function _getTopBid(uint256 tokenId) internal view returns (uint256) {
-        return _topBid[tokenId];
     }
 
     function _getTopBidder(uint256 tokenId) internal view returns (address) {
@@ -245,7 +251,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         uint256 _tokenId = _tokenIds.current();
         _mint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, uri);
-        _addToVehicleHistory(_tokenId,msg.sender);
+        _addToVehicleHistory(_tokenId, msg.sender);
         _uriRegistered[uri] = true;
         _tokenIds.increment();
     }

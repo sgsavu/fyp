@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
 import { fetchAllData, refresh } from "../redux/data/dataActions";
-import { getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists, getIfIsOwner } from "../redux/blockchain/blockchainUtils";
+import { getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists, getIfIsOwner } from "../utils/BlockchainGateway";
 import History from "../components/vehicle_sections/History";
 import PurchaseOptions from "../components/vehicle_sections/PurchaseOptions";
 import ListingOptions from "../components/vehicle_sections/ListingOptions";
@@ -20,28 +20,26 @@ const Vehicle = () => {
     const [currentOwner, setCurrentOwner] = useState("");
     const [settings, setSettings] = useState({})
 
-
     useEffect(async () => {
+
 
         let exists = await getIfExists(vehicle.injected.id)
         setExists(exists)
         if (exists) {
             setCurrentOwner(await ownerOf(vehicle.injected.id))
-            console.log("con balance", await getContractBalance())
+            const [isForSale, isAuction, isOwner] = await Promise.all([getIfForSale(vehicle.injected.id), getIfAuction(vehicle.injected.id), getIfIsOwner(vehicle.injected.id)])
             setSettings({
-                isForSale: await getIfForSale(vehicle.injected.id),
-                isAuction: await getIfAuction(vehicle.injected.id),
-                isOwner: await getIfIsOwner(vehicle.injected.id),
+                isForSale: isForSale,
+                isAuction: isAuction,
+                isOwner: isOwner,
                 myCurrency: myPrefferedCurrency
             })
         }
-    }, [data.myVehicles, data.vehiclesForSale, data.allVehicles])
 
-    console.log("settings",settings)
+    }, [data.loading])
 
     return (
         <div>
-
             {exists ?
                 <div>
                     <div>
@@ -50,13 +48,9 @@ const Vehicle = () => {
                             src={vehicle.image}
                             width={150}
                         />
-                        <p>Name: {vehicle.name}</p>
-                        <p>Description: {vehicle.description}</p>
-                        {vehicle.attributes.map((attribute, index) => {
+                        {Object.keys(vehicle.attributes).map((key, index) => {
                             return (
-                                <div key={index}>
-                                    <p>{attribute.trait_type}: {attribute.value}</p>
-                                </div>
+                                <p key={index}>{key}: {vehicle.attributes[key]}</p>
                             );
                         })}
                         <p>Current owner: {currentOwner}</p>
@@ -66,22 +60,22 @@ const Vehicle = () => {
                     <div>
                         {settings.isOwner
                             ?
-                              settings.isForSale
+                            settings.isForSale
                                 ?
                                 <ListedVehicleOptions vehicle={vehicle} settings={settings}>
                                 </ListedVehicleOptions>
                                 :
                                 <ListingOptions vehicle={vehicle} settings={settings}>
                                 </ListingOptions>
-                            : settings.isForSale 
+                            : settings.isForSale
                                 ?
                                 <PurchaseOptions vehicle={vehicle} settings={settings}>
                                 </PurchaseOptions>
-                                : 
+                                :
                                 null
                         }
                     </div>
-                        
+
                 </div>
 
                 : <div>

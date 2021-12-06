@@ -3,9 +3,10 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import SearchFilter from '../components/filters/SearchFilter';
 import { priceToUserCurrency } from "../utils/PricesCoinsExchange";
-import { getIfExists } from "../redux/blockchain/blockchainUtils";
+import { getIfExists } from "../utils/BlockchainGateway";
 import store from "../redux/store";
 import SortFilter from "../components/filters/SortFilter";
+import VehicleCard from "../components/vehicle_sections/VehicleCard";
 
 
 
@@ -41,15 +42,6 @@ const Marketplace = () => {
     setFilteredPages(temp)
   }
 
-  /*
-  const checkIfStillExists = async (id) => {
-    if (!await getIfExists(id))
-      window.location.reload();
-      window.location.replace("/")
-  }
-
-  */
-
   useEffect(() => {
     if (vehicleList != undefined)
     {
@@ -80,22 +72,7 @@ const Marketplace = () => {
           <div>
             {filteredPages.length != 0 ? filteredPages[pageNr].map((vehicle, key) => {
               return (
-                <div key={key}>
-                  <a ></a>
-                  <p>{vehicle.name}</p>
-                  <p>{vehicle.description}</p>
-                  <p>{vehicle.attributes[1].value}</p>
-                  <img alt={vehicle.name} src={vehicle.image} width={150}></img>
-                  <Link to={{
-                    pathname: "/vehicle",
-                    state: { metadata: vehicle },
-                  }}>
-                    <p>VIEW </p>
-                  </Link>
-                  <p>{pageType == "instant" ? "Price: " : "Highest Bid: "}{
-                    vehicle?.injected.display_price
-                  } {myPrefferedCurrency}</p>
-                </div>
+                <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
               );
             }) : <p>{pageType == "instant" ? "No vehicles are currently available for sale by instant buy." : "No vehicles are currently available for sale by auction."}</p>}
           </div>

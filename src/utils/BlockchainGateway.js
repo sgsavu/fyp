@@ -1,6 +1,6 @@
-import { roles } from "../../utils/PermissionsAndRoles";
-import store from "../store";
-import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from '../../utils/PricesCoinsExchange'
+import { roles } from "./PermissionsAndRoles";
+import store from "../redux/store";
+import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from './PricesCoinsExchange'
 
 
 export async function getUserAccount() {
@@ -93,7 +93,7 @@ export async function getVehicleOfOwnerByIndex(account, i) {
         .call();
 }
 
-export async function getVehiclePrice (id){
+export async function getVehiclePrice(id) {
     return await store.getState().blockchain.smartContract.methods
         .getVehiclePrice(id)
         .call()
@@ -123,9 +123,9 @@ export async function getTotalNrOfOwners(token) {
         .call()
 }
 
-export async function getOwnerAtIndex(token,i) {
+export async function getOwnerAtIndex(token, i) {
     return await store.getState().blockchain.smartContract.methods
-        .getOwnerAtIndex(token,i)
+        .getOwnerAtIndex(token, i)
         .call()
 }
 
@@ -133,9 +133,8 @@ export async function getVehicleHistory(token) {
 
     let listOfOwners = []
     const vehicleHistoryLength = await getTotalNrOfOwners(token)
-    for (var i = 0 ; i< vehicleHistoryLength;i++ )
-    {
-        listOfOwners.push(await getOwnerAtIndex(token,i))
+    for (var i = 0; i < vehicleHistoryLength; i++) {
+        listOfOwners.push(await getOwnerAtIndex(token, i))
     }
 
     return listOfOwners;
@@ -143,7 +142,7 @@ export async function getVehicleHistory(token) {
 
 export async function buyVehicle(vehicleId) {
 
-    await store.getState().blockchain.smartContract.methods
+    return await store.getState().blockchain.smartContract.methods
         .buyVehicle(vehicleId)
         .send({ from: await getUserAccount(), value: await getVehiclePrice(vehicleId) })
         .once("error", (err) => {
@@ -155,8 +154,8 @@ export async function buyVehicle(vehicleId) {
         });
 }
 
-export async function bidVehicle(vehicleId,price) {
-    await store.getState().blockchain.smartContract.methods
+export async function bidVehicle(vehicleId, price) {
+    return await store.getState().blockchain.smartContract.methods
         .bidVehicle(vehicleId)
         .send({ from: await getUserAccount(), value: await myCurrencyToWei(price) })
         .once("error", (err) => {
@@ -169,9 +168,9 @@ export async function bidVehicle(vehicleId,price) {
 }
 
 
-export const listAuction = async (vehicleId,price) => {
+export const listAuction = async (vehicleId, price) => {
 
-    await store.getState().blockchain.smartContract.methods
+    return await store.getState().blockchain.smartContract.methods
         .listAuction(vehicleId, await myCurrencyToWei(price))
         .send({ from: await getUserAccount() })
         .once("error", (err) => {
@@ -184,9 +183,9 @@ export const listAuction = async (vehicleId,price) => {
 }
 
 
-export const listForSale = async (vehicleId,price) => {
+export const listForSale = async (vehicleId, price) => {
 
-    await store.getState().blockchain.smartContract.methods
+    return await store.getState().blockchain.smartContract.methods
         .listForSale(vehicleId, await myCurrencyToWei(price))
         .send({ from: await getUserAccount() })
         .once("error", (err) => {
@@ -200,7 +199,7 @@ export const listForSale = async (vehicleId,price) => {
 
 export const removeFromSale = async (vehicleId) => {
 
-    await store.getState().blockchain.smartContract.methods
+    return await store.getState().blockchain.smartContract.methods
         .removeFromSale(vehicleId)
         .send({ from: await getUserAccount() })
         .once("error", (err) => {
@@ -212,8 +211,8 @@ export const removeFromSale = async (vehicleId) => {
         });
 }
 
-export async function setVehiclePrice(vehicleId,price) {
-    await store.getState().blockchain.smartContract.methods
+export async function setVehiclePrice(vehicleId, price) {
+    return await store.getState().blockchain.smartContract.methods
         .setVehiclePrice(vehicleId, await myCurrencyToWei(price))
         .send({ from: await getUserAccount() })
         .once("error", (err) => {
@@ -227,23 +226,24 @@ export async function setVehiclePrice(vehicleId,price) {
 
 
 export async function concludeAuction(vehicleId) {
-    await store.getState().blockchain.smartContract.methods
+    return await store.getState().blockchain.smartContract.methods
         .concludeAuction(vehicleId)
         .send({ from: await getUserAccount() })
         .once("error", (err) => {
             console.log(err);
         })
-        .then((receipt) => {
-            console.log(receipt);
-            //dispatch(fetchAllData(blockchain.account));
-        });
 }
 
-export async function isTopBidder() {
-    return await getTopBidder() == await getUserAccount()
+export async function getIfIsTopBidder(id) {
+    return await getTopBidder(id) == await getUserAccount()
 }
 
 export async function getIfIsOwner(vehicleId) {
-        console.log(await getUserAccount())
-        return (await getUserAccount() == await ownerOf(vehicleId))
+    return (await getUserAccount() == await ownerOf(vehicleId))
+}
+
+export async function mint(uri) {
+    return await store.getState().blockchain.smartContract.methods
+        .createVehicle(uri)
+        .send({ from: await getUserAccount() })
 }

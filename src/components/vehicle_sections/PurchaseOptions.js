@@ -1,67 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
+import { getIfIsTopBidder,getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../../utils/BlockchainGateway";
+import { weiToMyCurrency } from '../../utils/PricesCoinsExchange'
+import { fetchAllData } from '../../redux/data/dataActions';
 
-import { getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../../redux/blockchain/blockchainUtils";
-import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from '../../utils/PricesCoinsExchange'
+function PurchaseOptions({ vehicle, settings }) {
 
-
-
-function PurchaseOptions({vehicle, settings}) {
-
-    const data = useSelector((state) => state.data);
-    const [desiredPrice, setDesiredPrice] = useState(0)
-    const [displayPrice, setDisplayPrice] = useState(0);
+    const dispatch = useDispatch();
     const myPrefferedCurrency = settings.myCurrency
     const isAuction = settings.isAuction
+    const data = useSelector((state) => state.data);
+
+    const [desiredPrice, setDesiredPrice] = useState(0)
+    const [displayPrice, setDisplayPrice] = useState(0)
     const [topBidder, setTopBidder] = useState("0x0")
     const [isTopBidder, setIsTopBidder] = useState(false)
 
-    const [topBid, setTopBid] = useState(0);
-
-    useEffect( async () => {
+    useEffect(async () => {
         setDisplayPrice(await weiToMyCurrency(await getVehiclePrice(vehicle.injected.id)))
-        if (isAuction == true) {
+        if (isAuction) {
             setTopBidder(await getTopBidder(vehicle.injected.id))
-            console.log("topbidder", await getTopBidder(vehicle.injected.id))
-
-            setIsTopBidder( await isTopBidder())
+            setIsTopBidder(await getIfIsTopBidder(vehicle.injected.id))
         }
-        let topBid = await getTopBid(vehicle.injected.id)
-        setTopBid(await weiToMyCurrency(topBid))
-
-    }, [])
+    }, [data.loading])
 
     return (
         <div>
-            <p>
-            {settings.isAuction ? "Highest Bid: " : "Price: "}
-            {displayPrice} {myPrefferedCurrency}</p>
-
-            {settings.isAuction ?
-                <div>
-                    <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
-                    <label>{myPrefferedCurrency}</label>
-                    <button onClick={(e) => {
-                        e.preventDefault()
-                        bidVehicle(vehicle.injected.id,desiredPrice)
-                    }}>
-                        Bid
-                    </button>
-                </div> :
-                <div>
-                    <button onClick={(e) => {
-                        e.preventDefault()
-                        buyVehicle(vehicle.injected.id)
+            <p>{isAuction ? "Highest Bid: ":"Price: "} {displayPrice} {myPrefferedCurrency}</p>
+            <div>
+                {isAuction ?
+                    <div>
+                        <div>
+                            <input type="number" value={desiredPrice} onChange={(e) => {setDesiredPrice(e.target.value)}}></input>
+                            <label>{myPrefferedCurrency}</label>
+                            <button onClick={() => {
+                                if (desiredPrice > displayPrice)
+                                    bidVehicle(vehicle.injected.id, desiredPrice).then((receipt) => {
+                                        console.log(receipt);
+                                        dispatch(fetchAllData());
+                                    });
+                                else
+                                    alert("Your price needs to be higher than the current top bid.")
+                            }}>
+                                Bid
+                            </button>
+                        </div>
+                        <div>
+                        {topBidder!= "0x0000000000000000000000000000000000000000" ?
+                            isTopBidder ?
+                                <p>You are the top bidder.</p>
+                                :
+                                <p>Top Bidder: {topBidder}</p>
+                            
+                            :
+                            <p>No bids yet.</p>
+                        }      
+                        </div>
+                    </div>
+                    :
+                    <button onClick={() => {
+                        buyVehicle(vehicle.injected.id).then((receipt) => {
+                            console.log(receipt);
+                            dispatch(fetchAllData());
+                        });
                     }}>
                         Buy
                     </button>
-                </div>
-            }
-            {isTopBidder ?
-                        <div>
-                            <p>You are the top bidder with {topBid} {myPrefferedCurrency} </p>
-                        </div>
-                        : null}
+                }
+            </div>
+
         </div>
     );
 }
