@@ -10,9 +10,8 @@ import Admin from './pages/Admin';
 import Options from './pages/Options';
 import MyBids from './pages/MyBids';
 import { useDispatch, useSelector } from "react-redux";
-import { connect } from "./redux/blockchain/blockchainActions";
+import { initializeWallet, loadSmartContract, loadWeb3Provider } from "./redux/blockchain/blockchainActions";
 import { fetchAllData, refreshVehiclesForSale } from "./redux/data/dataActions";
-import * as s from "./styles/globalStyles";
 
 import ControlledRoute from './components/ControlledRoute';
 import { roleToString } from "./utils/PermissionsAndRoles";
@@ -28,34 +27,32 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
- 
+
   useEffect(() => {
 
-    if (blockchain.account !== "" && blockchain.smartContract !== null) {
-      dispatch(fetchAllData(blockchain.account));
+    if (!blockchain.account && !blockchain.smartContract) {
+      dispatch(initializeWallet());
     }
-  }, [blockchain.smartContract, dispatch]);
-  return (
+    
+  }, []);
 
-    <s.Screen>
+  return (
+    <div>
       {blockchain.account === "" || blockchain.smartContract === null ? (
-        <s.Container flex={1} ai={"center"} jc={"center"}>
-          <s.TextTitle>Connect to the Blockchain</s.TextTitle>
-          <s.SpacerSmall />
-          <s.StyledButton
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(connect());
-            }}
-          >
-            CONNECT
-          </s.StyledButton>
-          <s.SpacerSmall />
-          {blockchain.errorMsg !== "" ? (
-            <s.TextDescription>{blockchain.errorMsg}</s.TextDescription>
-          ) : null}
-        </s.Container>
-      ) : <Router>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(loadSmartContract());
+          }}
+        >
+          Login
+        </button>
+      ) : null}
+      {blockchain.errorMsg !== "" ? (
+        <p>{blockchain.errorMsg}</p>
+      ) : null}
+      <Router>
         <Navbar>
         </Navbar>
         <Switch>
@@ -69,10 +66,8 @@ function App() {
           <Route path='/mybids' component={MyBids} />
           <Route path='/support' component={Support} />
         </Switch>
-      </Router>}
-
-
-    </s.Screen>
+      </Router>
+    </div>
   );
 }
 

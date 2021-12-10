@@ -38,10 +38,26 @@ const Admin = () => {
     }
   }
 
-  const burnVehicle = () => {
-    blockchain.smartContract.methods
+  class ProviderRpcError extends Error {
+    message;
+    code;
+    data;
+  }
+
+  const burnVehicle = async () => {
+
+    try{
+      await blockchain.smartContract.methods
       .destroyVehicle(vehicleToBurn)
-      .send({ from: blockchain.account })
+      .send({ from: window.ethereum.selectedAddress })
+    }
+    catch (error)
+    { 
+      if (error.code === 4001)
+        console.log ("rejected transaction")
+    }
+
+    
   }
 
   return (

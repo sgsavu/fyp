@@ -17,13 +17,16 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         emit Received(msg.sender, msg.value);
     }
 
-    struct Vehiclee {
+    struct VehicleInfo {
         address _topBidder; 
         uint256 price;
         mapping(uint256 => address) history;
+        uint256 odometer;
+        uint256 country;
     }
 
-    mapping(uint256 => Vehiclee) internal _vehicles;
+    mapping(uint256 => VehicleInfo) internal _vehicles;
+    mapping(uint256 => uint256) private _odometer;
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
     mapping(uint256 => uint256) private _forSale;
@@ -92,6 +95,15 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     modifier onlyIfPriceNonNull(uint256 price) {
         require(price > 0, "Cannot set price to 0.");
         _;
+    }
+    //ODOMETER
+
+    function getOdometer(uint256 tokenId) public view returns (uint256) {
+        return _odometer[tokenId];
+    }
+
+    function incrementOdometerBy(uint256 tokenId, uint256 value) public {
+        _odometer[tokenId] = _odometer[tokenId] + value;
     }
 
     //OWNER HISTORY
