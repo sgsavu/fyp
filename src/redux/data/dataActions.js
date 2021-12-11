@@ -112,7 +112,9 @@ async function getVehiclesForAccount(account) {
 
 async function getAllVehicles() {
 
+  console.log("aye")
   let totalNrOfVehicles = await getTotalNrOfVehicles()
+
   let allVehicles = []
   for (var i = 0; i < totalNrOfVehicles; i++) {
 
@@ -208,6 +210,7 @@ export const refresh = (code) => {
           );
           break;
         case "FORSALE_VEHICLES":
+          console.log("aye")
           dispatch(
             updateVehiclesForSale(
               await getForSaleVehicles(await getAllVehicles())

@@ -4,7 +4,23 @@ import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchAllData } from "../data/dataActions";
 import detectEthereumProvider from '@metamask/detect-provider';
 import { randomBytes, sign } from "crypto";
+import store from "../store";
+import { ALL_TEMPLATES, AVALANCHE_MAINNET_PARAMS, AVALANCHE_TESTNET_PARAMS } from "../../utils/NetworkTemplates";
 
+
+export const updateState = (payload) => {
+  return {
+    type: "UPDATE_STATE",
+    payload: payload,
+  }
+}
+
+const loading = (payload) => {
+  return {
+    type: "LOADING",
+    payload: payload,
+  }
+}
 
 const connectRequest = () => {
   return {
@@ -34,25 +50,33 @@ const updateAccountRequest = (payload) => {
 };
 
 
-export const initializeWallet = () => {
+const getDeployedChains = (contract) => {
+  const deployed = []
+  for (var property in contract.networks)
+    contract.networks[property] = contract.networks[property].address
+  Object.keys(contract.networks).forEach((entry) => {
+    deployed.push({chain_id:entry,address: contract.networks[entry]})
+  })
+  return deployed
+}
+
+export const loadWeb3Provider = () => {
   return async (dispatch) => {
     try {
 
+      dispatch(loading(true));
+
       const provider = await detectEthereumProvider();
 
-      const accounts = await provider.request({
-        method: "eth_requestAccounts",
-      });
+      if (!provider)
+        throw Error("No web3 wallet detected. Please install a web3 wallet such as MetaMask.")
 
-      /*
+        var web3 = new Web3(Web3.givenProvider)
 
-      await provider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x1' }], // chainId must be in hexadecimal numbers
-      });
 
-      */
-      
+      dispatch(updateState({ field: "web3", value: web3 }))
+      dispatch(updateState({ field: "provider", value: provider }))
+      dispatch(loading(false));
     }
     catch (err) {
       dispatch(connectFailed(err.message))
@@ -60,48 +84,20 @@ export const initializeWallet = () => {
   }
 }
 
-export const AVALANCHE_MAINNET_PARAMS = {
-  chainId: '0xA86A',
-  chainName: 'Avalanche Mainnet C-Chain',
-  nativeCurrency: {
-      name: 'Avalanche',
-      symbol: 'AVAX',
-      decimals: 18
-  },
-  rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
-  blockExplorerUrls: ['https://snowtrace.io/']
-}
 
-export const AVALANCHE_TESTNET_PARAMS = {
-  chainId: '0xA869',
-  chainName: 'Avalanche Testnet C-Chain',
-  nativeCurrency: {
-      name: 'Avalanche',
-      symbol: 'AVAX',
-      decimals: 18
-  },
-  rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
-  blockExplorerUrls: ['https://testnet.snowtrace.io/']
-}
-
-
-export const loadWeb3Provider = () => {
+export const loadNetworks = () => {
   return async (dispatch) => {
+
     try {
+      dispatch(loading(true));
 
-      const provider = await detectEthereumProvider();
+      const deployedChains = getDeployedChains(ExternalGatewayContract)
 
-      if (typeof provider === 'undefined')
-        throw Error("No web3 wallet detected.")
+      dispatch(updateState({ field: "availableNetworks", value: deployedChains }))
+      dispatch(updateState({ field: "currentNetwork", value: deployedChains[3] }))
 
-      /*
-      if (!provider.isMetaMask)
-        throw Error("Wallet is not Metamask. Please install MetaMask.")
-      */
+      dispatch(loading(false));
 
-      let web3 = new Web3(provider);
-
-      dispatch(connectFailed("Bruh"))
     }
     catch (err) {
       dispatch(connectFailed(err.message))
@@ -115,119 +111,102 @@ export const loadSmartContract = () => {
 
     try {
 
-      const provider = await detectEthereumProvider();
+      dispatch(loading(true));
 
-      let web3 = new Web3(provider);
+      const currentNetwork = await store.getState().blockchain.currentNetwork
 
-      const walletChainId = await provider.request({
-        method: "eth_chainId",
-      });
-
-      const bruh = await (await fetch(new URL("https://api.covalenthq.com/v1/chains/?quote-currency=USD&format=JSON&key=ckey_135c268318784e13be25ff66fe0"))).json();
-      console.log(bruh.data.items)
-
-      const convertedChainId = web3.utils.hexToNumber(walletChainId)
-      console.log(convertedChainId)
-
-      for (const network in bruh.data.items)
-        if (convertedChainId === bruh.data.items[network].chain_id)
-          console.log("found")
-
-      console.log(walletChainId)
-  
-      const networkData = await ExternalGatewayContract.networks[walletChainId];
-      console.log(ExternalGatewayContract.networks)
-      if (!networkData)
-      { 
-        /*
-        await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [AVALANCHE_TESTNET_PARAMS]
-        });
-
-        */
-        throw Error("dApp not available on wallet network.")
-      }
-  
+      console.log(currentNetwork)
+      const web3 = await store.getState().blockchain.web3
       const SmartContractObj = new web3.eth.Contract(
         ExternalGatewayContract.abi,
-        networkData.address
+        currentNetwork.address
       );
 
-      console.log(SmartContractObj)
+      console.log("newContractObject", SmartContractObj)
+
+      dispatch(updateState({ field: "smartContract", value: SmartContractObj }))
+
+      dispatch(loading(false));
 
     }
     catch (err) {
+     
       dispatch(connectFailed(err.message))
     }
   }
 }
 
 
-
 export const login = () => {
   return async (dispatch) => {
 
-    dispatch(connectRequest());
+    dispatch(loading(true));
 
-    const provider = await detectEthereumProvider();
-      let web3 = new Web3(provider);
+    const web3 = await store.getState().blockchain.web3
+    const provider = await store.getState().blockchain.provider
 
-    if (!await provider._metamask.isUnlocked())
-        throw Error("Wallet is locked. Please unlock.")
+    if (!await store.getState().blockchain.provider._metamask.isUnlocked())
+      throw Error("Wallet is locked. Please unlock.")
 
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
-    
 
-    /*
-    SIGNATURE
-    const signMessage = (message, publicAddress) => {
-      return new Promise((resolve, reject) =>
-        web3.eth.personal.sign(
-          web3.utils.utf8ToHex(message),
-          publicAddress,
-          (err, signature) => {
-            if (err) return reject(err);
-            return resolve({ signature });
-          }
-        )
-      );
-    };
-    const verifySignature = async (message, signature, address) => {
-      if (await web3.eth.accounts.recover(message, signature) !== address) {
-        throw Error("Bruh not you");
-      }
+    const walletChainId = await provider.request({
+      method: "eth_chainId",
+    });
+
+    const convertedChainId = Web3.utils.hexToNumber(walletChainId)
+
+    const dAppNetwork = await store.getState().blockchain.currentNetwork.chain_id
+
+    if (dAppNetwork != convertedChainId)
+    {
+      await provider.request({
+        method: 'wallet_addEthereumChain',
+        params: [ALL_TEMPLATES[dAppNetwork]]
+      });
     }
-    const authenticate = async (address) => {
-      const dAppname = "Vehicle"
-      const nonce = randomBytes(32).toString('base64')
-      const message = `Hi there from ${dAppname}! Sign this message to prove you have access to this wallet and we’ll log you in. This won’t cost you anything.To stop hackers using your wallet, here’s a unique message ID they can’t guess: ${nonce}`
-      const signature = await signMessage(message, address)
-      await verifySignature(message, signature, address);
-    }
-    */
 
     dispatch(
-      connectSuccess({
-        account: Web3.utils.toChecksumAddress(accounts[0])
+      updateState({
+        field:"account",value:Web3.utils.toChecksumAddress(accounts[0])
       })
     );
 
-    window.ethereum.on("accountsChanged", () => {
-      dispatch(updateAccount(Web3.utils.toChecksumAddress(window.ethereum.selectedAddress)));
-    });
-    window.ethereum.on("chainChanged", () => {
-      window.location.reload();
-    });
+    
+    
 
+    dispatch(loading(false));
 
 
 
 
   };
 };
+
+
+export const forceUserToChange = (dAppNetwork) => {
+  return async (dispatch) => {
+    const provider = await store.getState().blockchain.provider
+  await provider.request({
+    method: 'wallet_addEthereumChain',
+    params: [ALL_TEMPLATES[dAppNetwork]]
+  });
+}
+}
+
+export const updateNetwork = (newNetwork) => {
+  return async (dispatch) => {
+    await store.getState().blockchain.availableNetworks.forEach(element => {
+      
+      if (element.chain_id === Web3.utils.hexToNumber(newNetwork).toString())
+      {console.log("Went in")
+          dispatch(updateState({field:"currentNetwork",value: element}))
+      }
+  });
+  };
+} 
 
 export const updateAccount = (account) => {
   return async (dispatch) => {

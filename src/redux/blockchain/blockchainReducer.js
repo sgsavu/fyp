@@ -3,8 +3,11 @@ const initialState = {
   account: null,
   smartContract: null,
   web3: null,
+  error: false,
   errorMsg: "",
-  network: "",
+  currentNetwork: "5777",
+  availableNetworks: [],
+  provider: null,
 };
 
 const blockchainReducer = (state = initialState, action) => {
@@ -33,11 +36,16 @@ const blockchainReducer = (state = initialState, action) => {
         ...state,
         account: action.payload.account,
       };
-    case "UPDATE":
+    case "UPDATE_STATE":
       return {
         ...state,
-        account: action.payload.account,
+        [action.payload.field]: action.payload.value,
       };
+    case "LOADING":
+      return {
+        ...state,
+        loading: action.payload
+      }
     default:
       return state;
   }

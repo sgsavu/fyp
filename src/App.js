@@ -1,24 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import './styles/App.css';
-import Navbar from './components/Navbar';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import MyVehicles from './pages/MyVehicles';
-import Marketplace from './pages/Marketplace';
-import Verify from './pages/Verify';
-import Mint from './pages/Mint';
-import Admin from './pages/Admin';
-import Options from './pages/Options';
-import MyBids from './pages/MyBids';
+
 import { useDispatch, useSelector } from "react-redux";
-import { initializeWallet, loadSmartContract, loadWeb3Provider } from "./redux/blockchain/blockchainActions";
-import { fetchAllData, refreshVehiclesForSale } from "./redux/data/dataActions";
-
-import ControlledRoute from './components/ControlledRoute';
-import { roleToString } from "./utils/PermissionsAndRoles";
-import Vehicle from "./pages/Vehicle";
-import Support from "./pages/Support";
-
-
+import { initializeWallet, loadNetworks, loadSmartContract, loadWeb3Provider, login, updateAccount, updateNetwork} from "./redux/blockchain/blockchainActions";
+import { refresh} from "./redux/data/dataActions";
+import Loading from "./Loading";
+import Error from "./Error";
+import NormalView from "./NormalView";
+import Web3 from "web3";
 
 
 
@@ -27,46 +16,68 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
+  const isInitialMount = useRef(true);
+  const isInitialMount2 = useRef(true);
+
+
+  window.ethereum.on("accountsChanged", () => {
+    dispatch(updateAccount(Web3.utils.toChecksumAddress(window.ethereum.selectedAddress)));
+  });
+  window.ethereum.on("chainChanged", (chain) => {
+    console.log("chain changed",chain)
+    dispatch(updateNetwork(chain))
+  });
+
 
   useEffect(() => {
 
-    if (!blockchain.account && !blockchain.smartContract) {
-      dispatch(initializeWallet());
-    }
+    console.log('init')
+
     
+    dispatch(loadWeb3Provider())
+    dispatch(loadNetworks())
+    
+
+    
+
+
   }, []);
+
+  useEffect(() => {
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      console.log("network change")
+      dispatch(loadSmartContract())
+    }
+
+  }, [blockchain.currentNetwork])
+
+
+  useEffect(() => {
+
+    if (isInitialMount2.current) {
+      isInitialMount2.current = false;
+    } else {
+      console.log("davhielcs")
+      dispatch(refresh("FORSALE_VEHICLES"));
+    }
+
+  }, [blockchain.smartContract])
 
   return (
     <div>
-      {blockchain.account === "" || blockchain.smartContract === null ? (
+      {blockchain.loading === true ? <Loading /> : (blockchain.errorMsg ? <Error /> : 
+      
+      /*
+      blockchain.account? (
+        <div>
+          </div>) :
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(loadSmartContract());
-          }}
-        >
-          Login
-        </button>
-      ) : null}
-      {blockchain.errorMsg !== "" ? (
-        <p>{blockchain.errorMsg}</p>
-      ) : null}
-      <Router>
-        <Navbar>
-        </Navbar>
-        <Switch>
-          <ControlledRoute path='/' exact component={MyVehicles} />
-          <ControlledRoute path='/marketplace' component={Marketplace} />
-          <ControlledRoute path='/verify' component={Verify} />
-          <ControlledRoute path='/mint' component={Mint} />
-          <ControlledRoute path='/admin' component={Admin} />
-          <Route path='/vehicle' component={Vehicle} />
-          <Route path='/options' component={Options} />
-          <Route path='/mybids' component={MyBids} />
-          <Route path='/support' component={Support} />
-        </Switch>
-      </Router>
+          */
+      
+      <NormalView />)}
     </div>
   );
 }

@@ -91,6 +91,15 @@ module.exports = {
       //timeoutBlocks: 200,
       skipDryRun: true,
     },
+
+    fantom: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, 
+        process.env.FANTOM_TEST),
+      network_id: "*",
+      //confirmations: 2,
+      //timeoutBlocks: 200,
+      skipDryRun: true,
+    }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
