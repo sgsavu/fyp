@@ -5,7 +5,7 @@ import FormFields from '../components/minting_form/FormFields';
 import ImageUpload from '../components/minting_form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
-import { fetchAllData, refreshMyVehicles } from "../redux/data/dataActions";
+import { fetchMyData, refreshMyVehicles } from "../redux/data/dataActions";
 import { finishSubmit, errorSubmit } from '../redux/minting/formActions';
 import { mint, getUserAccount } from '../utils/BlockchainGateway'
 import { scramble, randomIntFromInterval } from '../utils/CryptographyUtils'
@@ -37,7 +37,7 @@ const Mint = () => {
             mint(ipfsBaseUrl + addedMetaData.path)
                 .then((receipt) => {
                     console.log(receipt);
-                    dispatch(fetchAllData());
+                    dispatch(fetchMyData());
                     dispatch(finishSubmit());
                 });
 

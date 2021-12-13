@@ -18,30 +18,16 @@ function App() {
   const data = useSelector((state) => state.data);
   const isInitialMount = useRef(true);
   const isInitialMount2 = useRef(true);
-
-
-  window.ethereum.on("accountsChanged", () => {
-    dispatch(updateAccount(Web3.utils.toChecksumAddress(window.ethereum.selectedAddress)));
-  });
-  window.ethereum.on("chainChanged", (chain) => {
-    console.log("chain changed",chain)
-    dispatch(updateNetwork(chain))
-  });
-
+  const provider = blockchain.provider
 
   useEffect(() => {
 
     console.log('init')
-
-    
     dispatch(loadWeb3Provider())
     dispatch(loadNetworks())
-    
-
-    
-
 
   }, []);
+
 
   useEffect(() => {
 
@@ -60,23 +46,25 @@ function App() {
     if (isInitialMount2.current) {
       isInitialMount2.current = false;
     } else {
-      console.log("davhielcs")
-      dispatch(refresh("FORSALE_VEHICLES"));
+
+      dispatch(refresh("SALE_VEHICLES"));
+
     }
 
   }, [blockchain.smartContract])
 
+  window.ethereum.on("accountsChanged", () => {
+    dispatch(updateAccount(Web3.utils.toChecksumAddress(window.ethereum.selectedAddress)));
+  });
+  window.ethereum.on("chainChanged", (chain) => {
+    console.log("chain changed",chain)
+    if (blockchain.account)
+      dispatch(updateNetwork(chain))
+  });
+
   return (
     <div>
       {blockchain.loading === true ? <Loading /> : (blockchain.errorMsg ? <Error /> : 
-      
-      /*
-      blockchain.account? (
-        <div>
-          </div>) :
-
-          */
-      
       <NormalView />)}
     </div>
   );

@@ -1,11 +1,11 @@
 
 import Web3 from "web3";
 import ExternalGatewayContract from "../../abis/ExternalGateway.json";
-import { fetchAllData } from "../data/dataActions";
+import { fetchMyData, refresh } from "../data/dataActions";
 import detectEthereumProvider from '@metamask/detect-provider';
 import { randomBytes, sign } from "crypto";
 import store from "../store";
-import { ALL_TEMPLATES, AVALANCHE_MAINNET_PARAMS, AVALANCHE_TESTNET_PARAMS } from "../../utils/NetworkTemplates";
+import { ALL_TEMPLATES } from "../../utils/NetworkTemplates";
 
 
 export const updateState = (payload) => {
@@ -21,19 +21,6 @@ const loading = (payload) => {
     payload: payload,
   }
 }
-
-const connectRequest = () => {
-  return {
-    type: "CONNECTION_REQUEST",
-  };
-};
-
-const connectSuccess = (payload) => {
-  return {
-    type: "CONNECTION_SUCCESS",
-    payload: payload,
-  };
-};
 
 const connectFailed = (payload) => {
   return {
@@ -55,7 +42,7 @@ const getDeployedChains = (contract) => {
   for (var property in contract.networks)
     contract.networks[property] = contract.networks[property].address
   Object.keys(contract.networks).forEach((entry) => {
-    deployed.push({chain_id:entry,address: contract.networks[entry]})
+    deployed.push({ chain_id: entry, address: contract.networks[entry] })
   })
   return deployed
 }
@@ -71,7 +58,7 @@ export const loadWeb3Provider = () => {
       if (!provider)
         throw Error("No web3 wallet detected. Please install a web3 wallet such as MetaMask.")
 
-        var web3 = new Web3(Web3.givenProvider)
+      var web3 = new Web3(Web3.givenProvider)
 
 
       dispatch(updateState({ field: "web3", value: web3 }))
@@ -92,6 +79,8 @@ export const loadNetworks = () => {
       dispatch(loading(true));
 
       const deployedChains = getDeployedChains(ExternalGatewayContract)
+
+      console.log (deployedChains)
 
       dispatch(updateState({ field: "availableNetworks", value: deployedChains }))
       dispatch(updateState({ field: "currentNetwork", value: deployedChains[3] }))
@@ -130,7 +119,7 @@ export const loadSmartContract = () => {
 
     }
     catch (err) {
-     
+
       dispatch(connectFailed(err.message))
     }
   }
@@ -160,8 +149,7 @@ export const login = () => {
 
     const dAppNetwork = await store.getState().blockchain.currentNetwork.chain_id
 
-    if (dAppNetwork != convertedChainId)
-    {
+    if (dAppNetwork != convertedChainId) {
       await provider.request({
         method: 'wallet_addEthereumChain',
         params: [ALL_TEMPLATES[dAppNetwork]]
@@ -170,47 +158,43 @@ export const login = () => {
 
     dispatch(
       updateState({
-        field:"account",value:Web3.utils.toChecksumAddress(accounts[0])
+        field: "account", value: Web3.utils.toChecksumAddress(accounts[0])
       })
     );
 
-    
-    
+    dispatch(
+      fetchMyData()
+    )
 
     dispatch(loading(false));
-
-
-
-
   };
 };
+
+
 
 
 export const forceUserToChange = (dAppNetwork) => {
   return async (dispatch) => {
     const provider = await store.getState().blockchain.provider
-  await provider.request({
-    method: 'wallet_addEthereumChain',
-    params: [ALL_TEMPLATES[dAppNetwork]]
-  });
-}
+    await provider.request({
+      method: 'wallet_addEthereumChain',
+      params: [ALL_TEMPLATES[dAppNetwork]]
+    });
+  }
 }
 
 export const updateNetwork = (newNetwork) => {
   return async (dispatch) => {
     await store.getState().blockchain.availableNetworks.forEach(element => {
-      
       if (element.chain_id === Web3.utils.hexToNumber(newNetwork).toString())
-      {console.log("Went in")
-          dispatch(updateState({field:"currentNetwork",value: element}))
-      }
-  });
+        dispatch(updateState({ field: "currentNetwork", value: element }))
+    });
   };
-} 
+}
 
 export const updateAccount = (account) => {
   return async (dispatch) => {
     dispatch(updateAccountRequest({ account: account }));
-    dispatch(fetchAllData(account));
+    dispatch(fetchMyData(account));
   };
 };

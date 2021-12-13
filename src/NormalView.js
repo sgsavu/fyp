@@ -11,7 +11,7 @@ import Options from './pages/Options';
 import MyBids from './pages/MyBids';
 import { useDispatch, useSelector } from "react-redux";
 import { initializeWallet, loadSmartContract, loadWeb3Provider } from "./redux/blockchain/blockchainActions";
-import { fetchAllData, refreshVehiclesForSale } from "./redux/data/dataActions";
+import { fetchMyData, refreshVehiclesForSale } from "./redux/data/dataActions";
 
 import ControlledRoute from './components/ControlledRoute';
 import { roleToString } from "./utils/PermissionsAndRoles";

@@ -1,6 +1,6 @@
 import { roles } from "./PermissionsAndRoles";
 import store from "../redux/store";
-import { EthToWei, myCurrencyToWei, currencyToCurrency, WeiToEth, weiToMyCurrency } from './PricesCoinsExchange'
+import { myCurrencyToWei } from './PricesCoinsExchange'
 
 
 export async function getUserAccount() {
@@ -68,13 +68,6 @@ export async function getTotalNrOfVehicles() {
     return await store
         .getState()
         .blockchain.smartContract.methods.totalSupply()
-        .call();
-}
-
-export async function getTopBid(id) {
-    return await store
-        .getState()
-        .blockchain.smartContract.methods.getTopBid(id)
         .call();
 }
 

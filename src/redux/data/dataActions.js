@@ -1,34 +1,11 @@
-// log
-import { roles, viewAllPrivileged } from "../../utils/PermissionsAndRoles";
+import { viewAllPrivileged } from "../../utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../utils/PricesCoinsExchange";
 import store from "../store";
-import dataReducer from "./dataReducer";
-import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTopBid, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount } from "../../utils/BlockchainGateway";
+import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount } from "../../utils/BlockchainGateway";
 
 const fetchDataRequest = () => {
   return {
     type: "FETCH_DATA_REQUEST",
-  };
-};
-
-const fetchDataSuccess = (payload) => {
-  return {
-    type: "FETCH_DATA_SUCCESS",
-    payload: payload,
-  };
-};
-
-const updateMyBids = (payload) => {
-  return {
-    type: "UPDATE_MY_BIDS",
-    payload: payload,
-  };
-};
-
-const updateRole = (payload) => {
-  return {
-    type: "UPDATE_ROLE",
-    payload: payload,
   };
 };
 
@@ -39,35 +16,12 @@ const fetchDataFailed = (payload) => {
   };
 };
 
-const updateAllVehicles = (payload) => {
+const updateState = (payload) => {
   return {
-    type: "UPDATE_ALL_VEHICLES",
+    type: "UPDATE_STATE",
     payload: payload,
   };
 };
-
-const updateVehiclesForSale = (payload) => {
-  return {
-    type: "UPDATE_VEHICLES_FOR_SALE",
-    payload: payload,
-  };
-};
-
-const updateMyVehicles = (payload) => {
-  return {
-    type: "UPDATE_MY_VEHICLES",
-    payload: payload,
-  };
-};
-
-const updateDisplayCurrency = (payload) => {
-  return {
-    type: "UPDATE_DISPLAY_CURRENCY",
-    payload: payload,
-  };
-};
-
-
 
 
 
@@ -96,15 +50,15 @@ async function getVehiclesForAccount(account) {
     let vehicleMetadata = await getVehicleMetadata(vehicleURI)
     injectTokenId(vehicleMetadata, vehicleID)
     if (await getIfForSale(vehicleID)) {
-      injectPrice(vehicleMetadata)
+      await injectPrice(vehicleMetadata)
       if (await getIfAuction(vehicleID))
-        if (await getTopBidder(vehicleID) == await store.getState().blockchain.account)
+        if (await getTopBidder(vehicleID) == await getUserAccount())
           vehicleMetadata.injected.bid = true
     }
     myVehicles.push(vehicleMetadata)
   }
 
-  console.log("pull in my vehicles", myVehicles)
+  console.log("pulled my vehicles", myVehicles)
   return myVehicles
 }
 
@@ -112,9 +66,7 @@ async function getVehiclesForAccount(account) {
 
 async function getAllVehicles() {
 
-  console.log("aye")
   let totalNrOfVehicles = await getTotalNrOfVehicles()
-
   let allVehicles = []
   for (var i = 0; i < totalNrOfVehicles; i++) {
 
@@ -135,7 +87,7 @@ async function getAllVehicles() {
   }
 
 
-  console.log("pull in all vehicles", allVehicles)
+  console.log("pulled all vehicles", allVehicles)
   return allVehicles
 }
 
@@ -165,7 +117,7 @@ async function getForSaleVehicles(allVehicles) {
 }
 
 
-export const fetchAllData = () => {
+export const fetchMyData = () => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
@@ -176,19 +128,16 @@ export const fetchAllData = () => {
       if (viewAllPrivileged.some(privilegedRole => privilegedRole === myRole)) {
         dispatch(refresh("MY_VEHICLES"));
         dispatch(refresh("ALL_VEHICLES"));
-        dispatch(refresh("FORSALE_VEHICLES"));
       }
       else {
         dispatch(refresh("MY_VEHICLES"));
-        dispatch(refresh("FORSALE_VEHICLES"));
       }
 
       dispatch(refresh("ROLE"));
       dispatch(refresh("BIDS"));
 
     } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
+      dispatch(fetchDataFailed(err));
     }
   };
 };
@@ -197,55 +146,52 @@ export const fetchAllData = () => {
 
 export const refresh = (code) => {
   return async (dispatch) => {
-    dispatch(fetchDataRequest());
+    dispatch(fetchDataRequest()); 
     try {
       switch (code) {
         case "MY_VEHICLES":
           dispatch(
-            updateMyVehicles(
-              await getVehiclesForAccount(await store
-                .getState()
-                .blockchain.account)
-            )
+            updateState({
+              field: "myVehicles",
+              value: await getVehiclesForAccount(await getUserAccount())
+            })
           );
           break;
-        case "FORSALE_VEHICLES":
-          console.log("aye")
+        case "SALE_VEHICLES":
           dispatch(
-            updateVehiclesForSale(
-              await getForSaleVehicles(await getAllVehicles())
-            )
+            updateState({
+              field: "vehiclesForSale",
+              value: await getForSaleVehicles(await getAllVehicles())
+            })
           );
           break;
         case "ALL_VEHICLES":
           dispatch(
-            updateAllVehicles(
-              await getAllVehicles()
-            )
+            updateState({
+              field: "allVehicles",
+              value: await getAllVehicles()
+            })
           );
           break;
         case "ROLE":
           dispatch(
-            updateRole(
-              await getRole(await store
-                .getState()
-                .blockchain.account)
-            )
+            updateState({
+              field: "myRole",
+              value: await getRole(await getUserAccount())
+            })
           );
           break;
         case "BIDS":
           dispatch(
-            updateMyBids(
-              await getMyBids(await getAllVehicles())
-            )
+            updateState({
+              field: "myBids",
+              value: await getMyBids(await getAllVehicles())
+            })
           );
           break;
-
-
       }
     } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
+      dispatch(fetchDataFailed(err));
     }
   };
 }
@@ -253,10 +199,12 @@ export const refresh = (code) => {
 
 export const updatePrefferedCurrency = (e) => {
   return async (dispatch) => {
-    e.preventDefault();
     const { value } = e.target
     dispatch(
-      updateDisplayCurrency(value)
+      updateState({
+        field: "displayCurrency",
+        value: value
+      })
     );
   };
 };
@@ -269,7 +217,7 @@ export const refreshDisplayPrices = () => {
       let forsale = await store
         .getState()
         .data.vehiclesForSale
-    
+
       for (const element in forsale.auctions) {
         forsale.auctions[element].injected.display_price = await weiToMyCurrency(forsale.auctions[element].injected.price)
       }
@@ -278,13 +226,13 @@ export const refreshDisplayPrices = () => {
       }
 
       dispatch(
-        updateVehiclesForSale(
-          forsale
-        )
+        updateState({
+          field: "vehiclesForSale",
+          value: forsale
+        })
       );
     } catch (err) {
-      console.log(err);
-      dispatch(fetchDataFailed("Could not load data from contract."));
+      dispatch(fetchDataFailed(err));
     }
   };
 }

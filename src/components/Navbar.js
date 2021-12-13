@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../utils/PermissionsAndRoles';
-import { fetchAllData, refresh } from '../redux/data/dataActions';
+import { fetchMyData, refresh } from '../redux/data/dataActions';
 import { MyBids } from './SidebarData';
 
 function Navbar() {
@@ -26,7 +26,7 @@ function Navbar() {
     switch (window.location.pathname)
     {
       case "/marketplace":
-        dispatch(refresh("FORSALE_VEHICLES"))
+        dispatch(refresh("SALE_VEHICLES"))
         break;
       case "/":
         dispatch(refresh("MY_VEHICLES"))
@@ -35,7 +35,7 @@ function Navbar() {
         dispatch(refresh("ALL_VEHICLES"))
         break;
       case "/vehicle":
-        dispatch(fetchAllData(blockchain.account))
+        dispatch(fetchMyData(blockchain.account))
         break;
     }
   }

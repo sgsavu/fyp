@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { weiToMyCurrency } from '../../utils/PricesCoinsExchange'
 import { getUserAccount, concludeAuction, setVehiclePrice, removeFromSale, getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists } from "../../utils/BlockchainGateway";
-import { fetchAllData } from '../../redux/data/dataActions';
+import { fetchMyData } from '../../redux/data/dataActions';
 
 
 function ListedVehicleOptions({vehicle,settings}) {
@@ -37,7 +37,7 @@ function ListedVehicleOptions({vehicle,settings}) {
                 <button onClick={() => {
                     concludeAuction(vehicle.injected.id).then((receipt) => {
                         console.log(receipt);
-                        dispatch(fetchAllData());
+                        dispatch(fetchMyData());
                     });
                 }}>
                     Conclude Auction
@@ -56,7 +56,7 @@ function ListedVehicleOptions({vehicle,settings}) {
                     if (desiredPrice>0){
                         setVehiclePrice(vehicle.injected.id,desiredPrice).then((receipt) => {
                             console.log(receipt);
-                            dispatch(fetchAllData());
+                            dispatch(fetchMyData());
                         });
                     }
                 }}>
@@ -68,7 +68,7 @@ function ListedVehicleOptions({vehicle,settings}) {
             <button onClick={() => {
                     removeFromSale(vehicle.injected.id).then((receipt) => {
                         console.log(receipt);
-                        dispatch(fetchAllData());
+                        dispatch(fetchMyData());
                     });
                 }}>
                     Delist Vehicle

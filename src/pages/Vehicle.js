@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
-import { fetchAllData, refresh } from "../redux/data/dataActions";
-import { getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists, getIfIsOwner } from "../utils/BlockchainGateway";
+import { ownerOf, getIfForSale, getIfAuction, getIfExists, getIfIsOwner } from "../utils/BlockchainGateway";
 import History from "../components/vehicle_sections/History";
 import PurchaseOptions from "../components/vehicle_sections/PurchaseOptions";
 import ListingOptions from "../components/vehicle_sections/ListingOptions";
@@ -14,6 +13,7 @@ const Vehicle = () => {
     const vehicle = location.state?.metadata
 
     const data = useSelector((state) => state.data);
+    const blockchain = useSelector((state) => state.blockchain);
     const myPrefferedCurrency = data.displayCurrency
 
     const [exists, setExists] = useState(false)
@@ -22,6 +22,8 @@ const Vehicle = () => {
 
     useEffect(async () => {
 
+        if ( blockchain.smartContract)
+        {
 
         let exists = await getIfExists(vehicle.injected.id)
         setExists(exists)
@@ -35,6 +37,8 @@ const Vehicle = () => {
                 myCurrency: myPrefferedCurrency
             })
         }
+    }
+
 
     }, [data.loading])
 

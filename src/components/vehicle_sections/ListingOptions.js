@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { listForSale, listAuction } from "../../utils/BlockchainGateway";
 import { useDispatch } from 'react-redux';
-import { fetchAllData } from '../../redux/data/dataActions';
+import { fetchMyData } from '../../redux/data/dataActions';
 
 
 function ListingOptions({ vehicle, settings }) {
@@ -34,7 +34,7 @@ function ListingOptions({ vehicle, settings }) {
                         if (desiredPrice > 0) {
                             listForSale(vehicle.injected.id, desiredPrice).then((receipt) => {
                                 console.log(receipt);
-                                dispatch(fetchAllData());
+                                dispatch(fetchMyData());
                             });
                         }
                     }}>
@@ -45,7 +45,7 @@ function ListingOptions({ vehicle, settings }) {
                         if (desiredPrice > 0) {
                             listAuction(vehicle.injected.id, desiredPrice).then((receipt) => {
                                 console.log(receipt);
-                                dispatch(fetchAllData());
+                                dispatch(fetchMyData());
                             });
                         }
                     }}>

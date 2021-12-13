@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getIfIsTopBidder,getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../../utils/BlockchainGateway";
 import { weiToMyCurrency } from '../../utils/PricesCoinsExchange'
-import { fetchAllData } from '../../redux/data/dataActions';
+import { fetchMyData } from '../../redux/data/dataActions';
 
 function PurchaseOptions({ vehicle, settings }) {
 
@@ -37,7 +37,7 @@ function PurchaseOptions({ vehicle, settings }) {
                                 if (desiredPrice > displayPrice)
                                     bidVehicle(vehicle.injected.id, desiredPrice).then((receipt) => {
                                         console.log(receipt);
-                                        dispatch(fetchAllData());
+                                        dispatch(fetchMyData());
                                     });
                                 else
                                     alert("Your price needs to be higher than the current top bid.")
@@ -61,7 +61,7 @@ function PurchaseOptions({ vehicle, settings }) {
                     <button onClick={() => {
                         buyVehicle(vehicle.injected.id).then((receipt) => {
                             console.log(receipt);
-                            dispatch(fetchAllData());
+                            dispatch(fetchMyData());
                         });
                     }}>
                         Buy
