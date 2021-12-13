@@ -13,12 +13,11 @@ const Options = () => {
     return (
         <div>
             Preffered Currency:
-            <select onChange={(e) => {
+            <select defaultValue={myCurrency} onChange={(e) => {
                 dispatch(updatePrefferedCurrency(e))
                 dispatch(refreshDisplayPrices(e))
-            }}> <option value={myCurrency}>{myCurrency}</option>
+            }}> 
                 {availableCurrencies.map((currency) => {
-                    if (currency!=myCurrency)
                     return (
                         <option key={currency} value={currency}>{currency}</option>
                     );

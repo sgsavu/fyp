@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from "react";
 import './styles/App.css';
 
 import { useDispatch, useSelector } from "react-redux";
-import { initializeWallet, loadNetworks, loadSmartContract, loadWeb3Provider, login, updateAccount, updateNetwork} from "./redux/blockchain/blockchainActions";
-import { refresh} from "./redux/data/dataActions";
+import { initApp, loadSmartContract, updateAccount, updateAppNetwork} from "./redux/blockchain/blockchainActions";
+import { fetchMyData, refresh} from "./redux/data/dataActions";
 import Loading from "./Loading";
 import Error from "./Error";
 import NormalView from "./NormalView";
@@ -21,25 +21,20 @@ function App() {
   const provider = blockchain.provider
 
   useEffect(() => {
-
-    console.log('init')
-    dispatch(loadWeb3Provider())
-    dispatch(loadNetworks())
-
+    dispatch(initApp())
   }, []);
-
 
   useEffect(() => {
 
     if (isInitialMount.current) {
       isInitialMount.current = false;
     } else {
-      console.log("network change")
-      dispatch(loadSmartContract())
+
+      dispatch(loadSmartContract());
+
     }
 
   }, [blockchain.currentNetwork])
-
 
   useEffect(() => {
 
@@ -47,20 +42,21 @@ function App() {
       isInitialMount2.current = false;
     } else {
 
-      dispatch(refresh("SALE_VEHICLES"));
+      dispatch(fetchMyData());
 
     }
 
   }, [blockchain.smartContract])
 
-  window.ethereum.on("accountsChanged", () => {
-    dispatch(updateAccount(Web3.utils.toChecksumAddress(window.ethereum.selectedAddress)));
+  window.ethereum.on("accountsChanged", (accounts) => {
+    dispatch(updateAccount(accounts[0]));
   });
+  
   window.ethereum.on("chainChanged", (chain) => {
-    console.log("chain changed",chain)
-    if (blockchain.account)
-      dispatch(updateNetwork(chain))
+    dispatch(updateAppNetwork(chain))
   });
+
+
 
   return (
     <div>

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { loadSmartContract,updateState, updateNetwork, forceUserToChange } from "./redux/blockchain/blockchainActions";
+import { loadSmartContract, updateState, updateNetwork, addChain } from "./redux/blockchain/blockchainActions";
 import Web3 from "web3";
 
 
@@ -18,27 +18,21 @@ function SelectNetwork() {
     }, []);
 
     const changeNetwork = (newNetwork) => {
-
-        //if wallet switch wtih wallet otherwise switch with internal
-        if (blockchain.account)
-            dispatch(forceUserToChange(newNetwork))
-        else
-            dispatch(updateNetwork(Web3.utils.numberToHex(newNetwork)))
+        addChain(newNetwork)
     }
-
     return (
         <div>
-            <select onChange={(e) => changeNetwork(e.target.value)}>
-                <option value={blockchain.currentNetwork.chain_id}>{blockchain.currentNetwork.chain_id}</option>
+            <select defaultValue={blockchain.currentNetwork} onChange={(e) => changeNetwork(e.target.value)}>
                 {
-                    blockchain.availableNetworks.map(element => {
-                        if (blockchain.currentNetwork != element)
-                        return (
-                            <option key={element.chain_id} value={element.chain_id}>
-                                {element.chain_id}
-                            </option>
-                        );
-                    })
+                    blockchain.availableNetworks ?
+                        Object.keys(blockchain.availableNetworks).map(key => {
+                            
+                                return (
+                                    <option key={key} value={key}>
+                                        {key}
+                                    </option>
+                                );
+                        }) : null
                 }
             </select>
         </div>

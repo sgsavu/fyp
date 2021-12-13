@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { loadSmartContract, login } from "./redux/blockchain/blockchainActions";
+import { loadSmartContract } from "./redux/blockchain/blockchainActions";
 
 
 
@@ -22,7 +22,7 @@ function Login() {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        dispatch(login());
+                        
                     }}
                 >
                     Login

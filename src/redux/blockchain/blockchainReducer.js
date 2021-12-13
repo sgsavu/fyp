@@ -5,8 +5,8 @@ const initialState = {
   web3: null,
   error: false,
   errorMsg: "",
-  currentNetwork: "5777",
-  availableNetworks: [],
+  currentNetwork: null,
+  availableNetworks: null,
   provider: null,
 };
 

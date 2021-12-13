@@ -128,8 +128,10 @@ export const fetchMyData = () => {
       if (viewAllPrivileged.some(privilegedRole => privilegedRole === myRole)) {
         dispatch(refresh("MY_VEHICLES"));
         dispatch(refresh("ALL_VEHICLES"));
+        dispatch(refresh("SALE_VEHICLES"));
       }
       else {
+        dispatch(refresh("SALE_VEHICLES"));
         dispatch(refresh("MY_VEHICLES"));
       }
 
