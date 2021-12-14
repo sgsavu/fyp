@@ -82,6 +82,31 @@ export const LOCAL_TESTNET_PARAMS = {
     blockExplorerUrls: ['https://polygonscan.com/']
 }
 
+export const MOONRIVER_MAIN_PARAMS = {
+    chainId: '0x505',
+    chainName: 'Moonriver',
+    nativeCurrency: {
+        name: 'null',
+        symbol: 'VHC',
+        decimals: 18
+    },
+    rpcUrls: ['https://rpc.moonriver.moonbeam.network'],
+    blockExplorerUrls: ['https://moonriver.moonscan.io/']
+}
+
+export const MOONRIVER_TESTNET_PARAMS = {
+    chainId: '0x507',
+    chainName: 'Moonbase Alpha',
+    nativeCurrency: {
+        name: 'null',
+        symbol: 'MOVR',
+        decimals: 18
+    },
+    rpcUrls: ['https://rpc.testnet.moonbeam.network'],
+    blockExplorerUrls: ['https://moonbase.moonscan.io/']
+}
+
+
 
 
 export const ALL_TEMPLATES = {
@@ -91,5 +116,6 @@ export const ALL_TEMPLATES = {
     "0x13881": POLYGON_MUMBAI_PARAMS,
     "0x89":POLYGON_MAINNET_PARAMS,
     "0xa869":AVALANCHE_TESTNET_PARAMS,
-    "0xa86a":AVALANCHE_MAINNET_PARAMS
+    "0xa86a":AVALANCHE_MAINNET_PARAMS,
+    "0x1": AVALANCHE_MAINNET_PARAMS
 }

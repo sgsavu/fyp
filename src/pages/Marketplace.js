@@ -43,16 +43,15 @@ const Marketplace = () => {
   }
 
   useEffect(() => {
-    if (vehicleList != undefined)
-    {
+    if (vehicleList != undefined) {
       listToPages(vehicleList)
       setFiltered(vehicleList)
     }
   }, [vehicleList])
 
   useEffect(() => {
-      listToPages(filtered)
-  }, [filtered,setFiltered])
+    listToPages(filtered)
+  }, [filtered, setFiltered])
 
 
   return (
@@ -68,7 +67,7 @@ const Marketplace = () => {
 
           }}>AUCTIONS</button>
           <SearchFilter in={vehicleList} out={setFiltered} default={vehicleList} />
-          <SortFilter in={filtered} out={listToPages}/>
+          <SortFilter in={filtered} out={listToPages} />
           <div>
             {filteredPages.length != 0 ? filteredPages[pageNr].map((vehicle, key) => {
               return (

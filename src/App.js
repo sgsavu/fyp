@@ -25,27 +25,19 @@ function App() {
   }, []);
 
   useEffect(() => {
-
     if (isInitialMount.current) {
       isInitialMount.current = false;
     } else {
-
       dispatch(loadSmartContract());
-
     }
-
   }, [blockchain.currentNetwork])
 
   useEffect(() => {
-
     if (isInitialMount2.current) {
       isInitialMount2.current = false;
     } else {
-
       dispatch(fetchMyData());
-
     }
-
   }, [blockchain.smartContract])
 
   window.ethereum.on("accountsChanged", (accounts) => {
@@ -57,10 +49,10 @@ function App() {
   });
 
 
-
+  console.log(blockchain.loading)
   return (
     <div>
-      {blockchain.loading === true ? <Loading /> : (blockchain.errorMsg ? <Error /> : 
+      {blockchain.loading.length != 0 ? <Loading /> : (blockchain.errorMsg ? <Error /> : 
       <NormalView />)}
     </div>
   );

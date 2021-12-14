@@ -17,9 +17,6 @@ import ControlledRoute from './components/ControlledRoute';
 import { roleToString } from "./utils/PermissionsAndRoles";
 import Vehicle from "./pages/Vehicle";
 import Support from "./pages/Support";
-import Loading from "./Loading";
-import Error from "./Error";
-import Login from "./Login";
 import SelectNetwork from "./SelectNetwork";
 
 function NormalView() {
@@ -34,14 +31,13 @@ function NormalView() {
 
     return (
         <div>
-            <Login />
             <SelectNetwork />
             <Router>
                 <Navbar>
                 </Navbar>
                 <Switch>
-                    <ControlledRoute path='/' exact component={MyVehicles} />
-                    <ControlledRoute path='/marketplace' component={Marketplace} />
+                    <ControlledRoute path='/myvehicles' component={MyVehicles} />
+                    <ControlledRoute path='/' exact component={Marketplace} />
                     <ControlledRoute path='/verify' component={Verify} />
                     <ControlledRoute path='/mint' component={Mint} />
                     <ControlledRoute path='/admin' component={Admin} />

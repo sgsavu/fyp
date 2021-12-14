@@ -1,5 +1,5 @@
 const initialState = {
-  loading: false,
+  loading: [],
   account: null,
   smartContract: null,
   web3: null,
@@ -14,14 +14,8 @@ const blockchainReducer = (state = initialState, action) => {
   switch (action.type) {
     case "CONNECTION_FAILED":
       return {
-        ...initialState,
-        loading: false,
-        errorMsg: action.payload,
-      };
-    case "UPDATE_ACCOUNT":
-      return {
         ...state,
-        account: action.payload.account,
+        errorMsg: action.payload,
       };
     case "UPDATE_STATE":
       return {
@@ -29,9 +23,18 @@ const blockchainReducer = (state = initialState, action) => {
         [action.payload.field]: action.payload.value,
       };
     case "LOADING":
+
+      const loading = state.loading
+      if (action.payload)
+        loading.push(action.payload)
+      else
+        loading.pop()
+
+        console.log(loading)
+
       return {
         ...state,
-        loading: action.payload
+        loading: loading
       }
     default:
       return state;

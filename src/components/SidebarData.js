@@ -14,15 +14,15 @@ export const MyBids = {
 
 const UserSidebar = [
     {
-        title: 'My Vehicles',
+        title: 'Marketplace',
         path: '/',
-        icon: <AiIcons.AiFillCar />,
+        icon: <FaIcons.FaShoppingBag />,
         cName: 'nav-text'
     },
     {
-        title: 'Vehicle Marketplace',
-        path: '/marketplace',
-        icon: <FaIcons.FaShoppingBag />,
+        title: 'My Vehicles',
+        path: '/myvehicles',
+        icon: <AiIcons.AiFillCar />,
         cName: 'nav-text'
     },
     {

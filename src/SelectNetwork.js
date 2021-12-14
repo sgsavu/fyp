@@ -3,6 +3,7 @@ import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
 import { loadSmartContract, updateState, updateNetwork, addChain } from "./redux/blockchain/blockchainActions";
 import Web3 from "web3";
+import { ALL_TEMPLATES } from "./utils/NetworkTemplates";
 
 
 
@@ -16,9 +17,8 @@ function SelectNetwork() {
     useEffect(() => {
 
     }, []);
-
-    const changeNetwork = (newNetwork) => {
-        addChain(newNetwork)
+    const changeNetwork = async (newNetwork) => {
+        await addChain(newNetwork)
     }
     return (
         <div>
@@ -29,7 +29,7 @@ function SelectNetwork() {
                             
                                 return (
                                     <option key={key} value={key}>
-                                        {key}
+                                        {ALL_TEMPLATES[key].chainName}
                                     </option>
                                 );
                         }) : null

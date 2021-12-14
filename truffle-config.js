@@ -99,6 +99,15 @@ module.exports = {
       //confirmations: 2,
       //timeoutBlocks: 200,
       skipDryRun: true,
+      },
+
+    moonriver: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, 
+        process.env.MOONRIVER_TEST),
+      network_id: "*",
+      //confirmations: 2,
+      //timeoutBlocks: 200,
+      skipDryRun: true,
     }
     // Another network with more advanced options...
     // advanced: {

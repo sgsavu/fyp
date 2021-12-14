@@ -22,22 +22,21 @@ const Vehicle = () => {
 
     useEffect(async () => {
 
-        if ( blockchain.smartContract)
-        {
+        if (blockchain.smartContract) {
 
-        let exists = await getIfExists(vehicle.injected.id)
-        setExists(exists)
-        if (exists) {
-            setCurrentOwner(await ownerOf(vehicle.injected.id))
-            const [isForSale, isAuction, isOwner] = await Promise.all([getIfForSale(vehicle.injected.id), getIfAuction(vehicle.injected.id), getIfIsOwner(vehicle.injected.id)])
-            setSettings({
-                isForSale: isForSale,
-                isAuction: isAuction,
-                isOwner: isOwner,
-                myCurrency: myPrefferedCurrency
-            })
+            let exists = await getIfExists(vehicle.injected.id)
+            setExists(exists)
+            if (exists) {
+                setCurrentOwner(await ownerOf(vehicle.injected.id))
+                const [isForSale, isAuction, isOwner] = await Promise.all([getIfForSale(vehicle.injected.id), getIfAuction(vehicle.injected.id), getIfIsOwner(vehicle.injected.id)])
+                setSettings({
+                    isForSale: isForSale,
+                    isAuction: isAuction,
+                    isOwner: isOwner,
+                    myCurrency: myPrefferedCurrency
+                })
+            }
         }
-    }
 
 
     }, [data.loading])

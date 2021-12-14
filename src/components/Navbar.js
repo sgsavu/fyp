@@ -35,7 +35,7 @@ function Navbar() {
         dispatch(refresh("ALL_VEHICLES"))
         break;
       case "/vehicle":
-        dispatch(fetchMyData(blockchain.account))
+        dispatch(fetchMyData())
         break;
     }
   }

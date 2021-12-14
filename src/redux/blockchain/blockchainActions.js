@@ -3,7 +3,6 @@ import Web3 from "web3";
 import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchMyData, refresh } from "../data/dataActions";
 import detectEthereumProvider from '@metamask/detect-provider';
-import { randomBytes, sign } from "crypto";
 import store from "../store";
 import { ALL_TEMPLATES } from "../../utils/NetworkTemplates";
 
@@ -40,7 +39,7 @@ const getDeployedChains = (contract) => {
 export const initApp = () => {
   return async (dispatch) => {
     try {
-      dispatch(loading(true));
+      dispatch(loading("Init"));
 
       const provider = await detectEthereumProvider({ timeout: 5 });
 
@@ -48,7 +47,6 @@ export const initApp = () => {
         throw Error("No web3 provider detected. Please install a web3 wallet such as MetaMask.")
 
       const web3 = new Web3(provider)
-
       const availableNetworks = getDeployedChains(ExternalGatewayContract)
 
       dispatch(updateState({ field: "web3", value: web3 }))
@@ -67,7 +65,7 @@ export const initApp = () => {
       });
 
       if (!(walletChainId in availableNetworks))
-        addChain(0x13881)
+        await addChain("0x13881")
       else
         dispatch(updateAppNetwork(walletChainId))
 
@@ -77,7 +75,7 @@ export const initApp = () => {
         })
       );
 
-      dispatch(loading(false));
+      dispatch(loading());
 
     } catch (err) {
       dispatch(connectFailed(err.message))
@@ -90,7 +88,7 @@ export const loadSmartContract = () => {
   return async (dispatch) => {
 
     try {
-      dispatch(loading(true));
+      dispatch(loading("Smart Contract"));
       const web3 = await store.getState().blockchain.web3
       const currentNetwork = await store.getState().blockchain.currentNetwork
       const availableNetworks = await store.getState().blockchain.availableNetworks
@@ -99,7 +97,7 @@ export const loadSmartContract = () => {
         availableNetworks[currentNetwork]
       );
       dispatch(updateState({ field: "smartContract", value: SmartContractObj }))
-      dispatch(loading(false));
+      dispatch(loading());
     }
     catch (err) {
       dispatch(connectFailed(err.message))
@@ -118,7 +116,9 @@ export const addChain = async (newNetwork) => {
 
 export const updateAppNetwork = (newNetwork) => {
   return async (dispatch) => {
+    dispatch(loading("UpdateNEtworkj"));
     dispatch(updateState({ field: "currentNetwork", value: newNetwork }))
+    dispatch(loading());
   };
 };
 
