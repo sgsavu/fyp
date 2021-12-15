@@ -78,7 +78,7 @@ export const LOCAL_TESTNET_PARAMS = {
         symbol: 'VHC',
         decimals: 18
     },
-    rpcUrls: ['HTTP://127.0.0.1:7545'],
+    rpcUrls: ['http://127.0.0.1:7545'],
     blockExplorerUrls: ['https://polygonscan.com/']
 }
 

@@ -1,22 +1,21 @@
 import React, { useEffect } from 'react';
-import '../styles/Form.css';
-import '../styles/drop.css';
-import FormFields from '../components/minting_form/FormFields';
-import ImageUpload from '../components/minting_form/imageUpload';
+import '../../styles/Form.css';
+import '../../styles/drop.css';
+import FormFields from '../minting_form/FormFields';
+import ImageUpload from '../minting_form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
-import { fetchMyData, refreshMyVehicles } from "../redux/data/dataActions";
-import { finishSubmit, errorSubmit } from '../redux/minting/formActions';
+import { fetchMyData, refreshMyVehicles } from "../../redux/data/dataActions";
+import { finishSubmit, errorSubmit } from '../../redux/minting/formActions';
 import { mint, getUserAccount } from '../utils/BlockchainGateway'
 import { scramble, randomIntFromInterval } from '../utils/CryptographyUtils'
-
-const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
 
 const Mint = () => {
 
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
     const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
+    const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
 
 
     const createMetaDataAndMint = async () => {

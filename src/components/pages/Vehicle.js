@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
 import { ownerOf, getIfForSale, getIfAuction, getIfExists, getIfIsOwner } from "../utils/BlockchainGateway";
-import History from "../components/vehicle_sections/History";
-import PurchaseOptions from "../components/vehicle_sections/PurchaseOptions";
-import ListingOptions from "../components/vehicle_sections/ListingOptions";
-import ListedVehicleOptions from "../components/vehicle_sections/ListedVehicleOptions";
+import History from "../vehicle_sections/History";
+import PurchaseOptions from "../vehicle_sections/PurchaseOptions";
+import ListingOptions from "../vehicle_sections/ListingOptions";
+import ListedVehicleOptions from "../vehicle_sections/ListedVehicleOptions";
 
 const Vehicle = () => {
 

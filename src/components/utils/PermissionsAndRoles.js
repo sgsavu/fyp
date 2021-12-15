@@ -1,5 +1,5 @@
 
-import { Sidebar } from '../components/SidebarData';
+import { Sidebar } from '../SidebarData';
 
 const keccak256 = require('keccak256')
 

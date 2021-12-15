@@ -1,5 +1,4 @@
-import React, { useState, useEffect} from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from 'react';
 
 const SearchFilter = ({ in: data, out: callback, default: dflt }) => {
 
@@ -9,7 +8,7 @@ const SearchFilter = ({ in: data, out: callback, default: dflt }) => {
         const searchWord = event.target.value;
         setWordEntered(searchWord);
         const newFilter = data.filter((element) => {
-            return element.name.toLowerCase().includes(searchWord.toLowerCase());
+            return element.attributes.vhci.toLowerCase().includes(searchWord.toLowerCase());
         });
         if (searchWord === "") {
             callback(dflt);

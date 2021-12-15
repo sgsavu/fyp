@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { checkRoutePermissionFor } from '../utils/PermissionsAndRoles';
+import { checkRoutePermissionFor } from './utils/PermissionsAndRoles';
 
 
 const PrivateRoute = ({ component: Component, ...rest }) => {

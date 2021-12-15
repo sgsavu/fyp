@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { getVehicleHistory } from "../../utils/BlockchainGateway";
+import { getVehicleHistory } from "../utils/BlockchainGateway";
 
 const History = ({vehicle}) => {
 

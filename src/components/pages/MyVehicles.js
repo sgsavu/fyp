@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import "../styles/MyVehicles.css";
-import VehicleCard from "../components/vehicle_sections/VehicleCard";
+import "../../styles/MyVehicles.css";
+import VehicleCard from "../vehicle_sections/VehicleCard";
 
 function MyVehicles() {
 
@@ -14,7 +14,7 @@ function MyVehicles() {
 
   return (
     <div>
-      {data.loading ? (
+      {data.loading.length!=0 ? (
         <p>loading...</p>
       ) : (
         vehicleList.map((vehicle, index) => {

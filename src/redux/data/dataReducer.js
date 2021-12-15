@@ -1,37 +1,34 @@
-import { actions, roles } from "../../utils/PermissionsAndRoles";
+import { actions, roles } from "../../components/utils/PermissionsAndRoles";
 
 const initialState = {
-  loading: false,
+  loading: [],
   myVehicles: [],
   vehiclesForSale: [],
   allVehicles: [],
   displayCurrency: "GBP",
   myRole: roles.USER_ROLE,
-  error: false,
   errorMsg: "",
   myBids: []
 };
 
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "FETCH_DATA_REQUEST":
-      return {
-        ...state,
-        loading: true,
-      };
-    case "FETCH_DATA_FAILED":
-      return {
-        ...state,
-        loading: false,
-        error: true,
-        errorMsg: action.payload,
-      };
     case "UPDATE_STATE":
       return {
         ...state,
-        loading: false,
-        [action.payload.field]: action.payload.value
+        [action.payload.field]: action.payload.value,
       };
+    case "LOADING":
+      const loading = state.loading
+      if (action.payload)
+        loading.push(action.payload)
+      else
+        loading.pop()
+        console.log(loading)
+      return {
+        ...state,
+        loading: loading
+      }
     default:
       return state;
   }

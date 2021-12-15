@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from "react-redux";
-import SearchFilter from '../components/filters/SearchFilter';
+import SearchFilter from '../filters/SearchFilter';
 import { Link } from 'react-router-dom';
 
 function Verify() {
@@ -8,9 +8,7 @@ function Verify() {
   const data = useSelector((state) => state.data);
   const vehicleList = data.allVehicles
   const [filtered, setFiltered] = useState([]);
-
-  console.log(filtered)
-
+  
   return (
     <div>
       <SearchFilter in={vehicleList} out={setFiltered} empty={[]} />

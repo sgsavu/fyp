@@ -1,5 +1,5 @@
 import web3 from "web3";
-import store from "../redux/store";
+import store from "../../redux/store";
 
 export const WeiToEth = (amount) => {
     return web3.utils.fromWei(String(amount), 'ether')

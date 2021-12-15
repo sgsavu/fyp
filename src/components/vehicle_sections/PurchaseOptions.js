@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getIfIsTopBidder,getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../../utils/BlockchainGateway";
-import { weiToMyCurrency } from '../../utils/PricesCoinsExchange'
+import { getIfIsTopBidder,getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
+import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { fetchMyData } from '../../redux/data/dataActions';
 
 function PurchaseOptions({ vehicle, settings }) {

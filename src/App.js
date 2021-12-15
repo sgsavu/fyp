@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from "react";
 import './styles/App.css';
 
 import { useDispatch, useSelector } from "react-redux";
-import { initApp, loadSmartContract, updateAccount, updateAppNetwork} from "./redux/blockchain/blockchainActions";
-import { fetchMyData, refresh} from "./redux/data/dataActions";
-import Loading from "./Loading";
-import Error from "./Error";
-import NormalView from "./NormalView";
+import { initApp, loadSmartContract, updateAppAccount, updateAppNetwork } from "./redux/blockchain/blockchainActions";
+import { fetchMyData, refresh } from "./redux/data/dataActions";
+import Loading from "./components/views/Loading";
+import Error from "./components/views/Error";
+import NormalView from "./components/views/NormalView";
 import Web3 from "web3";
 
 
@@ -40,20 +40,24 @@ function App() {
     }
   }, [blockchain.smartContract])
 
-  window.ethereum.on("accountsChanged", (accounts) => {
-    dispatch(updateAccount(accounts[0]));
-  });
+  if (provider)
+  {
+    window.ethereum.on("accountsChanged", (accounts) => {
+      dispatch(updateAppAccount(accounts[0]));
+    });
   
-  window.ethereum.on("chainChanged", (chain) => {
-    dispatch(updateAppNetwork(chain))
-  });
+    window.ethereum.on("chainChanged", (chain) => {
+      dispatch(updateAppNetwork(chain))
+    });
+  
+  }
 
 
-  console.log(blockchain.loading)
+
   return (
     <div>
-      {blockchain.loading.length != 0 ? <Loading /> : (blockchain.errorMsg ? <Error /> : 
-      <NormalView />)}
+      {blockchain.errorMsg ? <Error /> : (blockchain.loading.length != 0 ? <Loading /> :
+        <NormalView />)}
     </div>
   );
 }

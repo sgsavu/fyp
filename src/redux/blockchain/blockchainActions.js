@@ -4,8 +4,8 @@ import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchMyData, refresh } from "../data/dataActions";
 import detectEthereumProvider from '@metamask/detect-provider';
 import store from "../store";
-import { ALL_TEMPLATES } from "../../utils/NetworkTemplates";
-
+import { ALL_TEMPLATES } from "../../components/utils/NetworkTemplates";
+import MetaMaskOnboarding from '@metamask/onboarding';
 
 export const updateState = (payload) => {
   return {
@@ -21,14 +21,6 @@ const loading = (payload) => {
   }
 }
 
-const connectFailed = (payload) => {
-  return {
-    type: "CONNECTION_FAILED",
-    payload: payload,
-  };
-};
-
-
 const getDeployedChains = (contract) => {
   const deployed = {}
   for (var property in contract.networks)
@@ -38,57 +30,88 @@ const getDeployedChains = (contract) => {
 
 export const initApp = () => {
   return async (dispatch) => {
+
+    dispatch(loading("Initialization"))
     try {
-      dispatch(loading("Init"));
-
-      const provider = await detectEthereumProvider({ timeout: 5 });
-
-      if (!provider)
-        throw Error("No web3 provider detected. Please install a web3 wallet such as MetaMask.")
-
-      const web3 = new Web3(provider)
-      const availableNetworks = getDeployedChains(ExternalGatewayContract)
-
-      dispatch(updateState({ field: "web3", value: web3 }))
-      dispatch(updateState({ field: "provider", value: provider }))
-      dispatch(updateState({ field: "availableNetworks", value: availableNetworks }))
-
-      if (!provider._metamask.isUnlocked())
-        throw Error("Wallet is locked. Please unlock.")
-
-      const accounts = await provider.request({
-        method: "eth_requestAccounts",
-      });
-
-      const walletChainId = await provider.request({
-        method: "eth_chainId",
-      });
-
-      if (!(walletChainId in availableNetworks))
-        await addChain("0x13881")
-      else
-        dispatch(updateAppNetwork(walletChainId))
-
-      dispatch(
-        updateState({
-          field: "account", value: Web3.utils.toChecksumAddress(accounts[0])
-        })
-      );
-
-      dispatch(loading());
-
-    } catch (err) {
-      dispatch(connectFailed(err.message))
+      await dispatch(detectProvider())
+      await dispatch(login())
+      await dispatch(synchronizeChains())
     }
+    catch (err) {
+      dispatch(updateState({ field: "errorMsg", value: err.message }))
+    }
+    dispatch(loading())
   }
 }
+
+const detectProvider = () => {
+  return async (dispatch) => {
+    dispatch(loading("Detecting Provider"));
+    const provider = await detectEthereumProvider({ timeout: 5 })
+    if (!provider)
+    { 
+      new MetaMaskOnboarding().startOnboarding();
+      throw Error("No WEB3 provider detected. Please install a WEB3 wallet such as MetaMask.")
+    }
+    dispatch(updateState({ field: "web3", value: new Web3(provider) }))
+    dispatch(updateState({ field: "provider", value: provider }))
+    dispatch(updateState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
+    dispatch(loading());
+  }
+}
+
+const login = () => {
+  return async (dispatch) => {
+    dispatch(loading("Connecting Wallet"));
+    const accounts = await (await getProvider()).request({
+      method: "eth_requestAccounts",
+    });
+    dispatch(updateState({ field: "account", value: Web3.utils.toChecksumAddress(accounts[0]) }));
+    dispatch(loading());
+  }
+}
+
+const synchronizeChains = () => {
+  return async (dispatch) => {
+    dispatch(loading("Synchronizing Chains"));
+    const availableNetworks = await getAvailableNetworks()
+    const walletChainId = await (await getProvider()).request({
+      method: "eth_chainId",
+    });
+    if (!(walletChainId in availableNetworks))
+      await addChain("0x13881")
+    else
+      dispatch(updateAppNetwork(walletChainId))
+    dispatch(loading());
+  }
+}
+
+export const addChain = async (newNetwork) => {
+  await (await getProvider()).request({
+    method: 'wallet_addEthereumChain',
+    params: [ALL_TEMPLATES[newNetwork]]
+  });
+}
+
+export const updateAppNetwork = (newNetwork) => {
+  return async (dispatch) => {
+    dispatch(updateState({ field: "currentNetwork", value: newNetwork }))
+  };
+};
+
+export const updateAppAccount = (account) => {
+  return async (dispatch) => {
+    dispatch(updateState({ field: "account", value: Web3.utils.toChecksumAddress(account) }));
+    dispatch(fetchMyData())
+  };
+};
 
 
 export const loadSmartContract = () => {
   return async (dispatch) => {
 
+    dispatch(loading("Fetching smart contract for new network."));
     try {
-      dispatch(loading("Smart Contract"));
       const web3 = await store.getState().blockchain.web3
       const currentNetwork = await store.getState().blockchain.currentNetwork
       const availableNetworks = await store.getState().blockchain.availableNetworks
@@ -97,34 +120,22 @@ export const loadSmartContract = () => {
         availableNetworks[currentNetwork]
       );
       dispatch(updateState({ field: "smartContract", value: SmartContractObj }))
-      dispatch(loading());
     }
     catch (err) {
-      dispatch(connectFailed(err.message))
+      dispatch(updateState({ field: "errorMsg", value: err.message }))
     }
+    dispatch(loading());
   }
 }
 
-
-export const addChain = async (newNetwork) => {
-  const provider = await store.getState().blockchain.provider
-  await provider.request({
-    method: 'wallet_addEthereumChain',
-    params: [ALL_TEMPLATES[newNetwork]]
-  });
+ const getProvider = async () => {
+  return await store.getState().blockchain.provider
 }
 
-export const updateAppNetwork = (newNetwork) => {
-  return async (dispatch) => {
-    dispatch(loading("UpdateNEtworkj"));
-    dispatch(updateState({ field: "currentNetwork", value: newNetwork }))
-    dispatch(loading());
-  };
-};
+ const getAvailableNetworks = async () => {
+  return await store.getState().blockchain.availableNetworks
+}
 
-export const updateAccount = (account) => {
-  return async (dispatch) => {
-    dispatch(updateState({ field: "account", value: Web3.utils.toChecksumAddress(account) }));
-    dispatch(fetchMyData())
-  };
-};
+ const getCurrentNetwork = async () => {
+  return await store.getState().blockchain.currentNetwork
+}

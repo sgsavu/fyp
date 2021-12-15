@@ -1,5 +1,5 @@
 import { roles } from "./PermissionsAndRoles";
-import store from "../redux/store";
+import store from "../../redux/store";
 import { myCurrencyToWei } from './PricesCoinsExchange'
 
 

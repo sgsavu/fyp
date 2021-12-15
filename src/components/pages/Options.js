@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { refreshMyVehicles, refreshDisplayPrices, updatePrefferedCurrency } from '../redux/data/dataActions';
+import { refreshMyVehicles, refreshDisplayPrices, updatePrefferedCurrency } from '../../redux/data/dataActions';
 
 const Options = () => {
 
@@ -14,7 +14,7 @@ const Options = () => {
         <div>
             Preffered Currency:
             <select defaultValue={myCurrency} onChange={(e) => {
-                dispatch(updatePrefferedCurrency(e))
+                dispatch(updatePrefferedCurrency(e.target.value))
                 dispatch(refreshDisplayPrices(e))
             }}> 
                 {availableCurrencies.map((currency) => {

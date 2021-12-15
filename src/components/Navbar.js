@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import '../styles/Navbar.css';
 import { IconContext } from 'react-icons';
-import { getSidebarFor } from '../utils/PermissionsAndRoles';
+import { getSidebarFor } from './utils/PermissionsAndRoles';
 import { fetchMyData, refresh } from '../redux/data/dataActions';
 import { MyBids } from './SidebarData';
 

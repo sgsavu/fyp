@@ -1,20 +1,7 @@
-import { viewAllPrivileged } from "../../utils/PermissionsAndRoles";
-import { weiToMyCurrency } from "../../utils/PricesCoinsExchange";
+import { viewAllPrivileged } from "../../components/utils/PermissionsAndRoles";
+import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
-import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount } from "../../utils/BlockchainGateway";
-
-const fetchDataRequest = () => {
-  return {
-    type: "FETCH_DATA_REQUEST",
-  };
-};
-
-const fetchDataFailed = (payload) => {
-  return {
-    type: "FETCH_DATA_FAILED",
-    payload: payload,
-  };
-};
+import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount } from "../../components/utils/BlockchainGateway";
 
 const updateState = (payload) => {
   return {
@@ -23,7 +10,12 @@ const updateState = (payload) => {
   };
 };
 
-
+const loading = (payload) => {
+  return {
+    type: "LOADING",
+    payload: payload,
+  }
+}
 
 async function injectTokenId(vehicle, tokenId) {
   vehicle.injected = {}
@@ -119,12 +111,10 @@ async function getForSaleVehicles(allVehicles) {
 
 export const fetchMyData = () => {
   return async (dispatch) => {
-    dispatch(fetchDataRequest());
+    dispatch(loading("Fetching data for user."))
     try {
-
       const account = await getUserAccount()
       const myRole = await getRole(account)
-
       if (viewAllPrivileged.some(privilegedRole => privilegedRole === myRole)) {
         dispatch(refresh("MY_VEHICLES"));
         dispatch(refresh("ALL_VEHICLES"));
@@ -134,13 +124,12 @@ export const fetchMyData = () => {
         dispatch(refresh("SALE_VEHICLES"));
         dispatch(refresh("MY_VEHICLES"));
       }
-
       dispatch(refresh("ROLE"));
       dispatch(refresh("BIDS"));
-
     } catch (err) {
-      dispatch(fetchDataFailed(err));
+      dispatch(updateState({ field: "errorMsg", value: err.message }))
     }
+    dispatch(loading())
   };
 };
 
@@ -148,7 +137,7 @@ export const fetchMyData = () => {
 
 export const refresh = (code) => {
   return async (dispatch) => {
-    dispatch(fetchDataRequest()); 
+    dispatch(loading(`Refreshing data for ${code}`))
     try {
       switch (code) {
         case "MY_VEHICLES":
@@ -193,48 +182,35 @@ export const refresh = (code) => {
           break;
       }
     } catch (err) {
-      dispatch(fetchDataFailed(err));
+      dispatch(updateState({ field: "errorMsg", value: err.message }))
     }
+    dispatch(loading())
   };
 }
 
 
-export const updatePrefferedCurrency = (e) => {
+export const updatePrefferedCurrency = (value) => {
   return async (dispatch) => {
-    const { value } = e.target
-    dispatch(
-      updateState({
-        field: "displayCurrency",
-        value: value
-      })
-    );
+    dispatch(updateState({ field: "displayCurrency", value: value }));
   };
 };
 
 
 export const refreshDisplayPrices = () => {
   return async (dispatch) => {
-    dispatch(fetchDataRequest());
+    dispatch(loading("Refreshing display prices."))
     try {
-      let forsale = await store
-        .getState()
-        .data.vehiclesForSale
-
+      let forsale = await store.getState().data.vehiclesForSale
       for (const element in forsale.auctions) {
         forsale.auctions[element].injected.display_price = await weiToMyCurrency(forsale.auctions[element].injected.price)
       }
       for (const element in forsale.instant) {
         forsale.instant[element].injected.display_price = await weiToMyCurrency(forsale.instant[element].injected.price)
       }
-
-      dispatch(
-        updateState({
-          field: "vehiclesForSale",
-          value: forsale
-        })
-      );
+      dispatch(updateState({field: "vehiclesForSale",value: forsale}));
     } catch (err) {
-      dispatch(fetchDataFailed(err));
+      dispatch(updateState({ field: "errorMsg", value: err.message }))
     }
+    dispatch(loading())
   };
 }

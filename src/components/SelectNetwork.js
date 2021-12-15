@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import './styles/App.css';
+import React from "react";
+import '../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { loadSmartContract, updateState, updateNetwork, addChain } from "./redux/blockchain/blockchainActions";
-import Web3 from "web3";
+import { addChain } from "../redux/blockchain/blockchainActions";
 import { ALL_TEMPLATES } from "./utils/NetworkTemplates";
 
 
@@ -14,12 +13,10 @@ function SelectNetwork() {
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
 
-    useEffect(() => {
-
-    }, []);
     const changeNetwork = async (newNetwork) => {
         await addChain(newNetwork)
     }
+    
     return (
         <div>
             <select defaultValue={blockchain.currentNetwork} onChange={(e) => changeNetwork(e.target.value)}>

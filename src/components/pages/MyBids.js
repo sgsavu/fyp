@@ -1,6 +1,6 @@
 import React, {useSelector} from 'react';
 import { Link } from 'react-router-dom';
-import VehicleCard from '../components/vehicle_sections/VehicleCard';
+import VehicleCard from '../vehicle_sections/VehicleCard';
 
 
 const MyBids = () => {
