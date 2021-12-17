@@ -1,14 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import './styles/App.css';
-
 import { useDispatch, useSelector } from "react-redux";
-import { initApp, loadSmartContract, updateAppAccount, updateAppNetwork } from "./redux/blockchain/blockchainActions";
+import { initApp, loadSmartContract, updateAppAccount, updateAppNetwork, updateWeb3Provider } from "./redux/blockchain/blockchainActions";
 import { fetchMyData, refresh } from "./redux/data/dataActions";
 import Loading from "./components/views/Loading";
 import Error from "./components/views/Error";
 import NormalView from "./components/views/NormalView";
-import Web3 from "web3";
-
+import { ALL_TEMPLATES } from "./components/utils/NetworkTemplates";
 
 
 function App() {
@@ -16,27 +14,26 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
-  const isInitialMount = useRef(true);
-  const isInitialMount2 = useRef(true);
   const provider = blockchain.provider
 
   useEffect(() => {
     dispatch(initApp())
   }, []);
 
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      dispatch(loadSmartContract());
+  useEffect(async () => {
+    if (blockchain.initFinished) {
+      if (!blockchain.provider)
+        await dispatch(updateWeb3Provider(ALL_TEMPLATES[blockchain.currentNetwork].rpcUrls[0]))
+      await dispatch(loadSmartContract());
     }
   }, [blockchain.currentNetwork])
 
   useEffect(() => {
-    if (isInitialMount2.current) {
-      isInitialMount2.current = false;
-    } else {
-      dispatch(fetchMyData());
+    if (blockchain.initFinished) {
+      if (blockchain.account || blockchain.provider)
+        dispatch(fetchMyData());
+      else
+        dispatch(refresh("SALE_VEHICLES"));
     }
   }, [blockchain.smartContract])
 
@@ -49,10 +46,7 @@ function App() {
     window.ethereum.on("chainChanged", (chain) => {
       dispatch(updateAppNetwork(chain))
     });
-  
   }
-
-
 
   return (
     <div>

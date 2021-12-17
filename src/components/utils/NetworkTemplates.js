@@ -106,6 +106,30 @@ export const MOONRIVER_TESTNET_PARAMS = {
     blockExplorerUrls: ['https://moonbase.moonscan.io/']
 }
 
+export const RINKEBY = {
+    chainId: '0x4',
+    chainName: 'Rinkeby Testnet',
+    nativeCurrency: {
+        name: 'Ether',
+        symbol: 'ETH',
+        decimals: 18
+    },
+    rpcUrls: ['https://rinkeby.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c'],
+    blockExplorerUrls: ['https://moonbase.moonscan.io/']
+}
+
+export const ROPSTEN = {
+    chainId: '0x3',
+    chainName: 'Ropsten Testnet',
+    nativeCurrency: {
+        name: 'Ether',
+        symbol: 'ETH',
+        decimals: 18
+    },
+    rpcUrls: ['https://ropsten.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c'],
+    blockExplorerUrls: ['https://moonbase.moonscan.io/']
+}
+
 
 
 
@@ -117,5 +141,6 @@ export const ALL_TEMPLATES = {
     "0x89":POLYGON_MAINNET_PARAMS,
     "0xa869":AVALANCHE_TESTNET_PARAMS,
     "0xa86a":AVALANCHE_MAINNET_PARAMS,
-    "0x1": AVALANCHE_MAINNET_PARAMS
+    "0x4":RINKEBY,
+    "0x3":ROPSTEN,
 }

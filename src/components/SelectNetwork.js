@@ -1,7 +1,7 @@
 import React from "react";
 import '../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { addChain } from "../redux/blockchain/blockchainActions";
+import { addChain, updateAppNetwork } from "../redux/blockchain/blockchainActions";
 import { ALL_TEMPLATES } from "./utils/NetworkTemplates";
 
 
@@ -14,7 +14,10 @@ function SelectNetwork() {
     const data = useSelector((state) => state.data);
 
     const changeNetwork = async (newNetwork) => {
-        await addChain(newNetwork)
+        if (blockchain.account || blockchain.provider)
+            await addChain(newNetwork)
+        else
+            dispatch(updateAppNetwork(newNetwork))
     }
     
     return (

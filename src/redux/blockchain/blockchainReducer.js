@@ -1,3 +1,5 @@
+import Web3 from "web3";
+
 const initialState = {
   loading: [],
   account: null,
@@ -7,6 +9,7 @@ const initialState = {
   currentNetwork: null,
   availableNetworks: null,
   provider: null,
+  initFinished: false
 };
 
 const blockchainReducer = (state = initialState, action) => {

@@ -13,10 +13,19 @@ import ControlledRoute from '../ControlledRoute';
 import Vehicle from "../pages/Vehicle";
 import Support from "../pages/Support";
 import SelectNetwork from "../SelectNetwork";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/blockchain/blockchainActions";
 
 function NormalView() {
+
+    const dispatch = useDispatch();
+    const blockchain = useSelector((state) => state.blockchain);
     return (
         <div>
+            <button onClick={() => {dispatch(login())}}>
+                Login
+            </button>
+            <p>{blockchain.account}</p>
             <SelectNetwork />
             <Router>
                 <Navbar>

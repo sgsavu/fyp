@@ -109,6 +109,25 @@ module.exports = {
       //timeoutBlocks: 200,
       skipDryRun: true,
     }
+    ,
+
+    rinkeby: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, 
+        process.env.RINKEBY),
+      network_id: "*",
+      //confirmations: 2,
+      //timeoutBlocks: 200,
+      skipDryRun: true,
+    },
+
+    ropsten: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, 
+        process.env.ROPSTEN),
+      network_id: "*",
+      //confirmations: 2,
+      //timeoutBlocks: 200,
+      skipDryRun: true,
+    }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
