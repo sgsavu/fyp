@@ -4,7 +4,7 @@ import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import { fetchMyData, refresh } from "../data/dataActions";
 import detectEthereumProvider from '@metamask/detect-provider';
 import store from "../store";
-import { ALL_TEMPLATES } from "../../components/utils/NetworkTemplates";
+import { ALL_TEMPLATES, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
 
 const updateState = (payload) => {
@@ -36,6 +36,7 @@ export const initApp = () => {
       await dispatch(updateState({ field: "initFinished", value: true }))
       await dispatch(updateState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
       await dispatch(updateAppNetwork("0x3"))
+ 
     }
     catch (err) {
       dispatch(updateState({ field: "errorMsg", value: err.message }))
@@ -46,9 +47,7 @@ export const initApp = () => {
 
 export const login = () => {
   return async (dispatch) => {
-    dispatch(loading("Login"))
     try {
-
       const provider = await fetchProvider()
       const account = await fetchAccounts(provider)
       const network = await fetchChain(provider)
@@ -61,12 +60,11 @@ export const login = () => {
     } catch (err) {
       dispatch(updateState({ field: "errorMsg", value: err.message }))
     }
-    dispatch(loading())
   }
 }
 
 
-const fetchProvider = async () => {
+export const fetchProvider = async () => {
   const provider = await detectEthereumProvider({ timeout: 5 })
   if (!provider) {
     new MetaMaskOnboarding().startOnboarding();
@@ -75,7 +73,7 @@ const fetchProvider = async () => {
   return provider
 }
 
-const fetchAccounts = async (provider) => {
+export const fetchAccounts = async (provider) => {
   const accounts = await provider.request({
     method: "eth_requestAccounts",
   });
@@ -113,14 +111,20 @@ export const loadSmartContract = () => {
 }
 
 
-export const addChain = async (newNetwork) => {
+const addChain = async (newNetwork) => {
 
-  
-  
-    await (await getProvider()).request({
-      method: 'wallet_addEthereumChain',
-      params: [ALL_TEMPLATES[newNetwork]]
-    });
+  (await getProvider()).request({
+    method: 'wallet_addEthereumChain',
+    params: [ALL_TEMPLATES[newNetwork]]
+  });
+}
+
+const switchChain = async (newNetwork) => {
+
+  (await getProvider()).request({
+    method: 'wallet_switchEthereumChain',
+    params: [{ chainId: newNetwork }]
+  });
 }
 
 
@@ -136,20 +140,33 @@ export const updateWeb3Provider = (provider) => {
   }
 }
 
+export const addOrSwitchNetwork  = async (newNetwork) => {
+    if (newNetwork in METAMASK_DEFAULT)
+      await switchChain(newNetwork)
+    else
+      await addChain(newNetwork)  
+}
+
 export const updateAppNetwork = (newNetwork) => {
   return async (dispatch) => {
-    const availableNetworks = await getAvailableNetworks()
-    console.log(newNetwork,availableNetworks)
+    try{
+      const availableNetworks = await getAvailableNetworks()
     if (!(newNetwork in availableNetworks))
-      await addChain(Object.keys(availableNetworks)[0])
+      await addOrSwitchNetwork(Object.keys(availableNetworks)[0])
     else
       dispatch(updateState({ field: "currentNetwork", value: newNetwork }))
+    }
+    catch(err) {
+      dispatch(updateState({ field: "errorMsg", value: err.message }))
+    }
   };
 };
 
 export const updateAppAccount = (account) => {
   return async (dispatch) => {
-    dispatch(updateState({ field: "account", value: Web3.utils.toChecksumAddress(account) }));
+    if (account)
+      account = Web3.utils.toChecksumAddress(account)
+    dispatch(updateState({ field: "account", value: account }));
   };
 };
 

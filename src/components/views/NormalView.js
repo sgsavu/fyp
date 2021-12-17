@@ -22,9 +22,9 @@ function NormalView() {
     const blockchain = useSelector((state) => state.blockchain);
     return (
         <div>
-            <button onClick={() => {dispatch(login())}}>
+            {blockchain.account?null:<button onClick={() => {dispatch(login())}}>
                 Login
-            </button>
+            </button>}
             <p>{blockchain.account}</p>
             <SelectNetwork />
             <Router>

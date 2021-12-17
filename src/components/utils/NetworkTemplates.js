@@ -131,7 +131,11 @@ export const ROPSTEN = {
 }
 
 
-
+export const METAMASK_DEFAULT = {
+    "0x4":RINKEBY,
+    "0x3":ROPSTEN,
+    "0x1":RINKEBY
+}
 
 export const ALL_TEMPLATES = {
     "0x1691": LOCAL_TESTNET_PARAMS,

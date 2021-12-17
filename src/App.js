@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { initApp, loadSmartContract, updateAppAccount, updateAppNetwork, updateWeb3Provider } from "./redux/blockchain/blockchainActions";
+import { fetchAccounts, fetchProvider, initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork, updateWeb3Provider } from "./redux/blockchain/blockchainActions";
 import { fetchMyData, refresh } from "./redux/data/dataActions";
 import Loading from "./components/views/Loading";
 import Error from "./components/views/Error";
 import NormalView from "./components/views/NormalView";
 import { ALL_TEMPLATES } from "./components/utils/NetworkTemplates";
+import detectEthereumProvider from "@metamask/detect-provider";
 
 
 function App() {
@@ -14,10 +15,14 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
-  const provider = blockchain.provider
 
-  useEffect(() => {
+  useEffect(async () => {
     dispatch(initApp())
+    const provider = await detectEthereumProvider({ timeout: 5 })
+    if (provider)
+      if (await fetchAccounts(provider))
+        dispatch(login())
+
   }, []);
 
   useEffect(async () => {
@@ -37,8 +42,8 @@ function App() {
     }
   }, [blockchain.smartContract])
 
-  if (provider)
-  {
+  if (blockchain.provider)
+  { 
     window.ethereum.on("accountsChanged", (accounts) => {
       dispatch(updateAppAccount(accounts[0]));
     });
@@ -47,6 +52,7 @@ function App() {
       dispatch(updateAppNetwork(chain))
     });
   }
+
 
   return (
     <div>
