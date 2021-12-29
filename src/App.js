@@ -56,8 +56,7 @@ function App() {
 
   return (
     <div>
-      {blockchain.errorMsg ? <Error /> : (blockchain.loading.length != 0 ? <Loading /> :
-        <NormalView />)}
+        <NormalView />
     </div>
   );
 }

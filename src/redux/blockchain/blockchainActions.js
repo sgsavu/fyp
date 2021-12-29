@@ -7,7 +7,7 @@ import store from "../store";
 import { ALL_TEMPLATES, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
 
-const updateState = (payload) => {
+export const updateState = (payload) => {
   return {
     type: "UPDATE_STATE",
     payload: payload,

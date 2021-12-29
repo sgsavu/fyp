@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import '../../styles/App.css';
+import '../../styles/modal.css';
 import { useDispatch, useSelector } from "react-redux";
-
-
+import { updateState } from "../../redux/blockchain/blockchainActions";
+import Modal from "./Modal";
 
 
 
@@ -16,11 +16,22 @@ function Error() {
     window.location.reload();
   }
 
+  const dismiss = () =>{
+    dispatch(updateState({ field: "errorMsg", value: "" }))
+  }
+
+  const errorBox = () => {
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>{blockchain.errorMsg}</p>
+        <button onClick={dismiss}>Dismiss</button>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <p>{blockchain.errorMsg}</p>
-      <button onClick={reload}>Return Home</button>
-    </div>
+      blockchain.errorMsg ? <Modal content={errorBox}></Modal>: null
   );
 }
 

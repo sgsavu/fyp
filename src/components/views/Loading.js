@@ -1,15 +1,23 @@
 import React from "react";
 import '../../styles/App.css';
 import { useSelector } from "react-redux";
+import Modal from "./Modal";
 
 function Loading() {
 
   const blockchain = useSelector((state) => state.blockchain);
 
+  const loadingBox = () => {
+    return (
+      <div>
+        <h1>Loading</h1>
+        <p>{blockchain.loading[blockchain.loading.length-1]}</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <p>Loading: {blockchain.loading[blockchain.loading.length-1]}</p>
-    </div>
+    blockchain.loading.length != 0? <Modal content={loadingBox}></Modal>: null
   );
 }
 

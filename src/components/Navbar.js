@@ -10,6 +10,8 @@ import { IconContext } from 'react-icons';
 import { getSidebarFor } from './utils/PermissionsAndRoles';
 import { fetchMyData, refresh } from '../redux/data/dataActions';
 import { MyBids } from './SidebarData';
+import SelectNetwork from './SelectNetwork';
+import AccountStatus from './views/AccountStatus';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -25,10 +27,10 @@ function Navbar() {
   const refreshData = () => {
     switch (window.location.pathname)
     {
-      case "/marketplace":
+      case "/":
         dispatch(refresh("SALE_VEHICLES"))
         break;
-      case "/":
+      case "/myvehicles":
         dispatch(refresh("MY_VEHICLES"))
         break;
       case "/verify": 
@@ -44,6 +46,8 @@ function Navbar() {
     <IconContext.Provider value={{ color: '#fff' }}>
       <div className='navbar'>
         <FaIcons.FaBars className='menu-bars' onClick={toggleVisibility} />
+        <AccountStatus/>
+        <SelectNetwork/>
         <IoIcons.IoMdRefresh className='refresh' onClick={refreshData} />
       </div>
       <nav className={visible ? 'nav-menu active' : 'nav-menu'}>
