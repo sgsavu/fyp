@@ -120,7 +120,6 @@ contract ExternalGateway is Vehicle {
         );
 
         _classicExchange(ownerOf(tokenId), msg.sender, tokenId, msg.value);
-        _addToVehicleHistory(tokenId, msg.sender);
         _removeFromSale(tokenId);
     }
 
@@ -152,23 +151,5 @@ contract ExternalGateway is Vehicle {
 
     function getIfTokenExists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
-    }
-
-    function getOwnerAtIndex(uint256 tokenId, uint256 index)
-        external
-        view
-        onlyIfExists(tokenId)
-        returns (address)
-    {
-        return _ownerHistory[tokenId][index];
-    }
-
-    function getTotalNrOfOwners(uint256 tokenId)
-        external
-        view
-        onlyIfExists(tokenId)
-        returns (uint256)
-    {
-        return _getNumberOfOwners(tokenId);
     }
 }

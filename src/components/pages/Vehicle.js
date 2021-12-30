@@ -39,7 +39,7 @@ const Vehicle = () => {
         }
 
 
-    }, [data.loading])
+    }, [blockchain.smartContract,data.loading])
 
     return (
         <div>

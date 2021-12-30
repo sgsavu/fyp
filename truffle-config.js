@@ -127,6 +127,15 @@ module.exports = {
       //confirmations: 2,
       //timeoutBlocks: 200,
       skipDryRun: true,
+    },
+
+    harmony: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, 
+        process.env.HARMONY_TEST),
+      network_id: "*",
+      //confirmations: 2,
+      //timeoutBlocks: 200,
+      skipDryRun: true,
     }
     // Another network with more advanced options...
     // advanced: {

@@ -11,7 +11,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
 
-    event Received(address, uint256);
+    event Received(address indexed depositer, uint256 indexed amount);
 
     receive() external payable {
         emit Received(msg.sender, msg.value);
@@ -20,20 +20,20 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     struct VehicleInfo {
         address _topBidder; 
         uint256 price;
-        mapping(uint256 => address) history;
         uint256 odometer;
         uint256 country;
     }
 
     mapping(uint256 => VehicleInfo) internal _vehicles;
     mapping(uint256 => uint256) private _odometer;
+
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
+
     mapping(uint256 => uint256) private _forSale;
     mapping(uint256 => uint256) private _auction;
     mapping(uint256 => uint256) private _vehiclePrice;
     mapping(uint256 => address) private _topBidder;
-    mapping(uint256 => mapping(uint256 => address)) internal _ownerHistory;
 
     function supportsInterface(bytes4 interfaceId)
         public
@@ -106,25 +106,6 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _odometer[tokenId] = _odometer[tokenId] + value;
     }
 
-    //OWNER HISTORY
-
-    function _addToVehicleHistory(uint256 tokenId, address owner) internal {
-        uint256 vehicleHistoryLength = _getNumberOfOwners(tokenId);
-        _ownerHistory[tokenId][vehicleHistoryLength] = owner;
-    }
-
-    function _getNumberOfOwners(uint256 tokenId)
-        internal
-        view
-        returns (uint256)
-    {
-        uint256 index = 0;
-        while (_ownerHistory[tokenId][index] != address(0)) {
-            index++;
-        }
-        return index;
-    }
-
     // MONEY TRANSFERING AND BALANCE
 
     function getContractBalance() public view returns (uint256) {
@@ -175,7 +156,6 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
             tokenId,
             _getVehiclePrice(tokenId)
         );
-        _addToVehicleHistory(tokenId, topBidder);
         _resetAuction(tokenId);
         _removeFromSale(tokenId);
     }
@@ -263,7 +243,6 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         uint256 _tokenId = _tokenIds.current();
         _mint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, uri);
-        _addToVehicleHistory(_tokenId, msg.sender);
         _uriRegistered[uri] = true;
         _tokenIds.increment();
     }
