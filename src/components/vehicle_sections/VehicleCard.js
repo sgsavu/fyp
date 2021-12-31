@@ -14,7 +14,7 @@ const VehicleCard = ({vehicle}) => {
     return (
         <div>
             <img
-                alt={vehicle.name}
+                alt={vehicle.attributes.year}
                 src={vehicle.image}
                 width={150}
             />

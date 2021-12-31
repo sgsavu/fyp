@@ -12,15 +12,15 @@ function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
+  const app = useSelector((state) => state.app);
 
   useEffect(async () => {
     await dispatch(initApp())
     //await dispatch(login())
   }, []);
- 
 
   useEffect(async () => {
-    if (blockchain.initFinished) {
+    if (app.initializedApp) {
       if (!blockchain.walletProvider)
         await dispatch(updateWeb3Provider(ALL_TEMPLATES[blockchain.currentNetwork].rpcUrls[0]))
       await dispatch(loadSmartContract());
@@ -28,7 +28,7 @@ function App() {
   }, [blockchain.currentNetwork])
 
   useEffect(() => {
-    if (blockchain.initFinished) {
+    if (app.initializedApp) {
       if (blockchain.account || blockchain.walletProvider)
         dispatch(fetchMyData());
       else

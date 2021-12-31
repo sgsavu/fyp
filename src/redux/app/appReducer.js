@@ -9,7 +9,7 @@ const initialState = {
 
 const appReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "UPDATE_STATE":
+        case "UPDATE_APP_STATE":
             return {
                 ...state,
                 [action.payload.field]: action.payload.value,
@@ -20,6 +20,7 @@ const appReducer = (state = initialState, action) => {
                 field.push(action.payload)
             else
                 field.pop()
+            console.log(field)
             return {
                 ...state,
                 alerts: {

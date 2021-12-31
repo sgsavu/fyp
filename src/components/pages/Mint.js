@@ -43,7 +43,7 @@ const Mint = () => {
                     dispatch(fetchMyData());
                     dispatch(alerts("other","Transaction succesfful"))
                 }, (error) => {
-                    dispatch(alerts("other","Transaction failed"))
+                    dispatch(alerts("other",`Transaction failed: ${error}`))
                 });
             dispatch(alerts("other","Transaction sent for processing"))
             dispatch(finishSubmit());

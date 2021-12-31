@@ -1,19 +1,11 @@
-
 import Web3 from "web3";
 import ExternalGatewayContract from "../../abis/ExternalGateway.json";
-import { fetchMyData, refresh } from "../data/dataActions";
 import detectEthereumProvider from '@metamask/detect-provider';
 import store from "../store";
 import { ALL_TEMPLATES, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
-import { alerts } from "../app/appActions";
+import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
 
-export const updateState = (payload) => {
-  return {
-    type: "UPDATE_STATE",
-    payload: payload,
-  }
-}
 
 const getDeployedChains = (contract) => {
   const deployed = {}
@@ -22,42 +14,7 @@ const getDeployedChains = (contract) => {
   return deployed
 }
 
-
-
-export const initApp = () => {
-  return async (dispatch) => {
-    dispatch(alerts("loading","Initializing"))
-    try {
-      await dispatch(updateState({ field: "initFinished", value: true }))
-      await dispatch(updateState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
-      await dispatch(updateAppNetwork("0x3"))
-    }
-    catch (err) {
-      dispatch(alerts("error",err.message))
-    }
-    dispatch(alerts("loading"))
-  }
-}
-
-export const login = () => {
-  return async (dispatch) => {
-    try {
-      const provider = await fetchProvider()
-      const account = await fetchAccounts(provider)
-      const network = await fetchChain(provider)
-      await dispatch(updateWalletProvider(provider))
-      await dispatch(updateWeb3Provider(provider))
-      await dispatch(updateAppNetwork(network))
-      await dispatch(updateAppAccount(account));
-
-    } catch (err) {
-      dispatch(alerts("error",err.message))
-    }
-  }
-}
-
-
-export const fetchProvider = async () => {
+const fetchProvider = async () => {
   const provider = await detectEthereumProvider({ timeout: 5 })
   if (!provider) {
     new MetaMaskOnboarding().startOnboarding();
@@ -66,7 +23,7 @@ export const fetchProvider = async () => {
   return provider
 }
 
-export const fetchAccounts = async (provider) => {
+const fetchAccounts = async (provider) => {
   const accounts = await provider.request({
     method: "eth_requestAccounts",
   });
@@ -98,10 +55,42 @@ const switchChain = async (newNetwork) => {
 }
 
 
+export const initApp = () => {
+  return async (dispatch) => {
+    dispatch(alerts("loading", "Initializing"))
+    try {
+      await dispatch(updateAppState({ field: "initializedApp", value: true }))
+      await dispatch(updateBlockchainState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
+      await dispatch(updateAppNetwork("0x3"))
+    }
+    catch (err) {
+      dispatch(alerts("error", err.message))
+    }
+    dispatch(alerts("loading"))
+  }
+}
+
+export const login = () => {
+  return async (dispatch) => {
+    try {
+      const provider = await fetchProvider()
+      const account = await fetchAccounts(provider)
+      const network = await fetchChain(provider)
+      await dispatch(updateWalletProvider(provider))
+      await dispatch(updateWeb3Provider(provider))
+      await dispatch(updateAppNetwork(network))
+      await dispatch(updateAppAccount(account));
+
+    } catch (err) {
+      dispatch(alerts("error", err.message))
+    }
+  }
+}
+
 export const loadSmartContract = () => {
   return async (dispatch) => {
 
-    dispatch(alerts("loading","Fetching smart contract for new network."))
+    dispatch(alerts("loading", "Fetching smart contract for new network."))
     try {
       const web3 = await getWeb3()
       const currentNetwork = await getCurrentNetwork()
@@ -110,57 +99,21 @@ export const loadSmartContract = () => {
         ExternalGatewayContract.abi,
         availableNetworks[currentNetwork]
       );
-      dispatch(updateState({ field: "smartContract", value: SmartContractObj }))
+      dispatch(updateBlockchainState({ field: "smartContract", value: SmartContractObj }))
     }
     catch (err) {
-      dispatch(alerts("error",err.message))
+      dispatch(alerts("error", err.message))
     }
     dispatch(alerts("loading"))
   }
 }
 
-
-export const updateWalletProvider = (wallet) => {
-  return async (dispatch) => {
-    dispatch(updateState({ field: "walletProvider", value: wallet }))
-  }
+export const addOrSwitchNetwork = async (newNetwork) => {
+  if (newNetwork in METAMASK_DEFAULT)
+    await switchChain(newNetwork)
+  else
+    await addChain(newNetwork)
 }
-
-export const updateWeb3Provider = (provider) => {
-  return async (dispatch) => {
-    dispatch(updateState({ field: "web3", value: new Web3(provider) }))
-  }
-}
-
-export const addOrSwitchNetwork  = async (newNetwork) => {
-    if (newNetwork in METAMASK_DEFAULT)
-      await switchChain(newNetwork)
-    else
-      await addChain(newNetwork)  
-}
-
-export const updateAppNetwork = (newNetwork) => {
-  return async (dispatch) => {
-    try{
-      const availableNetworks = await getAvailableNetworks()
-    if (!(newNetwork in availableNetworks))
-      await addOrSwitchNetwork(Object.keys(availableNetworks)[0])
-    else
-      dispatch(updateState({ field: "currentNetwork", value: newNetwork }))
-    }
-    catch(err) {
-      dispatch(alerts("error",err.message))
-    }
-  };
-};
-
-export const updateAppAccount = (account) => {
-  return async (dispatch) => {
-    if (account)
-      account = Web3.utils.toChecksumAddress(account)
-    dispatch(updateState({ field: "account", value: account }));
-  };
-};
 
 const getWeb3 = async () => {
   return await store.getState().blockchain.web3
@@ -177,3 +130,39 @@ const getAvailableNetworks = async () => {
 const getCurrentNetwork = async () => {
   return await store.getState().blockchain.currentNetwork
 }
+
+export const updateWalletProvider = (wallet) => {
+  return async (dispatch) => {
+    dispatch(updateBlockchainState({ field: "walletProvider", value: wallet }))
+  }
+}
+
+export const updateWeb3Provider = (provider) => {
+  return async (dispatch) => {
+    dispatch(updateBlockchainState({ field: "web3", value: new Web3(provider) }))
+  }
+}
+
+export const updateAppAccount = (account) => {
+  return async (dispatch) => {
+    if (account)
+      account = Web3.utils.toChecksumAddress(account)
+    dispatch(updateBlockchainState({ field: "account", value: account }));
+  };
+};
+
+export const updateAppNetwork = (newNetwork) => {
+  return async (dispatch) => {
+    try {
+      const availableNetworks = await getAvailableNetworks()
+      if (!(newNetwork in availableNetworks))
+        await addOrSwitchNetwork(Object.keys(availableNetworks)[0])
+      else
+        dispatch(updateBlockchainState({ field: "currentNetwork", value: newNetwork }))
+    }
+    catch (err) {
+      dispatch(alerts("error", err.message))
+    }
+  };
+};
+

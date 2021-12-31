@@ -7,7 +7,7 @@ function MyVehicles() {
 
   const data = useSelector((state) => state.data);
   const app = useSelector((state) => state.app);
-  const vehicleList = Object.keys(data.myVehicles)
+  const vehicleList = data.myVehicles
 
   return (
     <div>
@@ -16,7 +16,7 @@ function MyVehicles() {
       ) : (
         vehicleList.map((vehicle, index) => {
           return (
-            <VehicleCard key={index} vehicleID={vehicle}></VehicleCard>
+            <VehicleCard key={index} vehicle={vehicle}></VehicleCard>
           );
         })
       )}

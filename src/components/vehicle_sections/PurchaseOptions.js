@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getIfIsTopBidder, getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { fetchMyData } from '../../redux/data/dataActions';
-import {  updateState } from "../../redux/blockchain/blockchainActions";
 import { alerts } from '../../redux/app/appActions';
 
 function PurchaseOptions({ vehicle, settings }) {
