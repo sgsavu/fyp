@@ -9,6 +9,7 @@ import { fetchMyData, refreshMyVehicles } from "../../redux/data/dataActions";
 import { finishSubmit, errorSubmit } from '../../redux/minting/formActions';
 import { mint, getUserAccount } from '../utils/BlockchainGateway'
 import { scramble, randomIntFromInterval } from '../utils/CryptographyUtils'
+import { alerts } from '../../redux/blockchain/blockchainActions';
 
 const Mint = () => {
 
@@ -37,8 +38,12 @@ const Mint = () => {
                 .then((receipt) => {
                     console.log(receipt);
                     dispatch(fetchMyData());
-                    dispatch(finishSubmit());
+                    dispatch(alerts("Transaction succesfful"))
+                }, (error) => {
+                    dispatch(alerts("Transaction failed"))
                 });
+            dispatch(alerts("Transaction sent for processing"))
+            dispatch(finishSubmit());
 
         } catch (err) {
             console.log(err);

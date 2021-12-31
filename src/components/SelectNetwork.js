@@ -19,14 +19,20 @@ function SelectNetwork() {
         else
             dispatch(updateAppNetwork(newNetwork))
     }
-    
+
     return (
         <div>
             <select defaultValue={blockchain.currentNetwork} onChange={(e) => changeNetwork(e.target.value)}>
                 {
                     blockchain.availableNetworks ?
                         Object.keys(blockchain.availableNetworks).map(key => {
-                            
+                            if (key == blockchain.currentNetwork)
+                                return (
+                                    <option selected key={key} value={key}>
+                                        {ALL_TEMPLATES[key].chainName}
+                                    </option>
+                                )
+                            else
                                 return (
                                     <option key={key} value={key}>
                                         {ALL_TEMPLATES[key].chainName}

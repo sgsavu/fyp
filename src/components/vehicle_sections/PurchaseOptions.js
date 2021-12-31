@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getIfIsTopBidder,getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
+import { getIfIsTopBidder, getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { fetchMyData } from '../../redux/data/dataActions';
+import { alerts, updateState } from "../../redux/blockchain/blockchainActions";
 
 function PurchaseOptions({ vehicle, settings }) {
 
@@ -10,6 +11,7 @@ function PurchaseOptions({ vehicle, settings }) {
     const myPrefferedCurrency = settings.myCurrency
     const isAuction = settings.isAuction
     const data = useSelector((state) => state.data);
+    const blockchain = useSelector((state) => state.blockchain);
 
     const [desiredPrice, setDesiredPrice] = useState(0)
     const [displayPrice, setDisplayPrice] = useState(0)
@@ -26,12 +28,12 @@ function PurchaseOptions({ vehicle, settings }) {
 
     return (
         <div>
-            <p>{isAuction ? "Highest Bid: ":"Price: "} {displayPrice} {myPrefferedCurrency}</p>
+            <p>{isAuction ? "Highest Bid: " : "Price: "} {displayPrice} {myPrefferedCurrency}</p>
             <div>
                 {isAuction ?
                     <div>
                         <div>
-                            <input type="number" value={desiredPrice} onChange={(e) => {setDesiredPrice(e.target.value)}}></input>
+                            <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
                             <label>{myPrefferedCurrency}</label>
                             <button onClick={() => {
                                 if (desiredPrice > displayPrice)
@@ -46,23 +48,26 @@ function PurchaseOptions({ vehicle, settings }) {
                             </button>
                         </div>
                         <div>
-                        {topBidder!= "0x0000000000000000000000000000000000000000" ?
-                            isTopBidder ?
-                                <p>You are the top bidder.</p>
+                            {topBidder != "0x0000000000000000000000000000000000000000" ?
+                                isTopBidder ?
+                                    <p>You are the top bidder.</p>
+                                    :
+                                    <p>Top Bidder: {topBidder}</p>
+
                                 :
-                                <p>Top Bidder: {topBidder}</p>
-                            
-                            :
-                            <p>No bids yet.</p>
-                        }      
+                                <p>No bids yet.</p>
+                            }
                         </div>
                     </div>
                     :
                     <button onClick={() => {
-                        buyVehicle(vehicle.injected.id).then((receipt) => {
-                            console.log(receipt);
-                            dispatch(fetchMyData());
-                        });
+                        if (blockchain.account) {
+                            buyVehicle(vehicle.injected.id).then((receipt) => {
+                                console.log(receipt);
+                                dispatch(fetchMyData());
+                            });
+                        }
+                        else { dispatch(alerts("You need to login.")) }
                     }}>
                         Buy
                     </button>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAccounts, fetchProvider, initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork, updateWeb3Provider } from "./redux/blockchain/blockchainActions";
+import { alerts, fetchAccounts, fetchProvider, initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork, updateWeb3Provider } from "./redux/blockchain/blockchainActions";
 import { fetchMyData, refresh } from "./redux/data/dataActions";
 import Loading from "./components/views/Loading";
 import Error from "./components/views/Error";
@@ -17,13 +17,11 @@ function App() {
   const data = useSelector((state) => state.data);
 
   useEffect(async () => {
-    dispatch(initApp())
-    const provider = await detectEthereumProvider({ timeout: 5 })
-    if (provider)
-      if (await fetchAccounts(provider))
-        dispatch(login())
-
+    await dispatch(initApp())
+    //await dispatch(login())
   }, []);
+
+ 
 
   useEffect(async () => {
     if (blockchain.initFinished) {

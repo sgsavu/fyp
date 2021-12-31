@@ -21,6 +21,13 @@ const loading = (payload) => {
   }
 }
 
+export const alerts = (payload) => {
+  return {
+    type: "ALERT",
+    payload: payload,
+  }
+}
+
 const getDeployedChains = (contract) => {
   const deployed = {}
   for (var property in contract.networks)
@@ -36,7 +43,6 @@ export const initApp = () => {
       await dispatch(updateState({ field: "initFinished", value: true }))
       await dispatch(updateState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
       await dispatch(updateAppNetwork("0x3"))
- 
     }
     catch (err) {
       dispatch(updateState({ field: "errorMsg", value: err.message }))
@@ -51,11 +57,13 @@ export const login = () => {
       const provider = await fetchProvider()
       const account = await fetchAccounts(provider)
       const network = await fetchChain(provider)
+      
+      console.log("dasasf",network)
 
       await dispatch(updateWalletProvider(provider))
       await dispatch(updateWeb3Provider(provider))
-      await dispatch(updateAppAccount(account));
       await dispatch(updateAppNetwork(network))
+      await dispatch(updateAppAccount(account));
 
     } catch (err) {
       dispatch(updateState({ field: "errorMsg", value: err.message }))
@@ -88,6 +96,22 @@ const fetchChain = async (provider) => {
   });
 }
 
+const addChain = async (newNetwork) => {
+
+  (await getProvider()).request({
+    method: 'wallet_addEthereumChain',
+    params: [ALL_TEMPLATES[newNetwork]]
+  });
+}
+
+const switchChain = async (newNetwork) => {
+
+  (await getProvider()).request({
+    method: 'wallet_switchEthereumChain',
+    params: [{ chainId: newNetwork }]
+  });
+}
+
 
 export const loadSmartContract = () => {
   return async (dispatch) => {
@@ -108,23 +132,6 @@ export const loadSmartContract = () => {
     }
     dispatch(loading());
   }
-}
-
-
-const addChain = async (newNetwork) => {
-
-  (await getProvider()).request({
-    method: 'wallet_addEthereumChain',
-    params: [ALL_TEMPLATES[newNetwork]]
-  });
-}
-
-const switchChain = async (newNetwork) => {
-
-  (await getProvider()).request({
-    method: 'wallet_switchEthereumChain',
-    params: [{ chainId: newNetwork }]
-  });
 }
 
 

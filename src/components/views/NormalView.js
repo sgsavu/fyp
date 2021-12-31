@@ -18,6 +18,7 @@ import { login } from "../../redux/blockchain/blockchainActions";
 import Error from "./Error";
 import Modal from "./Modal";
 import Loading from "./Loading";
+import CustomModal from "./CustomModal";
 
 
 function NormalView() {
@@ -29,6 +30,7 @@ function NormalView() {
     return (
         <div>
             <Error></Error>
+            <CustomModal></CustomModal>
             <Loading></Loading>
             <Router>
                 <Navbar>

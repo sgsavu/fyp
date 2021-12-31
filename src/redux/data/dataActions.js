@@ -1,7 +1,7 @@
 import { viewAllPrivileged } from "../../components/utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
-import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount } from "../../components/utils/BlockchainGateway";
+import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount, getVehiclePrice } from "../../components/utils/BlockchainGateway";
 
 const updateState = (payload) => {
   return {
@@ -23,35 +23,36 @@ async function injectTokenId(vehicle, tokenId) {
 }
 
 async function injectPrice(vehicle) {
-  let price = await store
-    .getState()
-    .blockchain.smartContract.methods.getVehiclePrice(vehicle.injected.id)
-    .call();
-  vehicle.injected.price = price
-  vehicle.injected.display_price = await weiToMyCurrency(price)
+  vehicle.injected.price = await getVehiclePrice(vehicle.injected.id)
+  vehicle.injected.display_price = await weiToMyCurrency(vehicle.injected.price)
 }
 
 
 async function getVehiclesForAccount(account) {
-
   let accountBalance = await getAccountBalance(account)
   let myVehicles = []
   for (var i = 0; i < accountBalance; i++) {
     let vehicleID = await getVehicleOfOwnerByIndex(account, i)
-    let vehicleURI = await getVehicleURI(vehicleID)
-    let vehicleMetadata = await getVehicleMetadata(vehicleURI)
-    injectTokenId(vehicleMetadata, vehicleID)
-    if (await getIfForSale(vehicleID)) {
-      await injectPrice(vehicleMetadata)
-      if (await getIfAuction(vehicleID))
-        if (await getTopBidder(vehicleID) == await getUserAccount())
-          vehicleMetadata.injected.bid = true
-    }
-    myVehicles.push(vehicleMetadata)
+    myVehicles.push(await getVehicleInfo(vehicleID))
   }
 
   console.log("pulled my vehicles", myVehicles)
   return myVehicles
+}
+
+export async function getVehicleInfo (vehicleID) {
+  let vehicleURI = await getVehicleURI(vehicleID)
+  let vehicleMetadata = await getVehicleMetadata(vehicleURI)
+  injectTokenId(vehicleMetadata, vehicleID)
+  if (await getIfForSale(vehicleID)) {
+    await injectPrice(vehicleMetadata)
+    if (await getIfAuction(vehicleID)) {
+      vehicleMetadata.injected.auction = true
+      if (await getTopBidder(vehicleID) == await getUserAccount())
+        vehicleMetadata.injected.bid = true
+    }
+  }
+  return vehicleMetadata
 }
 
 
@@ -61,23 +62,9 @@ async function getAllVehicles() {
   let totalNrOfVehicles = await getTotalNrOfVehicles()
   let allVehicles = []
   for (var i = 0; i < totalNrOfVehicles; i++) {
-
     let vehicleID = await getVehicleByIndex(i)
-    let vehicleURI = await getVehicleURI(vehicleID)
-    let vehicleMetadata = await getVehicleMetadata(vehicleURI)
-
-    injectTokenId(vehicleMetadata, vehicleID)
-    if (await getIfForSale(vehicleID)) {
-      await injectPrice(vehicleMetadata)
-      if (await getIfAuction(vehicleID)) {
-        vehicleMetadata.injected.auction = true
-        if (await getTopBidder(vehicleID) == await store.getState().blockchain.account)
-          vehicleMetadata.injected.bid = true
-      }
-    }
-    allVehicles.push(vehicleMetadata)
+    allVehicles.push(await getVehicleInfo(vehicleID))
   }
-
 
   console.log("pulled all vehicles", allVehicles)
   return allVehicles

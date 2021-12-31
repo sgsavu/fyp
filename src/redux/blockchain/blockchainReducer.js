@@ -8,7 +8,7 @@ const initialState = {
   availableNetworks: null,
   provider: null,
   initFinished: false,
-  pastTransfers: []
+  alerts: [],
 };
 
 const blockchainReducer = (state = initialState, action) => {
@@ -18,13 +18,24 @@ const blockchainReducer = (state = initialState, action) => {
         ...state,
         [action.payload.field]: action.payload.value,
       };
+    case "ALERT":
+      const alerts = state.alerts
+      if (action.payload)
+        alerts.push(action.payload)
+      else
+        alerts.pop()
+      console.log(alerts)
+      return {
+        ...state,
+        alerts: alerts
+      }
     case "LOADING":
       const loading = state.loading
       if (action.payload)
         loading.push(action.payload)
       else
         loading.pop()
-        console.log(loading)
+      console.log(loading)
       return {
         ...state,
         loading: loading
