@@ -32,7 +32,7 @@ const History = ({ vehicle }) => {
             }
         )
 
-    }, [data.myVehicles, data.allVehicles, data.vehiclesForSale])
+    }, [data.myVehicles, data.allVehicles, data.saleVehicles])
 
     return (
         <div>

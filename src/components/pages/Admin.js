@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from "react-hook-form";
 import { roles, actions, getAdminOptionsFor} from '../utils/PermissionsAndRoles';
-import web3 from 'web3';
+
 
 const keccak256 = require('keccak256')
 

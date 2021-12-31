@@ -11,7 +11,7 @@ const Marketplace = () => {
   const data = useSelector((state) => state.data);
 
   const [pageType, setPageType] = useState("instant");
-  let vehicleList = data.vehiclesForSale[pageType];
+  let vehicleList = data.saleVehicles[pageType];
   const [perPage, setPerPage] = useState(10);
   const [pageNr, setPageNr] = useState(0)
   const myPrefferedCurrency = data.displayCurrency

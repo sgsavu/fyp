@@ -6,20 +6,17 @@ import VehicleCard from "../vehicle_sections/VehicleCard";
 function MyVehicles() {
 
   const data = useSelector((state) => state.data);
-  const vehicleList = data.myVehicles
-
-  useEffect(() => {
-  
-  }, [vehicleList])
+  const app = useSelector((state) => state.app);
+  const vehicleList = Object.keys(data.myVehicles)
 
   return (
     <div>
-      {data.loading.length!=0 ? (
+      {app.alerts.loading.length!=0 ? (
         <p>loading...</p>
       ) : (
         vehicleList.map((vehicle, index) => {
           return (
-            <VehicleCard key={index} vehicle={vehicle}/>
+            <VehicleCard key={index} vehicleID={vehicle}></VehicleCard>
           );
         })
       )}

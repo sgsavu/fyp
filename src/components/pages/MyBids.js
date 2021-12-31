@@ -6,10 +6,11 @@ import VehicleCard from '../vehicle_sections/VehicleCard';
 const MyBids = () => {
 
     const data = useSelector((state) => state.data);
+    const app = useSelector((state) => state.app);
 
     return (
         <div>
-          {data.loading ? (
+          {app.alerts.loading.length == 0 ? (
             <p>loading...</p>
           ) : (
             data.myBids.map((vehicle, index) => {

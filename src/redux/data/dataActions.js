@@ -2,6 +2,7 @@ import { viewAllPrivileged } from "../../components/utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
 import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount, getVehiclePrice } from "../../components/utils/BlockchainGateway";
+import { alerts } from "../app/appActions";
 
 const updateState = (payload) => {
   return {
@@ -80,25 +81,25 @@ async function getMyBids(allVehicles) {
   return onlyMyBids
 }
 
-async function getForSaleVehicles(allVehicles) {
+async function getSaleVehicles(allVehicles) {
 
-  let onlyVehiclesForSale = { instant: [], auctions: [] }
+  let saleVehicles = { instant: [], auctions: [] }
   for (var i = 0; i < allVehicles.length; i++) {
     if (allVehicles[i].injected.hasOwnProperty('price')) {
       if (allVehicles[i].injected.hasOwnProperty('auction'))
-        onlyVehiclesForSale.auctions.push(allVehicles[i])
+        saleVehicles.auctions.push(allVehicles[i])
       else
-        onlyVehiclesForSale.instant.push(allVehicles[i])
+        saleVehicles.instant.push(allVehicles[i])
     }
   }
-  console.log("forsale", onlyVehiclesForSale)
-  return onlyVehiclesForSale
+  console.log("forsale", saleVehicles)
+  return saleVehicles
 }
 
 
 export const fetchMyData = () => {
   return async (dispatch) => {
-    dispatch(loading("Fetching data for user."))
+    dispatch(alerts("loading","Fetching data for user."))
     try {
       const account = await getUserAccount()
       const myRole = await getRole(account)
@@ -114,9 +115,9 @@ export const fetchMyData = () => {
       dispatch(refresh("ROLE"));
       dispatch(refresh("BIDS"));
     } catch (err) {
-      dispatch(updateState({ field: "errorMsg", value: err.message }))
+      dispatch(alerts("error",err.message))
     }
-    dispatch(loading())
+    dispatch(alerts("loading"))
   };
 };
 
@@ -124,7 +125,7 @@ export const fetchMyData = () => {
 
 export const refresh = (code) => {
   return async (dispatch) => {
-    dispatch(loading(`Refreshing data for ${code}`))
+    dispatch(alerts("loading",`Refreshing data for ${code}`))
     try {
       switch (code) {
         case "MY_VEHICLES":
@@ -138,8 +139,8 @@ export const refresh = (code) => {
         case "SALE_VEHICLES":
           dispatch(
             updateState({
-              field: "vehiclesForSale",
-              value: await getForSaleVehicles(await getAllVehicles())
+              field: "saleVehicles",
+              value: await getSaleVehicles(await getAllVehicles())
             })
           );
           break;
@@ -169,9 +170,9 @@ export const refresh = (code) => {
           break;
       }
     } catch (err) {
-      dispatch(updateState({ field: "errorMsg", value: err.message }))
+      dispatch(alerts("error",err.message))
     }
-    dispatch(loading())
+    dispatch(alerts("loading"))
   };
 }
 
@@ -185,19 +186,19 @@ export const updatePrefferedCurrency = (value) => {
 
 export const refreshDisplayPrices = () => {
   return async (dispatch) => {
-    dispatch(loading("Refreshing display prices."))
+    dispatch(alerts("loading","Refreshing display prices."))
     try {
-      let forsale = await store.getState().data.vehiclesForSale
+      let forsale = await store.getState().data.saleVehicles
       for (const element in forsale.auctions) {
         forsale.auctions[element].injected.display_price = await weiToMyCurrency(forsale.auctions[element].injected.price)
       }
       for (const element in forsale.instant) {
         forsale.instant[element].injected.display_price = await weiToMyCurrency(forsale.instant[element].injected.price)
       }
-      dispatch(updateState({field: "vehiclesForSale",value: forsale}));
+      dispatch(updateState({field: "saleVehicles",value: forsale}));
     } catch (err) {
-      dispatch(updateState({ field: "errorMsg", value: err.message }))
+      dispatch(alerts("error",err.message))
     }
-    dispatch(loading())
+    dispatch(alerts("loading"))
   };
 }

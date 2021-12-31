@@ -14,7 +14,7 @@ function SelectNetwork() {
     const data = useSelector((state) => state.data);
 
     const changeNetwork = async (newNetwork) => {
-        if (blockchain.provider)
+        if (blockchain.walletProvider)
             await addOrSwitchNetwork(newNetwork)
         else
             dispatch(updateAppNetwork(newNetwork))

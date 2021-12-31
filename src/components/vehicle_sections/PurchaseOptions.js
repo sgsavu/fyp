@@ -3,14 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getIfIsTopBidder, getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { fetchMyData } from '../../redux/data/dataActions';
-import { alerts, updateState } from "../../redux/blockchain/blockchainActions";
+import {  updateState } from "../../redux/blockchain/blockchainActions";
+import { alerts } from '../../redux/app/appActions';
 
 function PurchaseOptions({ vehicle, settings }) {
+
 
     const dispatch = useDispatch();
     const myPrefferedCurrency = settings.myCurrency
     const isAuction = settings.isAuction
-    const data = useSelector((state) => state.data);
+    const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
 
     const [desiredPrice, setDesiredPrice] = useState(0)
@@ -24,7 +26,7 @@ function PurchaseOptions({ vehicle, settings }) {
             setTopBidder(await getTopBidder(vehicle.injected.id))
             setIsTopBidder(await getIfIsTopBidder(vehicle.injected.id))
         }
-    }, [data.loading])
+    }, [app.alerts.loading])
 
     return (
         <div>
@@ -67,7 +69,7 @@ function PurchaseOptions({ vehicle, settings }) {
                                 dispatch(fetchMyData());
                             });
                         }
-                        else { dispatch(alerts("You need to login.")) }
+                        else { dispatch(alerts("other","You need to login.")) }
                     }}>
                         Buy
                     </button>

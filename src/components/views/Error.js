@@ -3,35 +3,35 @@ import '../../styles/modal.css';
 import { useDispatch, useSelector } from "react-redux";
 import { updateState } from "../../redux/blockchain/blockchainActions";
 import Modal from "./Modal";
+import { alerts } from "../../redux/app/appActions";
 
 
 
 function Error() {
 
   const dispatch = useDispatch();
-  const blockchain = useSelector((state) => state.blockchain);
-  const data = useSelector((state) => state.data);
+  const app = useSelector((state) => state.app);
 
   const reload = () =>{
     window.location.reload();
   }
 
   const dismiss = () =>{
-    dispatch(updateState({ field: "errorMsg", value: "" }))
+    dispatch(alerts("error"))
   }
 
   const errorBox = () => {
     return (
       <div>
         <h1>Error</h1>
-        <p>{blockchain.errorMsg}</p>
+        <p>{app.alerts.error.at(-1)}</p>
         <button onClick={dismiss}>Dismiss</button>
       </div>
     );
   }
 
   return (
-      blockchain.errorMsg ? <Modal content={errorBox}></Modal>: null
+    app.alerts.error.length != 0? <Modal content={errorBox}></Modal>: null
   );
 }
 

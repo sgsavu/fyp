@@ -9,7 +9,7 @@ import { fetchMyData, refreshMyVehicles } from "../../redux/data/dataActions";
 import { finishSubmit, errorSubmit } from '../../redux/minting/formActions';
 import { mint, getUserAccount } from '../utils/BlockchainGateway'
 import { scramble, randomIntFromInterval } from '../utils/CryptographyUtils'
-import { alerts } from '../../redux/blockchain/blockchainActions';
+import { alerts } from '../../redux/app/appActions';
 
 const Mint = () => {
 
@@ -19,6 +19,9 @@ const Mint = () => {
     const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
 
 
+
+
+    
     const createMetaDataAndMint = async () => {
 
         try {
@@ -38,11 +41,11 @@ const Mint = () => {
                 .then((receipt) => {
                     console.log(receipt);
                     dispatch(fetchMyData());
-                    dispatch(alerts("Transaction succesfful"))
+                    dispatch(alerts("other","Transaction succesfful"))
                 }, (error) => {
-                    dispatch(alerts("Transaction failed"))
+                    dispatch(alerts("other","Transaction failed"))
                 });
-            dispatch(alerts("Transaction sent for processing"))
+            dispatch(alerts("other","Transaction sent for processing"))
             dispatch(finishSubmit());
 
         } catch (err) {

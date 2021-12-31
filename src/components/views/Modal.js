@@ -15,13 +15,9 @@ const Modal = ({ content }) => {
     const reload = () => {
         window.location.reload();
     }
-
-    const dismiss = () => {
-        dispatch(updateState({ field: "errorMsg", value: "" }))
-    }
-
+    
     return (
-        <div className="overlay" onClick={dismiss}>
+        <div className="overlay" >
             <div className="popup">
                 {content()}
             </div>

@@ -2,22 +2,24 @@ import React from "react";
 import '../../styles/App.css';
 import { useSelector } from "react-redux";
 import Modal from "./Modal";
+import { alerts } from "../../redux/app/appActions";
 
 function Loading() {
 
-  const blockchain = useSelector((state) => state.blockchain);
+  const app = useSelector((state) => state.app);
+
 
   const loadingBox = () => {
     return (
       <div>
         <h1>Loading</h1>
-        <p>{blockchain.loading[blockchain.loading.length-1]}</p>
+        <p>{app.alerts.loading.at(-1)}</p>
       </div>
     );
   }
 
   return (
-    blockchain.loading.length != 0? <Modal content={loadingBox}></Modal>: null
+    app.alerts.loading.length != 0? <Modal content={loadingBox}></Modal>: null
   );
 }
 

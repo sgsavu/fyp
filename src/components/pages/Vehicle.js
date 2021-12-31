@@ -13,6 +13,7 @@ const Vehicle = () => {
     const vehicle = location.state?.metadata
 
     const data = useSelector((state) => state.data);
+    const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
     const myPrefferedCurrency = data.displayCurrency
 
@@ -39,7 +40,7 @@ const Vehicle = () => {
         }
 
 
-    }, [blockchain.smartContract,data.loading])
+    }, [blockchain.smartContract,app.alerts.loading])
 
     return (
         <div>
