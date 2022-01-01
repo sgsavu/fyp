@@ -1,8 +1,7 @@
 import React from "react";
 import '../../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../redux/blockchain/blockchainActions";
-
+import { login, signout } from "../../redux/blockchain/blockchainActions";
 
 function AccountStatus() {
 
@@ -12,10 +11,15 @@ function AccountStatus() {
 
     return (
         <div>
-            {blockchain.account? blockchain.account : <button onClick={() => {dispatch(login())}}>
+            {blockchain.account ? <div>
+                <p>{blockchain.account}</p>
+                <button onClick={() => {dispatch(signout())}}>
+                Disconnect
+            </button>
+                </div> : <button onClick={() => { dispatch(login()) }}>
                 Login
             </button>}
-          
+
         </div>
     );
 }

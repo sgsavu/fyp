@@ -24,23 +24,6 @@ function Navbar() {
   if (data.myBids.length!=0)
     sidebar = [...sidebar,MyBids]
 
-  const refreshData = () => {
-    switch (window.location.pathname)
-    {
-      case "/":
-        dispatch(refresh("SALE_VEHICLES"))
-        break;
-      case "/myvehicles":
-        dispatch(refresh("MY_VEHICLES"))
-        break;
-      case "/verify": 
-        dispatch(refresh("ALL_VEHICLES"))
-        break;
-      case "/vehicle":
-        dispatch(fetchMyData())
-        break;
-    }
-  }
 
   return (
     <IconContext.Provider value={{ color: '#fff' }}>
@@ -48,7 +31,7 @@ function Navbar() {
         <FaIcons.FaBars className='menu-bars' onClick={toggleVisibility} />
         <AccountStatus/>
         <SelectNetwork/>
-        <IoIcons.IoMdRefresh className='refresh' onClick={refreshData} />
+        
       </div>
       <nav className={visible ? 'nav-menu active' : 'nav-menu'}>
         <ul className='nav-menu-items' onClick={toggleVisibility}>

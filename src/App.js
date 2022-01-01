@@ -1,11 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { alerts, fetchAccounts, fetchProvider, initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork, updateWeb3Provider } from "./redux/blockchain/blockchainActions";
-import { fetchMyData, refresh } from "./redux/data/dataActions";
+import { initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork} from "./redux/blockchain/blockchainActions";
 import NormalView from "./components/views/NormalView";
-import { ALL_TEMPLATES } from "./components/utils/NetworkTemplates";
-
+import { fetchMyData } from "./redux/data/dataActions";
 
 function App() {
 
@@ -16,41 +14,33 @@ function App() {
 
   useEffect(async () => {
     await dispatch(initApp())
-    //await dispatch(login())
+    await dispatch(login())
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (app.initializedApp) {
-      if (!blockchain.walletProvider)
-        await dispatch(updateWeb3Provider(ALL_TEMPLATES[blockchain.currentNetwork].rpcUrls[0]))
-      await dispatch(loadSmartContract());
+      dispatch(loadSmartContract())
     }
   }, [blockchain.currentNetwork])
 
   useEffect(() => {
     if (app.initializedApp) {
-      if (blockchain.account || blockchain.walletProvider)
-        dispatch(fetchMyData());
-      else
-        dispatch(refresh("SALE_VEHICLES"));
+      dispatch(fetchMyData());
     }
   }, [blockchain.smartContract])
 
-  if (blockchain.walletProvider)
-  { 
+  if (blockchain.walletProvider) {
     window.ethereum.on("accountsChanged", (accounts) => {
       dispatch(updateAppAccount(accounts[0]));
     });
-  
     window.ethereum.on("chainChanged", (chain) => {
       dispatch(updateAppNetwork(chain))
     });
   }
 
-
   return (
     <div>
-        <NormalView />
+      <NormalView />
     </div>
   );
 }

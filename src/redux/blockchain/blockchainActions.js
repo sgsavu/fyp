@@ -2,9 +2,11 @@ import Web3 from "web3";
 import ExternalGatewayContract from "../../abis/ExternalGateway.json";
 import detectEthereumProvider from '@metamask/detect-provider';
 import store from "../store";
-import { ALL_TEMPLATES, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
+import { ALL_TEMPLATES, getNetworkRpcUrl, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
-import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
+import { alerts, updateAppState, updateBlockchainState, updateDataState } from "../app/appActions";
+import { fetchMyData } from "../data/dataActions";
+import { roles } from "../../components/utils/PermissionsAndRoles";
 
 
 const getDeployedChains = (contract) => {
@@ -77,9 +79,12 @@ export const login = () => {
       const account = await fetchAccounts(provider)
       const network = await fetchChain(provider)
       await dispatch(updateWalletProvider(provider))
-      await dispatch(updateWeb3Provider(provider))
-      await dispatch(updateAppNetwork(network))
+      await dispatch(updateWeb3(provider))
       await dispatch(updateAppAccount(account));
+      if (network == await getCurrentNetwork())
+        await dispatch(loadSmartContract())
+      else
+        await dispatch(updateAppNetwork(network))
 
     } catch (err) {
       dispatch(alerts("error", err.message))
@@ -87,13 +92,34 @@ export const login = () => {
   }
 }
 
+export const signout = () => {
+  return async (dispatch) => {
+    try {
+      await dispatch(updateWalletProvider(null))
+      await dispatch(updateAppAccount(null));
+      dispatch(updateDataState({ field: "myVehicles", value: [] }));
+      dispatch(updateDataState({ field: "myBids", value: [] }));
+      dispatch(updateDataState({ field: "myRole", value: roles.USER_ROLE}));
+
+    } catch (err) {
+      dispatch(alerts("error", err.message))
+    }
+  }
+}
+
+
+
 export const loadSmartContract = () => {
   return async (dispatch) => {
 
     dispatch(alerts("loading", "Fetching smart contract for new network."))
     try {
-      const web3 = await getWeb3()
       const currentNetwork = await getCurrentNetwork()
+      if (!(await store.getState().blockchain.walletProvider))
+      {
+        await dispatch(updateWeb3(getNetworkRpcUrl(currentNetwork)))
+      }
+      const web3 = await getWeb3()
       const availableNetworks = await getAvailableNetworks()
       const SmartContractObj = new web3.eth.Contract(
         ExternalGatewayContract.abi,
@@ -137,7 +163,7 @@ export const updateWalletProvider = (wallet) => {
   }
 }
 
-export const updateWeb3Provider = (provider) => {
+export const updateWeb3 = (provider) => {
   return async (dispatch) => {
     dispatch(updateBlockchainState({ field: "web3", value: new Web3(provider) }))
   }

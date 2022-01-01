@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import '../../styles/modal.css';
 import { useDispatch, useSelector } from "react-redux";
-import { updateState } from "../../redux/blockchain/blockchainActions";
 import Modal from "./Modal";
 import { alerts } from "../../redux/app/appActions";
 

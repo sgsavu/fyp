@@ -148,3 +148,7 @@ export const ALL_TEMPLATES = {
     "0x4":RINKEBY,
     "0x3":ROPSTEN,
 }
+
+export const getNetworkRpcUrl = (network) => {
+    return ALL_TEMPLATES[network].rpcUrls[0]
+}
