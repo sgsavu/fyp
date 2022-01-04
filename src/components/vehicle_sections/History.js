@@ -13,7 +13,6 @@ const History = ({ vehicle }) => {
 
         const getVehicleHistory = (events) => {
             var vehicleHistory = []
-            console.log(events)
             events.forEach(event => {
                 vehicleHistory.push(event.returnValues.to)
             })

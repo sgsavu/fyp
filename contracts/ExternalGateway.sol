@@ -3,13 +3,8 @@ pragma solidity >=0.6.0 <0.9.0;
 import "./Vehicle.sol";
 
 contract ExternalGateway is Vehicle {
-    function createVehicle(string memory uri)
-        external
-        onlyClass(ROLE_CLASS.MINTER)
-        onlyIfNotRegistered(uri)
-    {
-        mint(uri);
-    }
+
+    event NewPrice(uint256 indexed tokenId, uint256 price);
 
     function tokenURI(uint256 tokenId)
         public
@@ -66,6 +61,7 @@ contract ExternalGateway is Vehicle {
         onlyIfAuction(tokenId)
     {
         _concludeAuction(tokenId);
+        emit SaleStatus(tokenId, false, false);
     }
 
     function listAuction(uint256 tokenId, uint256 price)
@@ -77,6 +73,7 @@ contract ExternalGateway is Vehicle {
         onlyIfPriceNonNull(price)
     {
         _listAuction(tokenId, price);
+        emit SaleStatus(tokenId, true, true);
     }
 
     function listForSale(uint256 tokenId, uint256 price)
@@ -87,6 +84,7 @@ contract ExternalGateway is Vehicle {
         onlyIfPriceNonNull(price)
     {
         _listForSale(tokenId, price);
+        emit SaleStatus(tokenId, true, false);
     }
 
     function removeFromSale(uint256 tokenId)
@@ -96,6 +94,7 @@ contract ExternalGateway is Vehicle {
         onlyOwnerOf(tokenId)
     {
         _removeFromSale(tokenId);
+        emit SaleStatus(tokenId, false, false);
     }
 
     function setVehiclePrice(uint256 tokenId, uint256 _price)
@@ -105,6 +104,7 @@ contract ExternalGateway is Vehicle {
         onlyIfPriceNonNull(_price)
     {
         _setVehiclePrice(tokenId, _price);
+        emit NewPrice(tokenId, _price);
     }
 
     function buyVehicle(uint256 tokenId)
@@ -121,6 +121,7 @@ contract ExternalGateway is Vehicle {
 
         _classicExchange(ownerOf(tokenId), msg.sender, tokenId, msg.value);
         _removeFromSale(tokenId);
+        emit SaleStatus(tokenId, false, false);
     }
 
     function bidVehicle(uint256 tokenId)
@@ -142,6 +143,14 @@ contract ExternalGateway is Vehicle {
         _refundCurentTopBidder(tokenId);
         _setVehiclePrice(tokenId, msg.value);
         _setTopBidder(tokenId, msg.sender);
+    }
+
+    function createVehicle(string memory uri)
+        external
+        onlyClass(ROLE_CLASS.MINTER)
+        onlyIfNotRegistered(uri)
+    {
+        mint(uri);
     }
 
     function destroyVehicle(uint256 _tokenId) external {

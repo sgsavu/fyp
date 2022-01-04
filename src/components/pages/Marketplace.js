@@ -29,7 +29,7 @@ const Marketplace = () => {
   }
 
   function splitIntoPages(filtered) {
-    const copy = filtered.filter(() => true);
+    const copy = Object.values(filtered).filter(() => true);
     var temp = []
     while (copy.length) {
       temp = [...temp, copy.splice(0, perPage)]
@@ -42,7 +42,7 @@ const Marketplace = () => {
       splitIntoPages(vehicleList)
       setFiltered(vehicleList)
     }
-  }, [vehicleList])
+  }, [vehicleList,data])
 
   useEffect(() => {
     splitIntoPages(filtered)

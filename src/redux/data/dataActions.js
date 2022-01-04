@@ -1,8 +1,9 @@
-import { superUsers } from "../../components/utils/PermissionsAndRoles";
+import { roles, superUsers } from "../../components/utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
 import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount, getVehiclePrice } from "../../components/utils/BlockchainGateway";
 import { alerts, updateDataState } from "../app/appActions";
+import { subscribeToSaleStatus, subscribeToSaleStatusFalse, subscribeToSaleStatusTrue } from "./eventSubscriber";
 
 
 function injectTokenId(vehicle, tokenId) {
@@ -32,33 +33,35 @@ export async function getVehicleInfo(vehicleID) {
 
 async function getAllVehicles() {
   let totalNrOfVehicles = await getTotalNrOfVehicles()
-  let allVehicles = []
+  let allVehicles = {}
   for (var i = 0; i < totalNrOfVehicles; i++) {
     let vehicleID = await getVehicleByIndex(i)
-    allVehicles.push(await getVehicleInfo(vehicleID))
+    allVehicles[vehicleID] = await getVehicleInfo(vehicleID)
   }
   return allVehicles
 }
 
 function getSaleVehicles(allVehicles) {
-  let saleVehicles = { instant: [], auctions: [] }
-  for (var i = 0; i < allVehicles.length; i++) {
-    if (allVehicles[i].injected.hasOwnProperty('price')) {
-      if (allVehicles[i].injected.hasOwnProperty('auction'))
-        saleVehicles.auctions.push(allVehicles[i])
+  let saleVehicles = { instant: {}, auctions: {} }
+
+  for (const [tokenId, metadata] of Object.entries(allVehicles)) {
+    if (metadata.injected.hasOwnProperty('price')) {
+      if (metadata.injected.hasOwnProperty('auction'))
+        saleVehicles.auctions[tokenId] = metadata
       else
-        saleVehicles.instant.push(allVehicles[i])
+        saleVehicles.instant[tokenId] = metadata
     }
   }
+
   return saleVehicles
 }
 
 async function getVehiclesForAccount(account) {
   let accountBalance = await getAccountBalance(account)
-  let myVehicles = []
+  let myVehicles = {}
   for (var i = 0; i < accountBalance; i++) {
     let vehicleID = await getVehicleOfOwnerByIndex(account, i)
-    myVehicles.push(await getVehicleInfo(vehicleID))
+    myVehicles[vehicleID] = await getVehicleInfo(vehicleID)
   }
   return myVehicles
 }
@@ -76,9 +79,12 @@ export function getDefaultVehicles() {
   return async (dispatch) => {
     let allVehicles = await getAllVehicles()
     let saleVehicles = getSaleVehicles(allVehicles)
+
+   
+
     console.log("all", allVehicles)
     console.log("sale", saleVehicles)
-    dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
+    dispatch(updateDataState({ field: "allVehicles", value: Object.values(allVehicles) }));
     dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
   }
 }
@@ -87,18 +93,31 @@ export function getAuthenticatedVehicles() {
   return async (dispatch) => {
     let myVehicles = await getVehiclesForAccount(await getUserAccount())
     let myBids = getMyBids(await store.getState().data.allVehicles)
-    dispatch(updateDataState({ field: "myVehicles", value: myVehicles }));
+    
+    dispatch(subscribeToSaleStatus(Object.keys(myVehicles)))
+
+    dispatch(updateDataState({ field: "myVehicles", value: Object.values(myVehicles) }));
     dispatch(updateDataState({ field: "myBids", value: myBids }));
+  }
+}
+
+
+export const clearMyData = () => {
+  return async (dispatch) => {
+    dispatch(updateDataState({ field: "myVehicles", value: [] }));
+    dispatch(updateDataState({ field: "myBids", value: [] }));
+    dispatch(updateDataState({ field: "myRole", value: roles.VIEWER_ROLE }));
   }
 }
 
 export const fetchMyData = () => {
   return async (dispatch) => {
-    dispatch(alerts("loading","Fetching data..."))
+    console.log("FETCHED MY DATA")
+    dispatch(alerts("loading", "Fetching data..."))
     if (await store.getState().blockchain.account || await store.getState().blockchain.walletProvider) {
       dispatch(getDefaultVehicles())
       dispatch(getAuthenticatedVehicles())
-      await dispatch(updateDataState({ field: "myRole", value: await getRole(await getUserAccount())}));
+      await dispatch(updateDataState({ field: "myRole", value: await getRole(await getUserAccount()) }));
     }
     else {
       await dispatch(getDefaultVehicles())

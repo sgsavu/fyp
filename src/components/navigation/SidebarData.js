@@ -4,15 +4,7 @@ import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 
 
-export const MyBids = {
-    title: 'My Bids',
-    path: '/mybids',
-    icon: <AiIcons.AiFillCar />,
-    cName: 'nav-text'
-}
-
-
-const UserSidebar = [
+const ViewerSidebar = [
     {
         title: 'Marketplace',
         path: '/',
@@ -20,15 +12,19 @@ const UserSidebar = [
         cName: 'nav-text'
     },
     {
-        title: 'My Vehicles',
-        path: '/myvehicles',
-        icon: <AiIcons.AiFillCar />,
-        cName: 'nav-text'
-    },
-    {
         title: 'Options',
         path: '/options',
         icon: <IoIcons.IoMdOptions />,
+        cName: 'nav-text'
+    },
+]
+
+const UserSidebar = [
+    ...ViewerSidebar,
+    {
+        title: 'My Vehicles',
+        path: '/myvehicles',
+        icon: <AiIcons.AiFillCar />,
         cName: 'nav-text'
     },
     {
@@ -102,6 +98,7 @@ const DefaultAdminSidebar = [
 ];
 
 export const Sidebar = {
+    VIEWER: ViewerSidebar,
     USER: UserSidebar,
     AUTHORITY: AuthoritySidebar,
     AUTHORITY_ADMIN: AuthorityAdminSidebar,

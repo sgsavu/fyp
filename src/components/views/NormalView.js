@@ -1,6 +1,6 @@
 import React from "react";
 import '../../styles/App.css';
-import Navbar from '../Navbar';
+import Navbar from '../navigation/Navbar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import MyVehicles from '../pages/MyVehicles';
 import Marketplace from '../pages/Marketplace';
@@ -9,7 +9,7 @@ import Mint from '../pages/Mint';
 import Admin from '../pages/Admin';
 import Options from '../pages/Options';
 import MyBids from '../pages/MyBids';
-import ControlledRoute from '../ControlledRoute';
+import ControlledRoute from '../navigation/ControlledRoute';
 import Vehicle from "../pages/Vehicle";
 import Support from "../pages/Support";
 import SelectNetwork from "../SelectNetwork";

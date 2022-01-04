@@ -5,12 +5,24 @@ import { initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork} 
 import NormalView from "./components/views/NormalView";
 import { fetchMyData } from "./redux/data/dataActions";
 
+
+
 function App() {
 
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
   const app = useSelector((state) => state.app);
+
+  function bruhski () {
+    if (blockchain.smartContract)
+
+    blockchain.smartContract.events.Transfer({
+      filter: { tokenId: "2" },
+      fromBlock: 0,
+  }, function(error, event){ console.log(event); })
+  
+  }
 
   useEffect(async () => {
     await dispatch(initApp())

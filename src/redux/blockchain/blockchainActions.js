@@ -5,7 +5,7 @@ import store from "../store";
 import { ALL_TEMPLATES, getNetworkRpcUrl, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState, updateDataState } from "../app/appActions";
-import { fetchMyData } from "../data/dataActions";
+import { clearMyData, fetchMyData } from "../data/dataActions";
 import { roles } from "../../components/utils/PermissionsAndRoles";
 
 
@@ -95,19 +95,14 @@ export const login = () => {
 export const signout = () => {
   return async (dispatch) => {
     try {
-      await dispatch(updateWalletProvider(null))
-      await dispatch(updateAppAccount(null));
-      dispatch(updateDataState({ field: "myVehicles", value: [] }));
-      dispatch(updateDataState({ field: "myBids", value: [] }));
-      dispatch(updateDataState({ field: "myRole", value: roles.USER_ROLE}));
-
+      dispatch(updateWalletProvider(null))
+      dispatch(updateAppAccount(null));
+      dispatch(clearMyData())
     } catch (err) {
       dispatch(alerts("error", err.message))
     }
   }
 }
-
-
 
 export const loadSmartContract = () => {
   return async (dispatch) => {
@@ -115,8 +110,7 @@ export const loadSmartContract = () => {
     dispatch(alerts("loading", "Fetching smart contract for new network."))
     try {
       const currentNetwork = await getCurrentNetwork()
-      if (!(await store.getState().blockchain.walletProvider))
-      {
+      if (!(await store.getState().blockchain.walletProvider)) {
         await dispatch(updateWeb3(getNetworkRpcUrl(currentNetwork)))
       }
       const web3 = await getWeb3()

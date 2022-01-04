@@ -1,5 +1,5 @@
 
-import { Sidebar } from '../SidebarData';
+import { Sidebar } from '../navigation/SidebarData';
 
 const keccak256 = require('keccak256')
 
@@ -14,7 +14,8 @@ export const roles = {
   AUTHORITY_ROLE_ADMIN: keccak256("AUTHORITY_ROLE_ADMIN"),
   MINTER_ROLE: keccak256("MINTER_ROLE"),
   AUTHORITY_ROLE: keccak256("AUTHORITY_ROLE"),
-  USER_ROLE: keccak256("USER_ROLE")
+  USER_ROLE: keccak256("USER_ROLE"),
+  VIEWER_ROLE: keccak256("VIEWER_ROLE")
 }
 
 export const string_roles = {
@@ -94,6 +95,8 @@ export const getAdminOptionsFor = (role) => {
 
 export const getSidebarFor = (role) => {
   switch (role) {
+    case roles.VIEWER_ROLE:
+      return Sidebar.VIEWER
     case roles.USER_ROLE:
       return Sidebar.USER
     case roles.AUTHORITY_ROLE:

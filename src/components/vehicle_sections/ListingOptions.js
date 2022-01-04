@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { listForSale, listAuction } from "../utils/BlockchainGateway";
 import { useDispatch } from 'react-redux';
 import { fetchMyData } from '../../redux/data/dataActions';
+import { alerts } from '../../redux/app/appActions';
 
 
 function ListingOptions({ vehicle, settings }) {
@@ -32,10 +33,10 @@ function ListingOptions({ vehicle, settings }) {
                 {listingType == "INSTANT" ?
                     <button onClick={() => {
                         if (desiredPrice > 0) {
-                            listForSale(vehicle.injected.id, desiredPrice).then((receipt) => {
-                                console.log(receipt);
-                                dispatch(fetchMyData());
-                            });
+                            listForSale(vehicle.injected.id, desiredPrice)
+                        }
+                        else {
+                            dispatch(alerts("error", "Price cannot be 0"))
                         }
                     }}>
                         List for sale
@@ -43,10 +44,10 @@ function ListingOptions({ vehicle, settings }) {
                     :
                     <button onClick={() => {
                         if (desiredPrice > 0) {
-                            listAuction(vehicle.injected.id, desiredPrice).then((receipt) => {
-                                console.log(receipt);
-                                dispatch(fetchMyData());
-                            });
+                            listAuction(vehicle.injected.id, desiredPrice)
+                        }
+                        else {
+                            dispatch(alerts("error", "Price cannot be 0"))
                         }
                     }}>
                         List auction

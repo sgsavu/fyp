@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { getUserAccount, concludeAuction, setVehiclePrice, removeFromSale, getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists } from "../utils/BlockchainGateway";
 import { fetchMyData } from '../../redux/data/dataActions';
+import { alerts } from '../../redux/app/appActions';
 
 
-function ListedVehicleOptions({vehicle,settings}) {
+function ListedVehicleOptions({ vehicle, settings }) {
 
     const dispatch = useDispatch();
     const data = useSelector((state) => state.data);
@@ -28,50 +29,44 @@ function ListedVehicleOptions({vehicle,settings}) {
     return (
         <div>
             <p>
-                {isAuction ? topBidder != "0x0000000000000000000000000000000000000000"? "Highest Bid: ":"Starting price: " : "Price: "}
+                {isAuction ? topBidder != "0x0000000000000000000000000000000000000000" ? "Highest Bid: " : "Starting price: " : "Price: "}
                 {displayPrice} {myPrefferedCurrency}</p>
 
-            {isAuction ? 
-            <div>
-                {topBidder != "0x0000000000000000000000000000000000000000" ? 
-                <button onClick={() => {
-                    concludeAuction(vehicle.injected.id).then((receipt) => {
-                        console.log(receipt);
-                        dispatch(fetchMyData());
-                    });
-                }}>
-                    Conclude Auction
-                </button> 
-                : 
-                null
-                }
-
-            </div> 
-            : 
-            <div>
+            {isAuction ?
                 <div>
-                    <input type="number" value={desiredPrice} onChange={(e) => {setDesiredPrice(e.target.value)}}></input>
-                    <label>{myPrefferedCurrency}</label>
-                    <button onClick={() => {
-                    if (desiredPrice>0){
-                        setVehiclePrice(vehicle.injected.id,desiredPrice).then((receipt) => {
-                            console.log(receipt);
-                            dispatch(fetchMyData());
-                        });
+                    {topBidder != "0x0000000000000000000000000000000000000000" ?
+                        <button onClick={() => {
+                            concludeAuction(vehicle.injected.id)
+                        }}>
+                            Conclude Auction
+                        </button>
+                        :
+                        null
                     }
-                }}>
-                    Update Price
-                </button>
+
                 </div>
-            </div>
+                :
+                <div>
+                    <div>
+                        <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
+                        <label>{myPrefferedCurrency}</label>
+                        <button onClick={() => {
+                            if (desiredPrice > 0) {
+                                setVehiclePrice(vehicle.injected.id, desiredPrice)
+                            }
+                            else {
+                                dispatch(alerts("error", "Cannot set price to 0."))
+                            }
+                        }}>
+                            Update Price
+                        </button>
+                    </div>
+                </div>
             }
             <button onClick={() => {
-                    removeFromSale(vehicle.injected.id).then((receipt) => {
-                        console.log(receipt);
-                        dispatch(fetchMyData());
-                    });
-                }}>
-                    Delist Vehicle
+                removeFromSale(vehicle.injected.id)
+            }}>
+                Delist Vehicle
             </button>
 
 

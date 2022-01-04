@@ -5,7 +5,7 @@ const initialState = {
   saleVehicles: [],
   allVehicles: [],
   displayCurrency: "GBP",
-  myRole: roles.USER_ROLE,
+  myRole: roles.VIEWER_ROLE,
   myBids: []
 };
 

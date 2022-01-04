@@ -5,13 +5,13 @@ import * as IoIcons from 'react-icons/io';
 
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import '../styles/Navbar.css';
+import '../../styles/Navbar.css';
 import { IconContext } from 'react-icons';
-import { getSidebarFor } from './utils/PermissionsAndRoles';
-import { fetchMyData, refresh } from '../redux/data/dataActions';
+import { getSidebarFor } from '../utils/PermissionsAndRoles';
+import { fetchMyData, refresh } from '../../redux/data/dataActions';
 import { MyBids } from './SidebarData';
-import SelectNetwork from './SelectNetwork';
-import AccountStatus from './views/AccountStatus';
+import SelectNetwork from '../SelectNetwork';
+import AccountStatus from '../views/AccountStatus';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -21,17 +21,12 @@ function Navbar() {
   const toggleVisibility = () => setVisible(!visible);
   var sidebar = getSidebarFor(data.myRole)
 
-  if (data.myBids.length!=0)
-    sidebar = [...sidebar,MyBids]
-
-
   return (
     <IconContext.Provider value={{ color: '#fff' }}>
       <div className='navbar'>
         <FaIcons.FaBars className='menu-bars' onClick={toggleVisibility} />
         <AccountStatus/>
         <SelectNetwork/>
-        
       </div>
       <nav className={visible ? 'nav-menu active' : 'nav-menu'}>
         <ul className='nav-menu-items' onClick={toggleVisibility}>
@@ -39,9 +34,6 @@ function Navbar() {
             <AiIcons.AiOutlineClose className='menu-bars' />
           </li>
           {sidebar.map((item, index) => {
-            if (item.path=="/mybids")
-              if (data.myBids.length==0)
-                console.log("bruh")
             return (
               <li key={index} className={item.cName}>
                 <Link to={item.path}>
