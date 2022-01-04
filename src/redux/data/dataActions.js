@@ -3,7 +3,7 @@ import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
 import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount, getVehiclePrice } from "../../components/utils/BlockchainGateway";
 import { alerts, updateDataState } from "../app/appActions";
-import { subscribeToSaleStatus, subscribeToSaleStatusFalse, subscribeToSaleStatusTrue } from "./eventSubscriber";
+import { subscribeToNewPrice, subscribeToSaleStatus, subscribeToSaleStatusFalse, subscribeToSaleStatusTrue, subscribeToTransfers } from "./eventSubscriber";
 
 
 function injectTokenId(vehicle, tokenId) {
@@ -11,7 +11,7 @@ function injectTokenId(vehicle, tokenId) {
   vehicle.injected.id = tokenId
 }
 
-async function injectPrice(vehicle) {
+export async function injectPrice(vehicle) {
   vehicle.injected.price = await getVehiclePrice(vehicle.injected.id)
   vehicle.injected.display_price = await weiToMyCurrency(vehicle.injected.price)
 }
@@ -67,10 +67,11 @@ async function getVehiclesForAccount(account) {
 }
 
 function getMyBids(allVehicles) {
-  let myBids = []
-  for (var i = 0; i < allVehicles.length; i++) {
-    if (allVehicles[i].injected.hasOwnProperty('bid'))
-      myBids.push(allVehicles[i])
+  let myBids = {}
+  for (const [tokenId, metadata] of Object.entries(allVehicles)) {
+    if (metadata.injected.hasOwnProperty('bid')) {
+    myBids[tokenId] = metadata
+    }
   }
   return myBids
 }
@@ -80,12 +81,15 @@ export function getDefaultVehicles() {
     let allVehicles = await getAllVehicles()
     let saleVehicles = getSaleVehicles(allVehicles)
 
-   
+    dispatch(subscribeToTransfers())
+    dispatch(subscribeToSaleStatus())
+    dispatch(subscribeToNewPrice())
 
     console.log("all", allVehicles)
     console.log("sale", saleVehicles)
-    dispatch(updateDataState({ field: "allVehicles", value: Object.values(allVehicles) }));
+    dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
     dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
+
   }
 }
 
@@ -94,9 +98,10 @@ export function getAuthenticatedVehicles() {
     let myVehicles = await getVehiclesForAccount(await getUserAccount())
     let myBids = getMyBids(await store.getState().data.allVehicles)
     
-    dispatch(subscribeToSaleStatus(Object.keys(myVehicles)))
 
-    dispatch(updateDataState({ field: "myVehicles", value: Object.values(myVehicles) }));
+    console.log("myVehicles", myVehicles)
+    console.log("myBids", myBids)
+    dispatch(updateDataState({ field: "myVehicles", value: myVehicles }));
     dispatch(updateDataState({ field: "myBids", value: myBids }));
   }
 }

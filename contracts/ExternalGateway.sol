@@ -5,6 +5,7 @@ import "./Vehicle.sol";
 contract ExternalGateway is Vehicle {
 
     event NewPrice(uint256 indexed tokenId, uint256 price);
+    event NewTopBidder(uint256 indexed tokenId, address indexed topBidder);
 
     function tokenURI(uint256 tokenId)
         public
@@ -143,6 +144,8 @@ contract ExternalGateway is Vehicle {
         _refundCurentTopBidder(tokenId);
         _setVehiclePrice(tokenId, msg.value);
         _setTopBidder(tokenId, msg.sender);
+        emit NewPrice(tokenId, msg.value);
+        emit NewTopBidder(tokenId, msg.sender);
     }
 
     function createVehicle(string memory uri)
@@ -156,6 +159,7 @@ contract ExternalGateway is Vehicle {
     function destroyVehicle(uint256 _tokenId) external {
         _removeFromSale(_tokenId);
         burn(_tokenId);
+        emit SaleStatus(_tokenId, false, false);
     }
 
     function getIfTokenExists(uint256 tokenId) external view returns (bool) {

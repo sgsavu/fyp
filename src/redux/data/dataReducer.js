@@ -1,12 +1,12 @@
 import { actions, roles } from "../../components/utils/PermissionsAndRoles";
 
 const initialState = {
-  myVehicles: [],
-  saleVehicles: [],
-  allVehicles: [],
+  myVehicles: {},
+  saleVehicles: {},
+  allVehicles: {},
+  myBids: {},
   displayCurrency: "GBP",
   myRole: roles.VIEWER_ROLE,
-  myBids: []
 };
 
 const dataReducer = (state = initialState, action) => {

@@ -7,7 +7,7 @@ function MyVehicles() {
 
   const data = useSelector((state) => state.data);
   const app = useSelector((state) => state.app);
-  const vehicleList = data.myVehicles
+  const vehicleList = Object.values(data.myVehicles)
 
   return (
     <div>

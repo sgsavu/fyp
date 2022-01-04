@@ -5,7 +5,7 @@ import store from "../store";
 import { ALL_TEMPLATES, getNetworkRpcUrl, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState, updateDataState } from "../app/appActions";
-import { clearMyData, fetchMyData } from "../data/dataActions";
+import { clearMyData } from "../data/dataActions";
 import { roles } from "../../components/utils/PermissionsAndRoles";
 
 

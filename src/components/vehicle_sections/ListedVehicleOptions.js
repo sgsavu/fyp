@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { getUserAccount, concludeAuction, setVehiclePrice, removeFromSale, getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder, getTopBid, getIfExists } from "../utils/BlockchainGateway";
-import { fetchMyData } from '../../redux/data/dataActions';
 import { alerts } from '../../redux/app/appActions';
 
 

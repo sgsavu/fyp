@@ -8,8 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import '../../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../utils/PermissionsAndRoles';
-import { fetchMyData, refresh } from '../../redux/data/dataActions';
-import { MyBids } from './SidebarData';
 import SelectNetwork from '../SelectNetwork';
 import AccountStatus from '../views/AccountStatus';
 

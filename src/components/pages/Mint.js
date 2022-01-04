@@ -39,8 +39,6 @@ const Mint = () => {
             console.log(ipfsBaseUrl + addedMetaData.path);
             mint(ipfsBaseUrl + addedMetaData.path)
                 .then((receipt) => {
-                    console.log(receipt);
-                    dispatch(fetchMyData());
                     dispatch(alerts("other","Transaction succesfful"))
                 }, (error) => {
                     dispatch(alerts("other",`Transaction failed: ${error}`))

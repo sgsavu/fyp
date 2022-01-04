@@ -14,16 +14,6 @@ function App() {
   const data = useSelector((state) => state.data);
   const app = useSelector((state) => state.app);
 
-  function bruhski () {
-    if (blockchain.smartContract)
-
-    blockchain.smartContract.events.Transfer({
-      filter: { tokenId: "2" },
-      fromBlock: 0,
-  }, function(error, event){ console.log(event); })
-  
-  }
-
   useEffect(async () => {
     await dispatch(initApp())
     await dispatch(login())
@@ -49,6 +39,8 @@ function App() {
       dispatch(updateAppNetwork(chain))
     });
   }
+
+  console.log(data.saleVehicles)
 
   return (
     <div>

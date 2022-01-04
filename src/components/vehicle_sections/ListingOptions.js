@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { listForSale, listAuction } from "../utils/BlockchainGateway";
 import { useDispatch } from 'react-redux';
-import { fetchMyData } from '../../redux/data/dataActions';
 import { alerts } from '../../redux/app/appActions';
 
 

@@ -11,11 +11,10 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
 
-    event Received(address indexed depositer, uint256 indexed amount);
+    event Received(uint256 indexed tokenId, address indexed depositer, uint256 amount);
     event SaleStatus(uint256 indexed tokenId, bool status, bool isAuction);
 
     receive() external payable {
-        emit Received(msg.sender, msg.value);
     }
 
     struct VehicleInfo {

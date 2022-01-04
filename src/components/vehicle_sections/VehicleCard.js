@@ -21,6 +21,7 @@ const VehicleCard = ({vehicle}) => {
             <p>{vehicle.attributes.year}</p>
             <p>{vehicle.attributes.company}</p>
             <p>{vehicle.attributes.model}</p>
+            <p>{vehicle.injected.hasOwnProperty('display_price')?vehicle.injected.display_price:null}</p>
             <Link to={{
                 pathname: "/vehicle",
                 state: { metadata: vehicle },

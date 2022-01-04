@@ -171,7 +171,6 @@ export const listAuction = async (vehicleId, price) => {
         })
         .then((receipt) => {
             console.log(receipt);
-            //dispatch(fetchAllData(blockchain.account));
         });
 }
 
@@ -186,7 +185,6 @@ export const listForSale = async (vehicleId, price) => {
         })
         .then((receipt) => {
             console.log(receipt);
-            //(fetchAllData(blockchain.account));
         });
 }
 
@@ -200,7 +198,6 @@ export const removeFromSale = async (vehicleId) => {
         })
         .then((receipt) => {
             console.log(receipt);
-            //dispatch(fetchAllData(blockchain.account));
         });
 }
 

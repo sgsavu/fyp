@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getIfIsTopBidder, getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
-import { fetchMyData } from '../../redux/data/dataActions';
 import { alerts } from '../../redux/app/appActions';
 
 function PurchaseOptions({ vehicle, settings }) {
@@ -38,12 +37,9 @@ function PurchaseOptions({ vehicle, settings }) {
                             <label>{myPrefferedCurrency}</label>
                             <button onClick={() => {
                                 if (desiredPrice > displayPrice)
-                                    bidVehicle(vehicle.injected.id, desiredPrice).then((receipt) => {
-                                        console.log(receipt);
-                                        dispatch(fetchMyData());
-                                    });
+                                    bidVehicle(vehicle.injected.id, desiredPrice)
                                 else
-                                    alert("Your price needs to be higher than the current top bid.")
+                                    dispatch(alerts("other","Your price needs to be higher than the current top bid."))
                             }}>
                                 Bid
                             </button>
@@ -63,10 +59,7 @@ function PurchaseOptions({ vehicle, settings }) {
                     :
                     <button onClick={() => {
                         if (blockchain.account) {
-                            buyVehicle(vehicle.injected.id).then((receipt) => {
-                                console.log(receipt);
-                                dispatch(fetchMyData());
-                            });
+                            buyVehicle(vehicle.injected.id)
                         }
                         else { dispatch(alerts("other","You need to login.")) }
                     }}>
