@@ -35,7 +35,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                 <div>
                     {topBidder != "0x0000000000000000000000000000000000000000" ?
                         <button onClick={() => {
-                            concludeAuction(vehicle.injected.id)
+                            dispatch(concludeAuction(vehicle.injected.id))
                         }}>
                             Conclude Auction
                         </button>
@@ -51,10 +51,10 @@ function ListedVehicleOptions({ vehicle, settings }) {
                         <label>{myPrefferedCurrency}</label>
                         <button onClick={() => {
                             if (desiredPrice > 0) {
-                                setVehiclePrice(vehicle.injected.id, desiredPrice)
+                                dispatch(setVehiclePrice(vehicle.injected.id, desiredPrice))
                             }
                             else {
-                                dispatch(alerts("error", "Cannot set price to 0."))
+                                dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))
                             }
                         }}>
                             Update Price
@@ -63,7 +63,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                 </div>
             }
             <button onClick={() => {
-                removeFromSale(vehicle.injected.id)
+                dispatch(removeFromSale(vehicle.injected.id))
             }}>
                 Delist Vehicle
             </button>

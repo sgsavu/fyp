@@ -3,8 +3,6 @@ import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
 import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount, getVehiclePrice } from "../../components/utils/BlockchainGateway";
 import { alerts, updateDataState } from "../app/appActions";
-import { subscribeToNewPrice, subscribeToSaleStatus, subscribeToSaleStatusFalse, subscribeToSaleStatusTrue, subscribeToTransfers } from "./eventSubscriber";
-
 
 function injectTokenId(vehicle, tokenId) {
   vehicle.injected = {}
@@ -16,6 +14,11 @@ export async function injectPrice(vehicle) {
   vehicle.injected.display_price = await weiToMyCurrency(vehicle.injected.price)
 }
 
+export async function injectIfTopBidder(vehicle) {
+  if (await getTopBidder(vehicle.injected.id) == await getUserAccount())
+    vehicle.injected.bid = true
+}
+
 export async function getVehicleInfo(vehicleID) {
   let vehicleURI = await getVehicleURI(vehicleID)
   let vehicleMetadata = await getVehicleMetadata(vehicleURI)
@@ -24,8 +27,7 @@ export async function getVehicleInfo(vehicleID) {
     await injectPrice(vehicleMetadata)
     if (await getIfAuction(vehicleID)) {
       vehicleMetadata.injected.auction = true
-      if (await getTopBidder(vehicleID) == await getUserAccount())
-        vehicleMetadata.injected.bid = true
+      await injectIfTopBidder(vehicleMetadata)
     }
   }
   return vehicleMetadata
@@ -70,7 +72,7 @@ function getMyBids(allVehicles) {
   let myBids = {}
   for (const [tokenId, metadata] of Object.entries(allVehicles)) {
     if (metadata.injected.hasOwnProperty('bid')) {
-    myBids[tokenId] = metadata
+      myBids[tokenId] = metadata
     }
   }
   return myBids
@@ -80,10 +82,6 @@ export function getDefaultVehicles() {
   return async (dispatch) => {
     let allVehicles = await getAllVehicles()
     let saleVehicles = getSaleVehicles(allVehicles)
-
-    dispatch(subscribeToTransfers())
-    dispatch(subscribeToSaleStatus())
-    dispatch(subscribeToNewPrice())
 
     console.log("all", allVehicles)
     console.log("sale", saleVehicles)
@@ -97,7 +95,6 @@ export function getAuthenticatedVehicles() {
   return async (dispatch) => {
     let myVehicles = await getVehiclesForAccount(await getUserAccount())
     let myBids = getMyBids(await store.getState().data.allVehicles)
-    
 
     console.log("myVehicles", myVehicles)
     console.log("myBids", myBids)
@@ -117,8 +114,7 @@ export const clearMyData = () => {
 
 export const fetchMyData = () => {
   return async (dispatch) => {
-    console.log("FETCHED MY DATA")
-    dispatch(alerts("loading", "Fetching data..."))
+    dispatch(alerts({ alert: "loading", message: "Fetching data..." }))
     if (await store.getState().blockchain.account || await store.getState().blockchain.walletProvider) {
       dispatch(getDefaultVehicles())
       dispatch(getAuthenticatedVehicles())
@@ -127,7 +123,7 @@ export const fetchMyData = () => {
     else {
       await dispatch(getDefaultVehicles())
     }
-    dispatch(alerts("loading"))
+    dispatch(alerts({ alert: "loading" }))
   };
 };
 
@@ -139,7 +135,7 @@ export const updatePrefferedCurrency = (value) => {
 
 export const refreshDisplayPrices = () => {
   return async (dispatch) => {
-    dispatch(alerts("loading", "Refreshing display prices."))
+    dispatch(alerts({ alert: "loading", message: "Refreshing display prices." }))
     try {
       let forsale = await store.getState().data.saleVehicles
       for (const element in forsale.auctions) {
@@ -150,8 +146,8 @@ export const refreshDisplayPrices = () => {
       }
       dispatch(updateDataState({ field: "saleVehicles", value: forsale }));
     } catch (err) {
-      dispatch(alerts("error", err.message))
+      dispatch(alerts({ alert: "error", message: err.message }))
     }
-    dispatch(alerts("loading"))
+    dispatch(alerts({ alert: "loading" }))
   };
 }

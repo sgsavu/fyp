@@ -139,6 +139,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         uint256 currentTopBid = _getVehiclePrice(tokenId);
         if (currentTopBid != 0 && currentTopBidder != address(0))
             _secureMoneyTransfer(currentTopBidder, currentTopBid);
+        
     }
 
     function _resetAuction(uint256 tokenId) internal {

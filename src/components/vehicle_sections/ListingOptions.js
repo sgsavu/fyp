@@ -32,10 +32,10 @@ function ListingOptions({ vehicle, settings }) {
                 {listingType == "INSTANT" ?
                     <button onClick={() => {
                         if (desiredPrice > 0) {
-                            listForSale(vehicle.injected.id, desiredPrice)
+                            dispatch(listForSale(vehicle.injected.id, desiredPrice))
                         }
                         else {
-                            dispatch(alerts("error", "Price cannot be 0"))
+                            dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))
                         }
                     }}>
                         List for sale
@@ -43,10 +43,10 @@ function ListingOptions({ vehicle, settings }) {
                     :
                     <button onClick={() => {
                         if (desiredPrice > 0) {
-                            listAuction(vehicle.injected.id, desiredPrice)
+                            dispatch(listAuction(vehicle.injected.id, desiredPrice))
                         }
                         else {
-                            dispatch(alerts("error", "Price cannot be 0"))
+                            dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))
                         }
                     }}>
                         List auction

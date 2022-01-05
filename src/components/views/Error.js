@@ -16,7 +16,7 @@ function Error() {
   }
 
   const dismiss = () =>{
-    dispatch(alerts("error"))
+    dispatch(alerts({ alert: "error" }))
   }
 
   const errorBox = () => {

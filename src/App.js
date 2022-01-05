@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import './styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { initApp, loadSmartContract, login, updateAppAccount, updateAppNetwork} from "./redux/blockchain/blockchainActions";
+import { initApp, loadSmartContract, login, subscribeToChainEvents, updateAppAccount, updateAppNetwork} from "./redux/blockchain/blockchainActions";
 import NormalView from "./components/views/NormalView";
 import { fetchMyData } from "./redux/data/dataActions";
 
@@ -19,9 +19,9 @@ function App() {
     await dispatch(login())
   }, []);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (app.initializedApp) {
-      dispatch(loadSmartContract())
+      await dispatch(loadSmartContract())
     }
   }, [blockchain.currentNetwork])
 
@@ -39,8 +39,6 @@ function App() {
       dispatch(updateAppNetwork(chain))
     });
   }
-
-  console.log(data.saleVehicles)
 
   return (
     <div>

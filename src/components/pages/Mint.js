@@ -37,13 +37,8 @@ const Mint = () => {
 
             const addedMetaData = await ipfsClient.add(JSON.stringify(metaDataObj));
             console.log(ipfsBaseUrl + addedMetaData.path);
-            mint(ipfsBaseUrl + addedMetaData.path)
-                .then((receipt) => {
-                    dispatch(alerts("other","Transaction succesfful"))
-                }, (error) => {
-                    dispatch(alerts("other",`Transaction failed: ${error}`))
-                });
-            dispatch(alerts("other","Transaction sent for processing"))
+            dispatch(mint(ipfsBaseUrl + addedMetaData.path))
+            dispatch(alerts({ alert: "other", message: "Transaction sent for processing."}))
             dispatch(finishSubmit());
 
         } catch (err) {

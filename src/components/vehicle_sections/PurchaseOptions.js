@@ -37,9 +37,10 @@ function PurchaseOptions({ vehicle, settings }) {
                             <label>{myPrefferedCurrency}</label>
                             <button onClick={() => {
                                 if (desiredPrice > displayPrice)
-                                    bidVehicle(vehicle.injected.id, desiredPrice)
+                                    dispatch(bidVehicle(vehicle.injected.id, desiredPrice))
                                 else
-                                    dispatch(alerts("other","Your price needs to be higher than the current top bid."))
+                                    dispatch(alerts({ alert: "other", message: "Your price needs to be higher than the current top bid." }))
+
                             }}>
                                 Bid
                             </button>
@@ -59,9 +60,11 @@ function PurchaseOptions({ vehicle, settings }) {
                     :
                     <button onClick={() => {
                         if (blockchain.account) {
-                            buyVehicle(vehicle.injected.id)
+                            dispatch(buyVehicle(vehicle.injected.id))
                         }
-                        else { dispatch(alerts("other","You need to login.")) }
+                        else {
+                            dispatch(alerts({ alert: "other", message: "You need to login." }))
+                        }
                     }}>
                         Buy
                     </button>

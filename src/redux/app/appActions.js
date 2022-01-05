@@ -1,7 +1,6 @@
-export const alerts = (alert,payload) => {
+export const alerts = (payload) => {
     return {
         type: "ALERT",
-        alert: alert,
         payload: payload,
     }
 }
@@ -26,3 +25,18 @@ export const updateAppState = (payload) => {
         payload: payload,
     }
 }
+
+export const entryDataState = (payload) => {
+    return {
+        type: "ENTRY_DATA_STATE",
+        payload: payload,
+    }
+}
+
+export const deleteFieldKey = (payload) => {
+    return {
+        type: "DELETE_FIELD_KEY",
+        payload: payload,
+    }
+}
+

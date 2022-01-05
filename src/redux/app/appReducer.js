@@ -15,9 +15,9 @@ const appReducer = (state = initialState, action) => {
                 [action.payload.field]: action.payload.value,
             };
         case "ALERT":
-            const field = state.alerts[action.alert]
-            if (action.payload)
-                field.push(action.payload)
+            const field = state.alerts[action.payload.alert]
+            if (action.payload.message)
+                field.push(action.payload.message)
             else
                 field.pop()
             console.log(field)
@@ -25,7 +25,7 @@ const appReducer = (state = initialState, action) => {
                 ...state,
                 alerts: {
                     ...state.alerts,
-                    [action.alert]: field
+                    [action.payload.alert]: field
                 }
             }
         default:

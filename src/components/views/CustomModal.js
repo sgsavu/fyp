@@ -12,7 +12,7 @@ function CustomModal() {
 
 
   const dismiss = () =>{
-    dispatch(alerts("other"))
+    dispatch(alerts({ alert: "other" }))
   }
 
   const alertBox = () => {

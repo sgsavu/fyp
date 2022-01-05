@@ -1,6 +1,7 @@
 import { roles } from "./PermissionsAndRoles";
 import store from "../../redux/store";
 import { myCurrencyToWei } from './PricesCoinsExchange'
+import { alerts } from "../../redux/app/appActions";
 
 
 export async function getUserAccount() {
@@ -122,108 +123,6 @@ export async function getOwnerAtIndex(token, i) {
         .call()
 }
 
-export async function getVehicleHistory(token) {
-
-    let listOfOwners = []
-    const vehicleHistoryLength = await getTotalNrOfOwners(token)
-    for (var i = 0; i < vehicleHistoryLength; i++) {
-        listOfOwners.push(await getOwnerAtIndex(token, i))
-    }
-
-    return listOfOwners;
-}
-
-export async function buyVehicle(vehicleId) {
-
-    return await store.getState().blockchain.smartContract.methods
-        .buyVehicle(vehicleId)
-        .send({ from: await getUserAccount(), value: await getVehiclePrice(vehicleId) })
-        .once("error", (err) => {
-            console.log(err);
-        })
-        .then((receipt) => {
-            console.log(receipt);
-            //dispatch(fetchAllData(blockchain.account));
-        });
-}
-
-export async function bidVehicle(vehicleId, price) {
-    return await store.getState().blockchain.smartContract.methods
-        .bidVehicle(vehicleId)
-        .send({ from: await getUserAccount(), value: await myCurrencyToWei(price) })
-        .once("error", (err) => {
-            console.log(err);
-        })
-        .then((receipt) => {
-            console.log(receipt);
-            //dispatch(fetchAllData(blockchain.account));
-        });
-}
-
-
-export const listAuction = async (vehicleId, price) => {
-
-    return await store.getState().blockchain.smartContract.methods
-        .listAuction(vehicleId, await myCurrencyToWei(price))
-        .send({ from: await getUserAccount() })
-        .once("error", (err) => {
-            console.log(err);
-        })
-        .then((receipt) => {
-            console.log(receipt);
-        });
-}
-
-
-export const listForSale = async (vehicleId, price) => {
-
-    return await store.getState().blockchain.smartContract.methods
-        .listForSale(vehicleId, await myCurrencyToWei(price))
-        .send({ from: await getUserAccount() })
-        .once("error", (err) => {
-            console.log(err);
-        })
-        .then((receipt) => {
-            console.log(receipt);
-        });
-}
-
-export const removeFromSale = async (vehicleId) => {
-
-    return await store.getState().blockchain.smartContract.methods
-        .removeFromSale(vehicleId)
-        .send({ from: await getUserAccount() })
-        .once("error", (err) => {
-            console.log(err);
-        })
-        .then((receipt) => {
-            console.log(receipt);
-        });
-}
-
-export async function setVehiclePrice(vehicleId, price) {
-    return await store.getState().blockchain.smartContract.methods
-        .setVehiclePrice(vehicleId, await myCurrencyToWei(price))
-        .send({ from: await getUserAccount() })
-        .once("error", (err) => {
-            console.log(err);
-        })
-        .then((receipt) => {
-            console.log(receipt);
-            //dispatch(refresh("FORSALE_VEHICLES"));
-        });
-}
-
-
-export async function concludeAuction(vehicleId) {
-    return await store.getState().blockchain.smartContract.methods
-        .concludeAuction(vehicleId)
-        .send({ from: await getUserAccount() })
-        .once("error", (err) => {
-            console.log(err);
-        })
-}
-
 export async function getIfIsTopBidder(id) {
     return await getTopBidder(id) == await getUserAccount()
 }
@@ -232,8 +131,131 @@ export async function getIfIsOwner(vehicleId) {
     return (await getUserAccount() == await ownerOf(vehicleId))
 }
 
-export async function mint(uri) {
-    return await store.getState().blockchain.smartContract.methods
-        .createVehicle(uri)
-        .send({ from: await getUserAccount() })
+
+export function buyVehicle(vehicleId) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .buyVehicle(vehicleId)
+            .send({ from: await getUserAccount(), value: await getVehiclePrice(vehicleId) })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+export function bidVehicle(vehicleId, price) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .bidVehicle(vehicleId)
+            .send({ from: await getUserAccount(), value: await myCurrencyToWei(price) })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+
+export const listAuction = (vehicleId, price) => {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .listAuction(vehicleId, await myCurrencyToWei(price))
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+
+
+export const listForSale = (vehicleId, price) => {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .listForSale(vehicleId, await myCurrencyToWei(price))
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+export const removeFromSale = (vehicleId) => {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .removeFromSale(vehicleId)
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+export function setVehiclePrice(vehicleId, price) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .setVehiclePrice(vehicleId, await myCurrencyToWei(price))
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+
+export function concludeAuction(vehicleId) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .concludeAuction(vehicleId)
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+export function mint(uri) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .createVehicle(uri)
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+            })
+            .then((receipt) => {
+                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+            });
+    }
+}
+
+function formatTx(tx) {
+    let result = ""
+    /*
+    for (const [key, value] of Object.entries(tx)) {
+        result = result + `\n${key}: ${value}`
+    }
+    */
+    result = result + `\nBlock Nr:${tx.blockNumber}`
+    result = result + `\nTx Index:${tx.transactionIndex}`
+    return result
 }

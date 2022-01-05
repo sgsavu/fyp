@@ -7,6 +7,7 @@ import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState, updateDataState } from "../app/appActions";
 import { clearMyData } from "../data/dataActions";
 import { roles } from "../../components/utils/PermissionsAndRoles";
+import { subscribeToNewPrice, subscribeToSaleStatus, subscribeToTransfers } from "../data/eventSubscriber";
 
 
 const getDeployedChains = (contract) => {
@@ -59,16 +60,14 @@ const switchChain = async (newNetwork) => {
 
 export const initApp = () => {
   return async (dispatch) => {
-    dispatch(alerts("loading", "Initializing"))
     try {
       await dispatch(updateAppState({ field: "initializedApp", value: true }))
       await dispatch(updateBlockchainState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
       await dispatch(updateAppNetwork("0x3"))
     }
     catch (err) {
-      dispatch(alerts("error", err.message))
+      dispatch(alerts({ alert: "error", message: err.message }))
     }
-    dispatch(alerts("loading"))
   }
 }
 
@@ -87,7 +86,7 @@ export const login = () => {
         await dispatch(updateAppNetwork(network))
 
     } catch (err) {
-      dispatch(alerts("error", err.message))
+      dispatch(alerts({ alert: "error", message: err.message }))
     }
   }
 }
@@ -99,7 +98,7 @@ export const signout = () => {
       dispatch(updateAppAccount(null));
       dispatch(clearMyData())
     } catch (err) {
-      dispatch(alerts("error", err.message))
+      dispatch(alerts({ alert: "error", message: err.message }))
     }
   }
 }
@@ -107,7 +106,6 @@ export const signout = () => {
 export const loadSmartContract = () => {
   return async (dispatch) => {
 
-    dispatch(alerts("loading", "Fetching smart contract for new network."))
     try {
       const currentNetwork = await getCurrentNetwork()
       if (!(await store.getState().blockchain.walletProvider)) {
@@ -119,12 +117,22 @@ export const loadSmartContract = () => {
         ExternalGatewayContract.abi,
         availableNetworks[currentNetwork]
       );
-      dispatch(updateBlockchainState({ field: "smartContract", value: SmartContractObj }))
+      await dispatch(updateBlockchainState({ field: "smartContract", value: SmartContractObj }))
+
+      dispatch(subscribeToChainEvents())
+
     }
     catch (err) {
-      dispatch(alerts("error", err.message))
+      dispatch(alerts({ alert: "error", message: err.message }))
     }
-    dispatch(alerts("loading"))
+  }
+}
+
+export const subscribeToChainEvents = () => {
+  return async (dispatch) => {
+    dispatch(subscribeToTransfers())
+    dispatch(subscribeToSaleStatus())
+    dispatch(subscribeToNewPrice())
   }
 }
 
@@ -181,7 +189,7 @@ export const updateAppNetwork = (newNetwork) => {
         dispatch(updateBlockchainState({ field: "currentNetwork", value: newNetwork }))
     }
     catch (err) {
-      dispatch(alerts("error", err.message))
+      dispatch(alerts({ alert: "error", message: err.message }))
     }
   };
 };
