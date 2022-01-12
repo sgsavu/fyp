@@ -1,0 +1,10 @@
+POST http://localhost:5000/mint
+Content-Type: application/json
+
+{
+    "aye":"aye"
+}
+
+###
+
+GET http://localhost:5000/

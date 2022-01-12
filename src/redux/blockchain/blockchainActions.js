@@ -7,7 +7,7 @@ import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState, updateDataState } from "../app/appActions";
 import { clearMyData } from "../data/dataActions";
 import { roles } from "../../components/utils/PermissionsAndRoles";
-import { subscribeToNewPrice, subscribeToSaleStatus, subscribeToTransfers } from "../data/eventSubscriber";
+import { subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "../data/eventSubscriber";
 
 
 const getDeployedChains = (contract) => {
@@ -133,6 +133,7 @@ export const subscribeToChainEvents = () => {
     dispatch(subscribeToTransfers())
     dispatch(subscribeToSaleStatus())
     dispatch(subscribeToNewPrice())
+    dispatch(subscribeToNewTopBidder())
   }
 }
 

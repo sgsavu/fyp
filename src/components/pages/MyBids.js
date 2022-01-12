@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import VehicleCard from '../vehicle_sections/VehicleCard';
 
 
-const MyBids = () => {
+function MyBids(){
 
     const data = useSelector((state) => state.data);
     const app = useSelector((state) => state.app);
@@ -13,7 +13,8 @@ const MyBids = () => {
           {app.alerts.loading.length == 0 ? (
             <p>loading...</p>
           ) : (
-            data.myBids.map((vehicle, index) => {
+            Object.values(data.saleVehicles).map((vehicle, index) => {
+              if (vehicle.injected.bid)
               return (
                 <VehicleCard key={index} vehicle={vehicle}></VehicleCard>
               );

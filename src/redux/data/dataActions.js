@@ -116,8 +116,8 @@ export const fetchMyData = () => {
   return async (dispatch) => {
     dispatch(alerts({ alert: "loading", message: "Fetching data..." }))
     if (await store.getState().blockchain.account || await store.getState().blockchain.walletProvider) {
-      dispatch(getDefaultVehicles())
-      dispatch(getAuthenticatedVehicles())
+      await dispatch(getDefaultVehicles())
+      await dispatch(getAuthenticatedVehicles())
       await dispatch(updateDataState({ field: "myRole", value: await getRole(await getUserAccount()) }));
     }
     else {

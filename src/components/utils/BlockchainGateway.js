@@ -138,7 +138,7 @@ export function buyVehicle(vehicleId) {
             .buyVehicle(vehicleId)
             .send({ from: await getUserAccount(), value: await getVehiclePrice(vehicleId) })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -152,7 +152,7 @@ export function bidVehicle(vehicleId, price) {
             .bidVehicle(vehicleId)
             .send({ from: await getUserAccount(), value: await myCurrencyToWei(price) })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -167,7 +167,7 @@ export const listAuction = (vehicleId, price) => {
             .listAuction(vehicleId, await myCurrencyToWei(price))
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -183,7 +183,8 @@ export const listForSale = (vehicleId, price) => {
             .listForSale(vehicleId, await myCurrencyToWei(price))
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                console.log(err)
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -197,7 +198,7 @@ export const removeFromSale = (vehicleId) => {
             .removeFromSale(vehicleId)
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -211,7 +212,7 @@ export function setVehiclePrice(vehicleId, price) {
             .setVehiclePrice(vehicleId, await myCurrencyToWei(price))
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -226,7 +227,7 @@ export function concludeAuction(vehicleId) {
             .concludeAuction(vehicleId)
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
@@ -240,7 +241,7 @@ export function mint(uri) {
             .createVehicle(uri)
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err}` }))
+                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
             })
             .then((receipt) => {
                 dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))

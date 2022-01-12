@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import SearchFilter from '../filters/SearchFilter';
-import SortFilter from "../filters/SortFilter";
+import { useSelector } from "react-redux"; 
 import VehicleCard from "../vehicle_sections/VehicleCard";
-
+import { filterByAttributeValue, filterByInjectedValue, sorting } from "../filters/filters";
+import SearchFilter from "../filters/SearchFilter";
 
 
 const Marketplace = () => {
 
   const data = useSelector((state) => state.data);
-
   const [pageType, setPageType] = useState("instant");
   let vehicleList = data.saleVehicles[pageType];
   const [perPage, setPerPage] = useState(10);
   const [pageNr, setPageNr] = useState(0)
-  const myPrefferedCurrency = data.displayCurrency
-  const [filtered, setFiltered] = useState([]);
-  const [filteredPages, setPages] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [sortType, setSortType] = useState("descending")
 
   const nextPage = () => {
-    if (pageNr != filteredPages.length - 1)
+    if (pageNr != pages.length - 1)
       setPageNr(pageNr + 1)
   }
 
@@ -28,26 +25,37 @@ const Marketplace = () => {
       setPageNr(pageNr - 1)
   }
 
-  function splitIntoPages(filtered) {
-    const copy = Object.values(filtered).filter(() => true);
-    var temp = []
-    while (copy.length) {
-      temp = [...temp, copy.splice(0, perPage)]
+  const [pool, setPool] = useState([])
+  const [backupPool, setBackupPool] = useState([])
+
+  
+
+  function splitIntoPages(list) {
+    const copy = createCopy(list)
+    //const filter1 = filterByAttributeValue("company","213451235",copy)
+    const filter2 = sorting(copy,sortType)
+    var pages = []
+    while (filter2.length) {
+      pages = [...pages, filter2.splice(0, perPage)]
     }
-    setPages(temp)
+    setPages(pages)
+  }
+
+  function createCopy(list) {
+    const copy = list.filter(() => true);
+    return copy
   }
 
   useEffect(() => {
     if (vehicleList != undefined) {
-      splitIntoPages(vehicleList)
-      setFiltered(vehicleList)
+      setPool(Object.values(vehicleList))
+      setBackupPool(createCopy(Object.values(vehicleList)))
     }
-  }, [vehicleList,data])
+  }, [vehicleList])
 
   useEffect(() => {
-    splitIntoPages(filtered)
-  }, [filtered, setFiltered])
-
+    splitIntoPages(pool)
+  }, [pool])
 
   return (
     <div>
@@ -58,15 +66,17 @@ const Marketplace = () => {
         <button onClick={() => {
           setPageType("auctions")
         }}>AUCTIONS</button>
-        <SearchFilter in={vehicleList} out={setFiltered} default={vehicleList} />
-        <SortFilter in={filtered} out={splitIntoPages} />
+
+        <SearchFilter pool={pool} modifier={setPool} reset={backupPool}/>
+
         <div>
-          {filteredPages.length != 0 ? filteredPages[pageNr].map((vehicle, key) => {
+          {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
             return (
               <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
             );
           }) : <p>{pageType == "instant" ? "No vehicles are currently available for sale by instant buy." : "No vehicles are currently available for sale by auction."}</p>}
         </div>
+
         <button onClick={prevPage}>Prev</button>
         <p>{pageNr + 1}</p>
         <button onClick={nextPage}>Next</button>

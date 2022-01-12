@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const SearchFilter = ({ in: data, out: callback, default: dflt }) => {
+const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
 
     const [wordEntered, setWordEntered] = useState("");
+    const [localBackup, setLocalBackup] = useState([]);
+
+    useEffect(() => {
+        setLocalBackup(reset)
+    }, [])
 
     const handleFilter = (event) => {
         const searchWord = event.target.value;
         setWordEntered(searchWord);
-        const newFilter = data.filter((element) => {
-            return element.attributes.vhci.toLowerCase().includes(searchWord.toLowerCase());
+        const newFilter = localBackup.filter((element) => {
+            return element.attributes.vhcid.toLowerCase().includes(searchWord.toLowerCase());
         });
         if (searchWord === "") {
-            callback(dflt);
+            modifier(reset);
         } else {
-            callback(newFilter);
+            modifier(newFilter);
         }
     };
 
     const clearInput = () => {
-        callback(dflt);
+        modifier(reset);
         setWordEntered("");
     };
+
+    console.log(wordEntered)
 
     return (
         <div className="search">

@@ -51,6 +51,7 @@ export function subscribeToNewPrice() {
         const smartContract = await store.getState().blockchain.smartContract
         smartContract.events.NewPrice({
         }, function (error, event) {
+            console.log("NewPrice", event)
             if (!error)
                 dispatch(updatePrice(event.returnValues.tokenId))
         })
@@ -63,7 +64,8 @@ export function subscribeToNewTopBidder() {
         const smartContract = await store.getState().blockchain.smartContract
         const thisAccount = await getUserAccount()
         smartContract.events.NewTopBidder({
-        }, async function (error, event) {
+        },  function (error, event) {
+            console.log("NewTopBidder", event)
             if (!error)
                 dispatch(updateTopBidder(event.returnValues.tokenId))
         })
