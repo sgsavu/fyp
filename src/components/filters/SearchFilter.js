@@ -15,6 +15,7 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
         const newFilter = localBackup.filter((element) => {
             return element.attributes.vhcid.toLowerCase().includes(searchWord.toLowerCase());
         });
+        
         if (searchWord === "") {
             modifier(reset);
         } else {
@@ -26,8 +27,6 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
         modifier(reset);
         setWordEntered("");
     };
-
-    console.log(wordEntered)
 
     return (
         <div className="search">

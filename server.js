@@ -10,7 +10,15 @@ const { create } = require('ipfs-http-client')
 const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
 const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
 
-const { scramble, randomIntFromInterval } = require('./src/components/utils/CryptographyUtils.js')
+
+var fs = require('fs');
+var http = require('http');
+var https = require('https');
+var privateKey = fs.readFileSync('sslcert/localhost.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/localhost.crt', 'utf8');
+var credentials = { key: privateKey, cert: certificate };
+
+
 
 rpcUrls = {
   "0xa86a": 'https://api.avax.network/ext/bc/C/rpc',
@@ -23,6 +31,30 @@ rpcUrls = {
   '0x507': 'https://rpc.testnet.moonbeam.network',
   '0x4': 'https://rinkeby.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c',
   '0x3': 'https://ropsten.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c'
+}
+
+
+const scramble = (string) => {
+
+  var x = string.split('').sort(function () { return 0.5 - Math.random() }).join('');
+  function substitute(str) {
+    var pos = Math.floor(Math.random() * str.length);
+    return str.substring(0, pos) + getRandomLetter() + str.substring(pos + 1);
+  }
+  function getRandomLetter() {
+    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var pos = Math.floor(Math.random() * letters.length);
+    return letters.charAt(pos);
+  }
+  for (var i = 0; i < randomIntFromInterval(1, 10); i++) {
+    x = string.split('').sort(function () { return 0.5 - Math.random() }).join('');
+    x = substitute(x)
+  }
+  return x
+}
+
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 
@@ -39,8 +71,8 @@ const createMetaDataAndMint = async (data) => {
       created: Date.now(),
       updated: Date.now(),
       attributes: data.attributes,
-      nonce1: "121",
-      nonce2: "123"
+      nonce1: scramble(data.from),
+      nonce2: randomIntFromInterval(1, 1000000)
     };
 
     console.log(metaDataObj)
@@ -50,9 +82,9 @@ const createMetaDataAndMint = async (data) => {
 
     const tx = {
       nonce: web3Instance.utils.toHex(transactionCount),
-      value: web3Instance.utils.toHex(web3Instance.utils.toWei('0', 'ether')),
+      //value: web3Instance.utils.toHex(web3Instance.utils.toWei('0', 'ether')),
       gasLimit: web3Instance.utils.toHex(2100000),
-      gasPrice: web3Instance.utils.toHex(web3Instance.utils.toWei('6', 'gwei')),
+      //gasPrice: web3Instance.utils.toHex(web3Instance.utils.toWei('6', 'gwei')),
       from: data.from,
       to: smartContract._address,
       data: smartContract.methods.createVehicle(ipfsBaseUrl + addedMetaData.path).encodeABI()
@@ -90,8 +122,6 @@ const loadSmartContract = (chain) => {
 
 
 var deployedChains = getDeployedChains(ExternalGatewayContract)
-
-console.log(deployedChains)
 
 
 async function exists(tokenId) {
@@ -131,6 +161,9 @@ app.delete('/', (req, res) => {
   return res.send('Received a DELETE HTTP method');
 });
 
-app.listen(process.env.PORT, () =>
-  console.log(`Example app listening on port ${process.env.PORT}!`),
-);
+
+var httpsServer = https.createServer(credentials, app);
+
+
+httpsServer.listen(8443, () =>
+  console.log(`HTTPS Server listening on port 8443!`));

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux"; 
+import { useSelector } from "react-redux";
 import VehicleCard from "../vehicle_sections/VehicleCard";
 import { filterByAttributeValue, filterByInjectedValue, sorting } from "../filters/filters";
 import SearchFilter from "../filters/SearchFilter";
@@ -13,7 +13,9 @@ const Marketplace = () => {
   const [perPage, setPerPage] = useState(10);
   const [pageNr, setPageNr] = useState(0)
   const [pages, setPages] = useState([]);
-  const [sortType, setSortType] = useState("descending")
+  const [sortType, setSortType] = useState("ascending")
+
+  const [multipleFilter, setMultipleFilter] = useState([])
 
   const nextPage = () => {
     if (pageNr != pages.length - 1)
@@ -28,12 +30,18 @@ const Marketplace = () => {
   const [pool, setPool] = useState([])
   const [backupPool, setBackupPool] = useState([])
 
-  
+
 
   function splitIntoPages(list) {
-    const copy = createCopy(list)
-    //const filter1 = filterByAttributeValue("company","213451235",copy)
-    const filter2 = sorting(copy,sortType)
+    var copy = createCopy(list)
+    console.log(multipleFilter)
+
+    if (multipleFilter.length!=0)
+    multipleFilter.forEach((obj)=>{
+      copy = filterByAttributeValue(Object.keys(obj)[0],obj[Object.keys(obj)[0]],copy)
+    })
+    
+    const filter2 = sorting(copy, sortType)
     var pages = []
     while (filter2.length) {
       pages = [...pages, filter2.splice(0, perPage)]
@@ -55,9 +63,26 @@ const Marketplace = () => {
 
   useEffect(() => {
     splitIntoPages(pool)
-  }, [pool])
+  }, [pool, sortType, multipleFilter])
+
+
+  function getSelectValues(select) {
+    var result = [];
+    var options = select && select.options;
+    var opt;
+  
+    for (var i=0, iLen=options.length; i<iLen; i++) {
+      opt = options[i];
+      
+      if (opt.selected) {
+        result.push(JSON.parse(opt.value));
+      }
+    }
+    return result;
+  }
 
   return (
+
     <div>
       <div>
         <button onClick={() => {
@@ -67,8 +92,29 @@ const Marketplace = () => {
           setPageType("auctions")
         }}>AUCTIONS</button>
 
-        <SearchFilter pool={pool} modifier={setPool} reset={backupPool}/>
+        <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
+        <select onChange={(e) => { setSortType(e.target.value) }} >
+          <option value="ascending">
+            Ascending
+          </option>
+          <option value="descending">
+            Descending
+          </option>
+        </select>
 
+
+
+        <select multiple onChange={(e) => { setMultipleFilter(getSelectValues(e.target)) }}>
+          <option value='{"company":"213451235"}'>
+            Company 213451235
+          </option>
+          <option value='{"company":"123512"}'>
+            Company 123512
+          </option>
+          <option value='{"company":"0"}'>
+            Company 0 
+          </option>
+        </select>
         <div>
           {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
             return (

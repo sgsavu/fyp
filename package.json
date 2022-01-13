@@ -13,14 +13,17 @@
     "@truffle/hdwallet-provider": "^1.4.0",
     "all": "^0.0.0",
     "axios": "^0.24.0",
+    "babel": "^6.23.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chosen-js": "^1.8.7",
     "classnames": "^2.3.1",
+    "concurrently": "^7.0.0",
     "crypto": "^1.0.1",
     "ipfs-http-client": "^52.0.0",
     "keccak256": "^1.0.3",
     "moralis": "0.0.148",
+    "npm-run-all": "^4.1.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-dropzone": "^11.4.2",
@@ -41,7 +44,9 @@
   "scripts": {
     "start": "node server.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "bruh": "react-scripts start",
+    "bruh2": "node server.js",
+    "test": "npm-run-all -p -r bruh bruh2",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
