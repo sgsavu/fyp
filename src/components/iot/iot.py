@@ -26,9 +26,9 @@ def mint():
     print(tx)
     signed_tx = web3.eth.account.signTransaction(tx, private_key='3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd')
     print("aye")
-    web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    #web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
-
+mint()
 
 def makeForSale():
     tx = contract.functions.listForSale(0,1).buildTransaction({'nonce': web3.eth.getTransactionCount('0x41F71840346605b60B12CCaa19f7842c869f0095')})
@@ -37,7 +37,7 @@ def makeForSale():
     print("aye")
     web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
-makeForSale()
+#makeForSale()
 
 def increment_odometer(vehicleId):
     contract.functions.increaseOdometerValue(vehicleId).transact()

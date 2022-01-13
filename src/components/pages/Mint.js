@@ -35,6 +35,8 @@ const Mint = () => {
                 nonce2: randomIntFromInterval(1, 1000000)
             };
 
+            console.log(metaDataObj)
+
             const addedMetaData = await ipfsClient.add(JSON.stringify(metaDataObj));
             console.log(ipfsBaseUrl + addedMetaData.path);
             dispatch(mint(ipfsBaseUrl + addedMetaData.path))

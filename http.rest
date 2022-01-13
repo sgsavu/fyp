@@ -1,10 +1,25 @@
 POST http://localhost:5000/mint
 Content-Type: application/json
 
-{
-    "aye":"aye"
+{   
+    "data": {
+        "image": "https://www.kickassfacts.com/wp-content/uploads/2021/04/bear.jpg",
+        "attributes":{ 
+            "bruh": "bruh"
+        },
+        "from":"0x41F71840346605b60B12CCaa19f7842c869f0095",
+        "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+    },
+    "chain":"0x3"
 }
 
 ###
 
 GET http://localhost:5000/
+Content-Type: application/json
+
+{
+    "chain":"0x3",
+    "operation":"exists",
+    "tokenId":7
+}

@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^12.1.10",
     "@truffle/hdwallet-provider": "^1.4.0",
     "all": "^0.0.0",
+    "axios": "^0.24.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chosen-js": "^1.8.7",
