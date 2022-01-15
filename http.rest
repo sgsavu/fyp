@@ -1,16 +1,45 @@
-POST https://localhost:8443/mint
+POST https://localhost:8443/
 Content-Type: application/json
 
 {   
+    "chain":"0xfa2",
+    "operation":"createVehicle",
     "data": {
         "image": "https://www.kickassfacts.com/wp-content/uploads/2021/04/bear.jpg",
         "attributes":{ 
             "bruh": "bruh"
         },
-        "from":"0x41F71840346605b60B12CCaa19f7842c869f0095",
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
-    },
-    "chain":"0xfa2"
+    }
+}
+
+###
+
+POST https://localhost:8443/
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"destroyVehicle",
+    "data": {
+        "tokenId": 12,
+        "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+    }
+}
+
+###
+
+POST https://localhost:8443/
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"concludeAuction",
+    "data": {
+        "tokenId": 7,
+        "price":"358107188643704830",
+        "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+    }
 }
 
 ###
@@ -20,6 +49,8 @@ Content-Type: application/json
 
 {
     "chain":"0xfa2",
-    "operation":"exists",
-    "tokenId":12
+    "operation":"isAuction",
+    "data": {
+        "tokenId": 7
+    }
 }

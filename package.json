@@ -42,7 +42,7 @@
     "web3": "^1.5.1"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "npm-run-all -p -r bruh bruh2",
     "build": "react-scripts build",
     "bruh": "react-scripts start",
     "bruh2": "node server.js",

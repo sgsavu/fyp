@@ -58,52 +58,110 @@ function randomIntFromInterval(min, max) {
 }
 
 
-const createMetaDataAndMint = async (data) => {
 
-  try {
+async function uploadToIPFS(data) {
 
-    const response = await axios.get(data.image, { responseType: 'arraybuffer' })
-    const buffer = Buffer.from(response.data, "utf-8")
+  const response = await axios.get(data.image, { responseType: 'arraybuffer' })
+  const imageBuffer = Buffer.from(response.data, "utf-8")
+  const ipfsImageHash = await ipfsClient.add(imageBuffer);
 
-    const addedImage = await ipfsClient.add(buffer);
-    const metaDataObj = {
-      image: ipfsBaseUrl + addedImage.path,
-      created: Date.now(),
-      updated: Date.now(),
-      attributes: data.attributes,
-      nonce1: scramble(data.from),
-      nonce2: randomIntFromInterval(1, 1000000)
-    };
-
-    console.log(metaDataObj)
-
-    const addedMetaData = await ipfsClient.add(JSON.stringify(metaDataObj));
-    const transactionCount = await web3Instance.eth.getTransactionCount(data.from);
-
-    const tx = {
-      nonce: web3Instance.utils.toHex(transactionCount),
-      //value: web3Instance.utils.toHex(web3Instance.utils.toWei('0', 'ether')),
-      gasLimit: web3Instance.utils.toHex(2100000),
-      //gasPrice: web3Instance.utils.toHex(web3Instance.utils.toWei('6', 'gwei')),
-      from: data.from,
-      to: smartContract._address,
-      data: smartContract.methods.createVehicle(ipfsBaseUrl + addedMetaData.path).encodeABI()
-    };
-
-    const signedTx = await web3Instance.eth.accounts.signTransaction(tx, data.private_key)
-    const sentTx = await web3Instance.eth.sendSignedTransaction(signedTx.rawTransaction)
-
-    return {
-      "ipfsUrl": ipfsBaseUrl + addedMetaData.path,
-      "tx": sentTx,
-    }
-
-  } catch (err) {
-    return {
-      "error": err.message
-    }
+  const tokenMetadata = {
+    image: ipfsBaseUrl + ipfsImageHash.path,
+    created: Date.now(),
+    updated: Date.now(),
+    attributes: data.attributes,
+    nonce1: scramble(data.public_key),
+    nonce2: randomIntFromInterval(1, 1000000)
   };
+
+  const ipfsTokenHash = await ipfsClient.add(JSON.stringify(tokenMetadata));
+  return ipfsBaseUrl + ipfsTokenHash.path
+}
+
+async function sendAuthenticatedTransaction(data) {
+
+  const account = web3Instance.eth.accounts.privateKeyToAccount(data.private_key)
+  const tx = {
+    nonce: web3Instance.utils.toHex(await (web3Instance.eth.getTransactionCount(account.address))),
+    //value: web3Instance.utils.toHex(web3Instance.utils.toWei('0', 'ether')),
+    gasLimit: web3Instance.utils.toHex(2100000),
+    //gasPrice: web3Instance.utils.toHex(web3Instance.utils.toWei('6', 'gwei')),
+    from: account.address,
+    to: smartContract._address,
+    data: data.smartContractMethod.encodeABI()
+  };
+  const signedTx = await web3Instance.eth.accounts.signTransaction(tx, data.private_key)
+  const sentTx = await web3Instance.eth.sendSignedTransaction(signedTx.rawTransaction)
+  return sentTx
+}
+
+
+async function createVehicle(data) {
+  data.public_key = (web3Instance.eth.accounts.privateKeyToAccount(data.private_key)).address
+  const tokenURI = await uploadToIPFS(data)
+  data.smartContractMethod = smartContract.methods.createVehicle(tokenURI)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "ipfsURI": tokenURI,
+    "tx": sentTx,
+  }
 };
+
+async function destroyVehicle(data) {
+  data.smartContractMethod = smartContract.methods.destroyVehicle(data.tokenId)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "tx": sentTx,
+  }
+};
+
+async function listForSale(data) {
+  data.smartContractMethod = smartContract.methods.listForSale(data.tokenId, data.price)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "tx": sentTx,
+  }
+}
+
+async function removeFromSale(data) {
+  data.smartContractMethod = smartContract.methods.removeFromSale(data.tokenId)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "tx": sentTx,
+  }
+}
+
+async function listAuction(data) {
+  data.smartContractMethod = smartContract.methods.listAuction(data.tokenId, data.price)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "tx": sentTx,
+  }
+}
+
+async function concludeAuction(data) {
+  data.smartContractMethod = smartContract.methods.concludeAuction(data.tokenId)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "tx": sentTx,
+  }
+}
+
+async function setVehiclePrice(data) {
+  data.smartContractMethod = smartContract.methods.setVehiclePrice(data.tokenId, data.price)
+  const sentTx = await sendAuthenticatedTransaction(data)
+
+  return {
+    "tx": sentTx,
+  }
+}
+
 
 
 const getDeployedChains = (contract) => {
@@ -123,47 +181,120 @@ const loadSmartContract = (chain) => {
 
 var deployedChains = getDeployedChains(ExternalGatewayContract)
 
-
-async function exists(tokenId) {
-  return smartContract.methods.getIfTokenExists(tokenId).call()
-}
-
-operations = {
-  "exists": exists
-}
-
 function loadChainSpecificData(chain) {
   web3Instance = new Web3(rpcUrls[chain]);
   smartContract = loadSmartContract(chain)
 }
 
+async function getIfTokenExists(tokenId) {
+  return smartContract.methods.getIfTokenExists(tokenId).call()
+}
+
+async function tokenURI(tokenId) {
+  return smartContract.methods.tokenURI(tokenId).call()
+}
+
+async function isForSale(tokenId) {
+  return smartContract.methods.isForSale(tokenId).call()
+}
+
+async function isAuction(tokenId) {
+  return smartContract.methods.isAuction(tokenId).call()
+}
+
+async function getVehiclePrice(tokenId) {
+  return smartContract.methods.getVehiclePrice(tokenId).call()
+}
+
+async function getTopBidder(tokenId) {
+  return smartContract.methods.getTopBidder(tokenId).call()
+}
+
+async function operationNotSupported() {
+  return "Operation is not supported."
+}
+
+function getOperationGET(operation) {
+  switch (operation) {
+    case "getIfTokenExists":
+      return getIfTokenExists
+    case "tokenURI":
+      return tokenURI
+    case "isForSale":
+      return isForSale;
+    case "isAuction":
+      return isAuction;
+    case "getVehiclePrice":
+      return getVehiclePrice;
+    case "getTopBidder":
+      return getTopBidder;
+    default:
+      return operationNotSupported;
+  }
+}
+
+function getOperationPOST(operation) {
+  switch (operation) {
+    case "createVehicle":
+      return createVehicle
+    case "destroyVehicle":
+      return destroyVehicle
+    case "listForSale":
+      return listForSale
+    case "removeFromSale":
+      return removeFromSale
+    case "listAuction":
+      return listAuction
+    case "concludeAuction":
+      return concludeAuction
+    case "setVehiclePrice":
+      return setVehiclePrice
+    default:
+      return operationNotSupported;
+  }
+}
+
+//URLS
 
 app.get('/', async (req, res) => {
 
   loadChainSpecificData(req.body.chain)
 
-  return res.send(await (operations[req.body.operation](req.body.tokenId)))
+  var result = null
+
+  try {
+    result = await (getOperationGET(req.body.operation)(req.body.data.tokenId))
+  }
+  catch (err) {
+    result = err.message
+  }
+
+  return res.send({
+    "result": result
+  })
 });
 
-app.post('/mint', async (req, res) => {
+app.post('/', async (req, res) => {
 
   loadChainSpecificData(req.body.chain)
 
-  return res.send(await (createMetaDataAndMint(req.body.data)));
+  var result = null
 
+  try {
+    result = await (getOperationPOST(req.body.operation)(req.body.data))
+  }
+  catch (err) {
+    result = err.message
+  }
+
+  return res.send({
+    "result": result
+  })
 });
 
-app.put('/', (req, res) => {
-  return res.send('Received a PUT HTTP method');
-});
-
-app.delete('/', (req, res) => {
-  return res.send('Received a DELETE HTTP method');
-});
-
+//MAIN STUFF
 
 var httpsServer = https.createServer(credentials, app);
-
 
 httpsServer.listen(8443, () =>
   console.log(`HTTPS Server listening on port 8443!`));

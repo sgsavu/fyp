@@ -17,6 +17,9 @@ const Marketplace = () => {
 
   const [multipleFilter, setMultipleFilter] = useState([])
 
+  const [pool, setPool] = useState([])
+  const [backupPool, setBackupPool] = useState([])
+
   const nextPage = () => {
     if (pageNr != pages.length - 1)
       setPageNr(pageNr + 1)
@@ -27,21 +30,17 @@ const Marketplace = () => {
       setPageNr(pageNr - 1)
   }
 
-  const [pool, setPool] = useState([])
-  const [backupPool, setBackupPool] = useState([])
-
-
 
   function splitIntoPages(list) {
-    var copy = createCopy(list)
-    console.log(multipleFilter)
 
-    if (multipleFilter.length!=0)
-    multipleFilter.forEach((obj)=>{
-      copy = filterByAttributeValue(Object.keys(obj)[0],obj[Object.keys(obj)[0]],copy)
+    var copy = createCopy(list)
+
+    multipleFilter.forEach((obj) => {
+      copy = filterByAttributeValue(Object.keys(obj)[0], obj[Object.keys(obj)[0]], copy)
     })
-    
+
     const filter2 = sorting(copy, sortType)
+
     var pages = []
     while (filter2.length) {
       pages = [...pages, filter2.splice(0, perPage)]
@@ -59,7 +58,16 @@ const Marketplace = () => {
       setPool(Object.values(vehicleList))
       setBackupPool(createCopy(Object.values(vehicleList)))
     }
-  }, [vehicleList])
+    console.log("ayue")
+  }, [vehicleList, data])
+
+
+  useEffect(() => {
+    console.log("dis shit changed")
+  }, [useSelector((state) => state.data).saleVehicles])
+
+
+  console.log(data.saleVehicles.instant)
 
   useEffect(() => {
     splitIntoPages(pool)
@@ -70,10 +78,10 @@ const Marketplace = () => {
     var result = [];
     var options = select && select.options;
     var opt;
-  
-    for (var i=0, iLen=options.length; i<iLen; i++) {
+
+    for (var i = 0, iLen = options.length; i < iLen; i++) {
       opt = options[i];
-      
+
       if (opt.selected) {
         result.push(JSON.parse(opt.value));
       }
@@ -92,16 +100,10 @@ const Marketplace = () => {
           setPageType("auctions")
         }}>AUCTIONS</button>
 
-        <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
-        <select onChange={(e) => { setSortType(e.target.value) }} >
-          <option value="ascending">
-            Ascending
-          </option>
-          <option value="descending">
-            Descending
-          </option>
-        </select>
 
+        <SearchFilter pool={pool} modifier={setPool} reset={backupPool}/>
+
+       
 
 
         <select multiple onChange={(e) => { setMultipleFilter(getSelectValues(e.target)) }}>
@@ -112,7 +114,7 @@ const Marketplace = () => {
             Company 123512
           </option>
           <option value='{"company":"0"}'>
-            Company 0 
+            Company 0
           </option>
         </select>
         <div>

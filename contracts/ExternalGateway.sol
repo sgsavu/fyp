@@ -7,6 +7,10 @@ contract ExternalGateway is Vehicle {
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
 
+    function getIfTokenExists(uint256 tokenId) external view returns (bool) {
+        return _exists(tokenId);
+    }
+
     function tokenURI(uint256 tokenId)
         public
         view
@@ -160,9 +164,5 @@ contract ExternalGateway is Vehicle {
         _removeFromSale(_tokenId);
         burn(_tokenId);
         emit SaleStatus(_tokenId, false, false);
-    }
-
-    function getIfTokenExists(uint256 tokenId) external view returns (bool) {
-        return _exists(tokenId);
     }
 }
