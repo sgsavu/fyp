@@ -1,3 +1,5 @@
+
+#MINT 
 POST https://localhost:8443/
 Content-Type: application/json
 
@@ -6,15 +8,26 @@ Content-Type: application/json
     "operation":"createVehicle",
     "data": {
         "image": "https://www.kickassfacts.com/wp-content/uploads/2021/04/bear.jpg",
-        "attributes":{ 
-            "bruh": "bruh"
+        "attributes": {
+            "company": "213451235",
+            "model": "1235123",
+            "vhcid": "51235123",
+            "year": "512351235",
+            "color": "12351235",
+            "body": "2355123",
+            "transmission": "53215",
+            "fuel": "1235215",
+            "engine": "12351",
+            "doors": "23512",
+            "seats": "3512351235",
+            "driver_side": "1235125"
         },
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
 
 ###
-
+#BURN
 POST https://localhost:8443/
 Content-Type: application/json
 
@@ -22,35 +35,36 @@ Content-Type: application/json
     "chain":"0xfa2",
     "operation":"destroyVehicle",
     "data": {
-        "tokenId": 12,
+        "tokenId": 14,
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
 
 ###
-
+#LIST FOR SALE
 POST https://localhost:8443/
 Content-Type: application/json
 
 {   
     "chain":"0xfa2",
-    "operation":"concludeAuction",
+    "operation":"listForSale",
     "data": {
-        "tokenId": 7,
+        "tokenId": 13,
         "price":"358107188643704830",
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
 
-###
 
+###
+#ANY GET
 GET https://localhost:8443/
 Content-Type: application/json
 
 {
     "chain":"0xfa2",
-    "operation":"isAuction",
+    "operation":"getIfTokenExists",
     "data": {
-        "tokenId": 7
+        "tokenId": 17
     }
 }

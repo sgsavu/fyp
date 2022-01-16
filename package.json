@@ -45,7 +45,7 @@
     "start": "npm-run-all -p -r bruh bruh2",
     "build": "react-scripts build",
     "bruh": "react-scripts start",
-    "bruh2": "node server.js",
+    "bruh2": "node ./rest_api/server.js",
     "test": "npm-run-all -p -r bruh bruh2",
     "eject": "react-scripts eject"
   },
