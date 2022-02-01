@@ -1,4 +1,4 @@
-const ExternalGatewayContract = require('../src/abis/ExternalGateway.json');
+var ExternalGatewayContract = require('../src/abis/ExternalGateway.json');
 const { rpcUrls } = require("./rpcUrls")
 const Web3 = require('web3');
 

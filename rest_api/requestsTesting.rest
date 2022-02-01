@@ -58,13 +58,13 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://92.122.81.49:8443/
 Content-Type: application/json
 
 {
     "chain":"0xfa2",
     "operation":"getIfTokenExists",
     "data": {
-        "tokenId": 17
+        "tokenId": 18
     }
 }

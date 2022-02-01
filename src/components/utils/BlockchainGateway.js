@@ -105,7 +105,7 @@ export async function getContractBalance() {
         .call()
 }
 
-export async function getIfExists(token) {
+export async function getIfTokenExists(token) {
     return await store.getState().blockchain.smartContract.methods
         .getIfTokenExists(token)
         .call()

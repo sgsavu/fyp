@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
-import { ownerOf, getIfForSale, getIfAuction, getIfExists, getIfIsOwner } from "../utils/BlockchainGateway";
+import { ownerOf, getIfForSale, getIfAuction, getIfTokenExists, getIfIsOwner } from "../utils/BlockchainGateway";
 import History from "../vehicle_sections/History";
 import PurchaseOptions from "../vehicle_sections/PurchaseOptions";
 import ListingOptions from "../vehicle_sections/ListingOptions";
@@ -25,7 +25,7 @@ const Vehicle = () => {
 
         if (blockchain.smartContract) {
 
-            let exists = await getIfExists(vehicle.injected.id)
+            let exists = await getIfTokenExists(vehicle.injected.id)
             setExists(exists)
             if (exists) {
                 setCurrentOwner(await ownerOf(vehicle.injected.id))

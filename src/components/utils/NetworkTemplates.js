@@ -42,7 +42,7 @@ export const POLYGON_MUMBAI_PARAMS = {
         symbol: 'MATIC',
         decimals: 18
     },
-    rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+    rpcUrls: ['https://polygon-mumbai.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c'],
     blockExplorerUrls: ['https://polygonscan.com/']
 }
 
