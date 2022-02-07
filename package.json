@@ -42,10 +42,10 @@
     "web3": "^1.5.1"
   },
   "scripts": {
-    "start": "npm-run-all -p -r bruh bruh2",
+    "start": "npm-run-all -p -r app api",
     "build": "react-scripts build",
-    "bruh": "react-scripts start",
-    "bruh2": "node ./rest_api/server.js",
+    "app": "react-scripts start",
+    "api": "node ./rest_api/server.js",
     "test": "npm-run-all -p -r bruh bruh2",
     "eject": "react-scripts eject"
   },
