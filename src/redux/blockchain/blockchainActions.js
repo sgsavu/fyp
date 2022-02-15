@@ -63,7 +63,7 @@ export const initApp = () => {
     try {
       await dispatch(updateAppState({ field: "initializedApp", value: true }))
       await dispatch(updateBlockchainState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
-      await dispatch(updateAppNetwork("0xfa2"))
+      await dispatch(updateAppNetwork("0x4"))
     }
     catch (err) {
       dispatch(alerts({ alert: "error", message: err.message }))

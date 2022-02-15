@@ -35,6 +35,7 @@ function App() {
   if (blockchain.walletProvider) {
     window.ethereum.on("accountsChanged", (accounts) => {
       dispatch(updateAppAccount(accounts[0]));
+      dispatch(fetchMyData());
     });
     window.ethereum.on("chainChanged", (chain) => {
       dispatch(updateAppNetwork(chain))

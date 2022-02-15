@@ -17,15 +17,19 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     receive() external payable {
     }
 
+    /*
+
     struct VehicleInfo {
         address _topBidder; 
         uint256 price;
         uint256 odometer;
         uint256 country;
     }
-
     mapping(uint256 => VehicleInfo) internal _vehicles;
-    mapping(uint256 => uint256) private _odometer;
+    */
+
+    mapping(uint256 => address) private _odometerAddress;
+    mapping(uint256 => uint256) private _odometerValue;
 
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
@@ -99,11 +103,15 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     //ODOMETER
 
     function getOdometer(uint256 tokenId) public view returns (uint256) {
-        return _odometer[tokenId];
+        return _odometerValue[tokenId];
     }
 
-    function incrementOdometerBy(uint256 tokenId, uint256 value) public {
-        _odometer[tokenId] = _odometer[tokenId] + value;
+    function incrementOdometerBy(uint256 value, uint256 tokenId) public onlyClass(ROLE_CLASS.ODOMETER)  {
+        _odometerValue[tokenId] = _odometerValue[tokenId] + value;
+    }
+
+    function setOdometer(uint256 tokenId, address odometer) public onlyClass(ROLE_CLASS.AUTHORITY) {
+        _odometerAddress[tokenId] = odometer;
     }
 
     // MONEY TRANSFERING AND BALANCE

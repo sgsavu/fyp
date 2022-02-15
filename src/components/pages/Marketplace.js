@@ -58,12 +58,10 @@ const Marketplace = () => {
       setPool(Object.values(vehicleList))
       setBackupPool(createCopy(Object.values(vehicleList)))
     }
-    console.log("ayue")
   }, [vehicleList, data])
 
 
   useEffect(() => {
-    console.log("dis shit changed")
   }, [useSelector((state) => state.data).saleVehicles])
 
 

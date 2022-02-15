@@ -7,9 +7,11 @@ contract RolesAndPermissions is AccessControl {
     enum ROLE_CLASS {
         MINTER,
         AUTHORITY,
+        ODOMETER,
         ADMIN
     }
 
+    bytes32 private constant ODOMETER_ROLE = keccak256("ODOMETER_ROLE");
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 private constant MINTER_ROLE_ADMIN = keccak256("MINTER_ROLE_ADMIN");
     bytes32 private constant AUTHORITY_ROLE = keccak256("AUTHORITY_ROLE");
@@ -26,6 +28,7 @@ contract RolesAndPermissions is AccessControl {
         _setRoleAdmin(AUTHORITY_ROLE_ADMIN, DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(MINTER_ROLE, MINTER_ROLE_ADMIN);
         _setRoleAdmin(AUTHORITY_ROLE, AUTHORITY_ROLE_ADMIN);
+        _setRoleAdmin(ODOMETER_ROLE, AUTHORITY_ROLE_ADMIN);
     }
     
     modifier onlyClass(ROLE_CLASS class) {
@@ -38,6 +41,10 @@ contract RolesAndPermissions is AccessControl {
             require(
                 hasRole(AUTHORITY_ROLE, msg.sender) ||
                     hasRole(AUTHORITY_ROLE_ADMIN, msg.sender)
+            );
+        } else if (class == ROLE_CLASS.ODOMETER) {
+            require(
+                hasRole(ODOMETER_ROLE, msg.sender)
             );
         } else if (class == ROLE_CLASS.ADMIN) {
             require(
