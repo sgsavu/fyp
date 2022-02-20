@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
 import "./Vehicle.sol";
@@ -165,4 +166,26 @@ contract ExternalGateway is Vehicle {
         burn(_tokenId);
         emit SaleStatus(_tokenId, false, false);
     }
+
+    //ODOMETER
+
+
+    function getOdometerValue(uint256 tokenId) public view onlyIfExists(tokenId) returns (uint256) {
+        return _odometerValue[tokenId];
+    }
+
+
+    function incrementOdometerBy(uint256 value, uint256 tokenId) public onlyClass(ROLE_CLASS.ODOMETER)  {
+        require(msg.sender==_odometerAddress[tokenId]);
+        _odometerValue[tokenId] = _odometerValue[tokenId] + value;
+    }
+
+    function setOdometer(uint256 tokenId, address odometer) public  {
+
+        require(hasRole(keccak256("AUTHORITY_ROLE"), msg.sender));
+        _odometerAddress[tokenId] = odometer;
+    }
+
+    
+
 }

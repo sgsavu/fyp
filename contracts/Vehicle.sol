@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./BoolBitStorage.sol";
 import "./RolesAndPermissions.sol";
 
 contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
+
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
 
@@ -17,19 +17,9 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     receive() external payable {
     }
 
-    /*
 
-    struct VehicleInfo {
-        address _topBidder; 
-        uint256 price;
-        uint256 odometer;
-        uint256 country;
-    }
-    mapping(uint256 => VehicleInfo) internal _vehicles;
-    */
-
-    mapping(uint256 => address) private _odometerAddress;
-    mapping(uint256 => uint256) private _odometerValue;
+    mapping(uint256 => address) internal _odometerAddress;
+    mapping(uint256 => uint256) internal _odometerValue;
 
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
@@ -100,25 +90,8 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         require(price > 0, "Cannot set price to 0.");
         _;
     }
-    //ODOMETER
-
-    function getOdometer(uint256 tokenId) public view returns (uint256) {
-        return _odometerValue[tokenId];
-    }
-
-    function incrementOdometerBy(uint256 value, uint256 tokenId) public onlyClass(ROLE_CLASS.ODOMETER)  {
-        _odometerValue[tokenId] = _odometerValue[tokenId] + value;
-    }
-
-    function setOdometer(uint256 tokenId, address odometer) public onlyClass(ROLE_CLASS.AUTHORITY) {
-        _odometerAddress[tokenId] = odometer;
-    }
 
     // MONEY TRANSFERING AND BALANCE
-
-    function getContractBalance() public view returns (uint256) {
-        return address(this).balance;
-    }
 
     function _secureMoneyTransfer(address beneficiary, uint256 money) internal {
         address payable _beneficiary = payable(beneficiary);
@@ -243,10 +216,6 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     }
 
     //MINT
-
-    function getTokenIdsCurrent() internal view returns (uint256) {
-        return _tokenIds.current();
-    }
 
     function mint(string memory uri) internal {
         uint256 _tokenId = _tokenIds.current();

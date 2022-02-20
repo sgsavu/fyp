@@ -22,6 +22,10 @@ async function getTopBidder(data) {
     return data.smartContract.methods.getTopBidder(data.tokenId).call()
 }
 
+async function hasRole(data) {
+    return data.smartContract.methods.hasRole(data.role, data.account).call()
+}
+
 async function operationNotSupported() {
     return "Operation is not supported."
 }
@@ -40,6 +44,8 @@ function operationGET(operation) {
             return getVehiclePrice;
         case "getTopBidder":
             return getTopBidder;
+        case "hasRole":
+            return hasRole;
         default:
             return operationNotSupported;
     }
