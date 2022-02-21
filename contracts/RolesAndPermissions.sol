@@ -24,6 +24,7 @@ contract RolesAndPermissions is AccessControl {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(MINTER_ROLE_ADMIN, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
+        _setupRole(AUTHORITY_ROLE_ADMIN, msg.sender);
 
         _setRoleAdmin(MINTER_ROLE_ADMIN, DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(AUTHORITY_ROLE_ADMIN, DEFAULT_ADMIN_ROLE);

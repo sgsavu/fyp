@@ -67,7 +67,7 @@ export const FANTOM_TESTNET_PARAMS = {
         decimals: 18
     },
     rpcUrls: ['https://rpc.testnet.fantom.network/'],
-    blockExplorerUrls: ['https://polygonscan.com/']
+    blockExplorerUrls: ['https://testnet.ftmscan.com/']
 }
 
 export const LOCAL_TESTNET_PARAMS = {
@@ -115,7 +115,7 @@ export const RINKEBY = {
         decimals: 18
     },
     rpcUrls: ['https://rinkeby.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c'],
-    blockExplorerUrls: ['https://moonbase.moonscan.io/']
+    blockExplorerUrls: ['https://rinkeby.etherscan.io/']
 }
 
 export const ROPSTEN = {
@@ -127,7 +127,7 @@ export const ROPSTEN = {
         decimals: 18
     },
     rpcUrls: ['https://ropsten.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c'],
-    blockExplorerUrls: ['https://moonbase.moonscan.io/']
+    blockExplorerUrls: ['https://ropsten.etherscan.io/']
 }
 
 
@@ -151,4 +151,8 @@ export const ALL_TEMPLATES = {
 
 export const getNetworkRpcUrl = (network) => {
     return ALL_TEMPLATES[network].rpcUrls[0]
+}
+
+export const getNetworkExplorer = (network) => {
+    return ALL_TEMPLATES[network].blockExplorerUrls[0]
 }

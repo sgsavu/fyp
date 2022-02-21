@@ -2,6 +2,7 @@ import { roles } from "./PermissionsAndRoles";
 import store from "../../redux/store";
 import { myCurrencyToWei } from './PricesCoinsExchange'
 import { alerts } from "../../redux/app/appActions";
+import { getNetworkExplorer } from "./NetworkTemplates";
 
 
 export async function getUserAccount() {
@@ -138,10 +139,10 @@ export function buyVehicle(vehicleId) {
             .buyVehicle(vehicleId)
             .send({ from: await getUserAccount(), value: await getVehiclePrice(vehicleId) })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -152,10 +153,10 @@ export function bidVehicle(vehicleId, price) {
             .bidVehicle(vehicleId)
             .send({ from: await getUserAccount(), value: await myCurrencyToWei(price) })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -167,10 +168,10 @@ export const listAuction = (vehicleId, price) => {
             .listAuction(vehicleId, await myCurrencyToWei(price))
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -183,11 +184,10 @@ export const listForSale = (vehicleId, price) => {
             .listForSale(vehicleId, await myCurrencyToWei(price))
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                console.log(err)
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -198,10 +198,10 @@ export const removeFromSale = (vehicleId) => {
             .removeFromSale(vehicleId)
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -212,10 +212,10 @@ export function setVehiclePrice(vehicleId, price) {
             .setVehiclePrice(vehicleId, await myCurrencyToWei(price))
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -227,10 +227,10 @@ export function concludeAuction(vehicleId) {
             .concludeAuction(vehicleId)
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
@@ -241,22 +241,62 @@ export function mint(uri) {
             .createVehicle(uri)
             .send({ from: await getUserAccount() })
             .once("error", (err) => {
-                dispatch(alerts({ alert: "other", message: `Transaction failed. ${err.message}` }))
+                dispatch(alerts(failedAlert(err)))
             })
             .then((receipt) => {
-                dispatch(alerts({ alert: "other", message: `Transaction successful.\n${formatTx(receipt)}` }))
+                dispatch(alerts(await successAlert(receipt)))
             });
     }
 }
 
-function formatTx(tx) {
-    let result = ""
-    /*
-    for (const [key, value] of Object.entries(tx)) {
-        result = result + `\n${key}: ${value}`
+export function grantRole(role,address) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .grantRole(role,address)
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts(failedAlert(err)))
+            })
+            .then((receipt) => {
+                dispatch(alerts(await successAlert(receipt)))
+            });
     }
-    */
-    result = result + `\nBlock Nr:${tx.blockNumber}`
-    result = result + `\nTx Index:${tx.transactionIndex}`
-    return result
+}
+
+export function revokeRole(role,address) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .revokeRole(role,address)
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts(failedAlert(err)))
+            })
+            .then((receipt) => {
+                dispatch(alerts(await successAlert(receipt)))
+            });
+    }
+}
+
+export function burn(id) {
+    return async (dispatch) => {
+        return await store.getState().blockchain.smartContract.methods
+            .destroyVehicle(id)
+            .send({ from: await getUserAccount() })
+            .once("error", (err) => {
+                dispatch(alerts(failedAlert(err)))
+            })
+            .then((receipt) => {
+                dispatch(alerts(await successAlert(receipt)))
+            });
+    }
+}
+
+
+async function successAlert (tx) {
+    const EXPLORER_BASE_URL = getNetworkExplorer(await store.getState().blockchain.currentNetwork) + "tx/"
+    return { alert: "other", url: EXPLORER_BASE_URL + tx.transactionHash, message: `Transaction successful.\n` }
+}
+
+function failedAlert (error) {
+    return { alert: "other", message: `Transaction failed. ${error.message}` }
 }

@@ -175,14 +175,14 @@ contract ExternalGateway is Vehicle {
     }
 
 
-    function incrementOdometerBy(uint256 value, uint256 tokenId) public onlyClass(ROLE_CLASS.ODOMETER)  {
+    function increaseOdometer(uint256 tokenId, uint256 value) public onlyClass(ROLE_CLASS.ODOMETER)  {
         require(msg.sender==_odometerAddress[tokenId]);
         _odometerValue[tokenId] = _odometerValue[tokenId] + value;
     }
 
-    function setOdometer(uint256 tokenId, address odometer) public  {
+    function setOdometerAddress(uint256 tokenId, address odometer) public  {
 
-        require(hasRole(keccak256("AUTHORITY_ROLE"), msg.sender));
+        require(hasRole(keccak256("AUTHORITY_ROLE_ADMIN"), msg.sender));
         _odometerAddress[tokenId] = odometer;
     }
 

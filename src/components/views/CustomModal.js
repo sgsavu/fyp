@@ -19,8 +19,11 @@ function CustomModal() {
     return (
       <div>
         <h1>Alert</h1>
-        <p>{app.alerts.other.at(-1)}</p>
+        <p>{app.alerts.other.at(-1).message}</p>
+        {app.alerts.other.at(-1).url? <a href={app.alerts.other.at(-1).url} target="_blank">View 🔗</a> : null }
+        <div>
         <button onClick={dismiss}>Dismiss</button>
+        </div>
       </div>
     );
   }

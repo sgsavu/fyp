@@ -17,6 +17,9 @@ const appReducer = (state = initialState, action) => {
         case "ALERT":
             const field = state.alerts[action.payload.alert]
             if (action.payload.message)
+                if (action.payload.alert == "other")
+                    field.push({url: action.payload.url, message: action.payload.message})
+                else
                 field.push(action.payload.message)
             else
                 field.pop()

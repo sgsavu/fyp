@@ -1,3 +1,5 @@
+const keccak256 = require('keccak256')
+
 async function getIfTokenExists(data) {
     return data.smartContract.methods.getIfTokenExists(data.tokenId).call()
 }
@@ -23,7 +25,11 @@ async function getTopBidder(data) {
 }
 
 async function hasRole(data) {
-    return data.smartContract.methods.hasRole(data.role, data.account).call()
+    return data.smartContract.methods.hasRole(keccak256(data.role), data.address).call()
+}
+
+async function getOdometerValue(data) {
+    return data.smartContract.methods.getOdometerValue(data.tokenId).call()
 }
 
 async function operationNotSupported() {
@@ -46,6 +52,8 @@ function operationGET(operation) {
             return getTopBidder;
         case "hasRole":
             return hasRole;
+        case "getOdometerValue":
+            return getOdometerValue;
         default:
             return operationNotSupported;
     }
