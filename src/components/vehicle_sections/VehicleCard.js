@@ -1,8 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 
 const VehicleCard = ({vehicle}) => {
-    
+
+    const data = useSelector((state) => state.data);
     return (
         <div>
             <img
@@ -10,10 +12,10 @@ const VehicleCard = ({vehicle}) => {
                 src={vehicle.image}
                 width={150}
             />
-            <p>{vehicle.attributes.year}</p>
-            <p>{vehicle.attributes.company}</p>
-            <p>{vehicle.attributes.model}</p>
-            <p>{window.location.pathname=="/"?vehicle.injected.display_price:null}</p>
+            <p>Year: {vehicle.attributes.year}</p>
+            <p>Company: {vehicle.attributes.company}</p>
+            <p>Model: {vehicle.attributes.model}</p>
+            <p>{window.location.pathname=="/"? "Price: "+ vehicle.injected.display_price + " " + data.displayCurrency :null}</p>
             <Link to={{
                 pathname: "/vehicle",
                 state: { metadata: vehicle },

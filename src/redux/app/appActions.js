@@ -5,6 +5,13 @@ export const alerts = (payload) => {
     }
 }
 
+export const TX = (payload) => {
+    return {
+        type: "TX",
+        payload: payload,
+    }
+}
+
 export const updateDataState = (payload) => {
     return {
         type: "UPDATE_DATA_STATE",

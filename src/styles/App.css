@@ -8,4 +8,19 @@
 }
 
 
+.address {
+  color: white;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  overflow:hidden;
+  width:100px;
+}
 
+.address a {
+  color:#ffffff; 
+}
+
+.pending {
+  color: white;
+  font-size: 10px;
+}

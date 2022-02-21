@@ -5,6 +5,7 @@ const initialState = {
   currentNetwork: null,
   availableNetworks: null,
   walletProvider: null,
+  pendingTx: [], 
 };
 
 const blockchainReducer = (state = initialState, action) => {
@@ -13,6 +14,17 @@ const blockchainReducer = (state = initialState, action) => {
       return {
         ...state,
         [action.payload.field]: action.payload.value,
+      };
+    case "TX":
+      var txState = state.pendingTx
+      if(action.payload.message)
+        txState.push(action.payload.message)
+      else
+        txState.pop()
+      console.log(txState)
+      return {
+        ...state,
+        pendingTx: txState
       };
     default:
       return state;

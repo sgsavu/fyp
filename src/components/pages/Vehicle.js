@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
-import { ownerOf, getIfForSale, getIfAuction, getIfTokenExists, getIfIsOwner } from "../utils/BlockchainGateway";
+import { ownerOf, getIfForSale, getIfAuction, getIfTokenExists, getIfIsOwner, getOdometerValue } from "../utils/BlockchainGateway";
 import History from "../vehicle_sections/History";
 import PurchaseOptions from "../vehicle_sections/PurchaseOptions";
 import ListingOptions from "../vehicle_sections/ListingOptions";
@@ -19,6 +19,7 @@ const Vehicle = () => {
 
     const [exists, setExists] = useState(false)
     const [currentOwner, setCurrentOwner] = useState("");
+    const [odometerValue, setOdometerValue] = useState(0);
     const [settings, setSettings] = useState({})
 
     useEffect(async () => {
@@ -27,6 +28,7 @@ const Vehicle = () => {
 
             let exists = await getIfTokenExists(vehicle.injected.id)
             setExists(exists)
+            setOdometerValue(await getOdometerValue(vehicle.injected.id))
             if (exists) {
                 setCurrentOwner(await ownerOf(vehicle.injected.id))
                 const [isForSale, isAuction, isOwner] = await Promise.all([getIfForSale(vehicle.injected.id), getIfAuction(vehicle.injected.id), getIfIsOwner(vehicle.injected.id)])
@@ -59,6 +61,7 @@ const Vehicle = () => {
                         })}
                         <p>Current owner: {currentOwner}</p>
                         <History vehicle={vehicle}></History>
+                        <p>Odometer: {odometerValue} km</p>
 
                     </div>
                     <div>

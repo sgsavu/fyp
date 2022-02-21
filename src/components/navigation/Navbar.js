@@ -10,6 +10,7 @@ import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../utils/PermissionsAndRoles';
 import SelectNetwork from '../SelectNetwork';
 import AccountStatus from '../views/AccountStatus';
+import PendingTX from '../views/PendingTX';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -22,9 +23,14 @@ function Navbar() {
   return (
     <IconContext.Provider value={{ color: '#fff' }}>
       <div className='navbar'>
-        <FaIcons.FaBars className='menu-bars' onClick={toggleVisibility} />
-        <AccountStatus/>
-        <SelectNetwork/>
+        <div>
+          <FaIcons.FaBars className='menu-bars' onClick={toggleVisibility} />
+        </div>
+        <div>
+          <AccountStatus />
+          <SelectNetwork />
+          <PendingTX />
+        </div>
       </div>
       <nav className={visible ? 'nav-menu active' : 'nav-menu'}>
         <ul className='nav-menu-items' onClick={toggleVisibility}>
