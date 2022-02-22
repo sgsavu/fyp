@@ -143,7 +143,7 @@ contract ExternalGateway is Vehicle {
 
     function destroyVehicle(uint256 _tokenId)
         external
-        onlyClass(ROLE_CLASS.AUTHORITY)
+        onlyRole(AUTHORITY_ROLE_ADMIN)
     {
         _removeFromSale(_tokenId);
         burn(_tokenId);

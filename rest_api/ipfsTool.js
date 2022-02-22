@@ -4,16 +4,16 @@ const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
 const { scramble, randomIntFromInterval } = require('./cryptographyUtils')
 const { urlToBuffer } = require("./imageManipulation")
 
-async function uploadToIPFS(data) {
+async function uploadToIPFS(obj) {
 
-    const ipfsImageHash = await ipfsClient.add(await urlToBuffer(data.image));
+    const ipfsImageHash = await ipfsClient.add(await urlToBuffer(obj.data.image));
 
     const tokenMetadata = {
         image: ipfsBaseUrl + ipfsImageHash.path,
         created: Date.now(),
         updated: Date.now(),
-        attributes: data.attributes,
-        nonce1: scramble(data.public_key),
+        attributes: obj.data.attributes,
+        nonce1: scramble((obj.web3Instance.eth.accounts.privateKeyToAccount(obj.private_key)).address),
         nonce2: randomIntFromInterval(1, 1000000)
     };
 

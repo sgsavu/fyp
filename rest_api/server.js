@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const https = require('https');
 const { operationGET, callViewChainFunction } = require("./operationsGET")
-const { operationPOST } = require("./operationsPOST")
+const { operationPOST, callChainFunction } = require("./operationsPOST")
 const { injectChainData } = require("./blockchain")
 const { credentials } = require("./TLS")
 const app = express();
@@ -13,12 +13,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (req, res) => {
 
-  injectChainData(req.body)
-
   var result = null
 
   try {
-    result = await (callViewChainFunction(req.body.data2,req.body.operation,Object.values(req.body.data)))
+    injectChainData(req.body)
+    result = await callViewChainFunction(req.body)
   }
   catch (err) {
     result = err.message
@@ -31,12 +30,11 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
 
-  injectChainData(req.body)
-
   var result = null
 
   try {
-    result = await (operationPOST(req.body.operation)(req.body.data))
+    injectChainData(req.body)
+    result = await callChainFunction(req.body)
   }
   catch (err) {
     result = err.message

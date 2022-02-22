@@ -1,13 +1,13 @@
 const keccak256 = require('keccak256')
 
 
-async function callViewChainFunction(obj,functionName, args) {
+async function callViewChainFunction(obj) {
 
-    if (functionName == "hasRole")
-        args[0] = keccak256(args[0])
+    if (obj.operation == "hasRole")
+        obj.data.role = keccak256(obj.data.role)
 
     return obj.smartContract.methods
-    [functionName](...args)
+    [obj.operation](...(Object.values(obj.data)))
         .call();
 }
 

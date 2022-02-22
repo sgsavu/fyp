@@ -33,30 +33,28 @@ function checkFunctionLocation (functionName) {
 function injectChainData(object) {
     var contractNr = checkFunctionLocation(object.operation)
     if (contractNr==-1)
-        return
-    object["data2"] = {}
-    object.data2.web3Instance = new Web3(rpcUrls[object.chain]);
-    object.data2.smartContract = new object.data2.web3Instance.eth.Contract(
+        throw Error("Operation Not Supported")
+    object.web3Instance = new Web3(rpcUrls[object.chain]);
+    object.smartContract = new object.web3Instance.eth.Contract(
         CONTRACT_LIST[contractNr].abi,
         getDeployedChains()[contractNr][object.chain]
     );
-    console.log(object)
 }
 
-async function sendAuthenticatedTransaction(data) {
+async function sendAuthenticatedTransaction(obj) {
 
-    const account = data.web3Instance.eth.accounts.privateKeyToAccount(data.private_key)
+    const account = obj.web3Instance.eth.accounts.privateKeyToAccount(obj.private_key)
     const tx = {
-        nonce: data.web3Instance.utils.toHex(await (data.web3Instance.eth.getTransactionCount(account.address))),
+        nonce: obj.web3Instance.utils.toHex(await (obj.web3Instance.eth.getTransactionCount(account.address))),
         //value: web3Instance.utils.toHex(web3Instance.utils.toWei('0', 'ether')),
-        gasLimit: data.web3Instance.utils.toHex(2100000),
+        gasLimit: obj.web3Instance.utils.toHex(2100000),
         //gasPrice: web3Instance.utils.toHex(web3Instance.utils.toWei('6', 'gwei')),
         from: account.address,
-        to: data.smartContract._address,
-        data: data.smartContractMethod.encodeABI()
+        to: obj.smartContract._address,
+        data: obj.smartContractMethod.encodeABI()
     };
-    const signedTx = await data.web3Instance.eth.accounts.signTransaction(tx, data.private_key)
-    const sentTx = await data.web3Instance.eth.sendSignedTransaction(signedTx.rawTransaction)
+    const signedTx = await obj.web3Instance.eth.accounts.signTransaction(tx, obj.private_key)
+    const sentTx = await obj.web3Instance.eth.sendSignedTransaction(signedTx.rawTransaction)
     return sentTx
 }
 

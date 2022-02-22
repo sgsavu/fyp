@@ -20,18 +20,30 @@ export const roles = {
 
 
 const DEFAULT_ADMIN_OPTIONS = {
-  actions: [actions.GIVE, actions.REVOKE],
-  roles: (({ MINTER_ROLE, MINTER_ADMIN_ROLE, AUTHORITY_ROLE, AUTHORITY_ROLE_ADMIN, ODOMETER_ROLE }) => ({ MINTER_ROLE, MINTER_ADMIN_ROLE, AUTHORITY_ROLE, AUTHORITY_ROLE_ADMIN, ODOMETER_ROLE }))(roles)
+  roleManaging: {
+    actions: [actions.GIVE, actions.REVOKE],
+    roles: (({ MINTER_ROLE, MINTER_ROLE_ADMIN, AUTHORITY_ROLE, AUTHORITY_ROLE_ADMIN, ODOMETER_ROLE }) => ({ MINTER_ROLE, MINTER_ROLE_ADMIN, AUTHORITY_ROLE, AUTHORITY_ROLE_ADMIN, ODOMETER_ROLE }))(roles)
+  },
+  vehicleBurning: true,
+  setOdometers: true
 }
 
 const MINTER_ADMIN_OPTIONS = {
-  actions: [actions.GIVE, actions.REVOKE],
-  roles: (({ MINTER_ROLE }) => ({ MINTER_ROLE }))(roles)
-}
+  roleManaging: {
+    actions: [actions.GIVE, actions.REVOKE],
+    roles: (({ MINTER_ROLE }) => ({ MINTER_ROLE }))(roles)
+  } ,
+  vehicleBurning: false,
+  setOdometers: false
+} 
 
 const AUTHORITY_ADMIN_OPTIONS = {
-  actions: [actions.GIVE, actions.REVOKE],
-  roles: (({ AUTHORITY_ROLE, ODOMETER_ROLE }) => ({ AUTHORITY_ROLE, ODOMETER_ROLE }))(roles)
+  roleManaging: {
+    actions: [actions.GIVE, actions.REVOKE],
+    roles: (({ AUTHORITY_ROLE, ODOMETER_ROLE }) => ({ AUTHORITY_ROLE, ODOMETER_ROLE }))(roles)
+  },
+  vehicleBurning: true,
+  setOdometers: true,
 }
 
 const EMPTY_OPTIONS = {
