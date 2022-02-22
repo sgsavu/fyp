@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
-import { ownerOf, getIfForSale, getIfAuction, getIfTokenExists, getIfIsOwner, getOdometerValue } from "../utils/BlockchainGateway";
+import { getIfIsOwner, callViewChainFunction } from "../utils/BlockchainGateway";
 import History from "../vehicle_sections/History";
 import PurchaseOptions from "../vehicle_sections/PurchaseOptions";
 import ListingOptions from "../vehicle_sections/ListingOptions";
@@ -17,7 +17,7 @@ const Vehicle = () => {
     const blockchain = useSelector((state) => state.blockchain);
     const myPrefferedCurrency = data.displayCurrency
 
-    const [exists, setExists] = useState(false)
+    const [eexists, setEexists] = useState(false)
     const [currentOwner, setCurrentOwner] = useState("");
     const [odometerValue, setOdometerValue] = useState(0);
     const [settings, setSettings] = useState({})
@@ -26,12 +26,12 @@ const Vehicle = () => {
 
         if (blockchain.smartContract) {
 
-            let exists = await getIfTokenExists(vehicle.injected.id)
-            setExists(exists)
-            setOdometerValue(await getOdometerValue(vehicle.injected.id))
-            if (exists) {
-                setCurrentOwner(await ownerOf(vehicle.injected.id))
-                const [isForSale, isAuction, isOwner] = await Promise.all([getIfForSale(vehicle.injected.id), getIfAuction(vehicle.injected.id), getIfIsOwner(vehicle.injected.id)])
+            let eexists = await callViewChainFunction("exists",[vehicle.injected.id])
+            setEexists(eexists)
+            setOdometerValue(await callViewChainFunction("getOdometerValue",[vehicle.injected.id]))
+            if (eexists) {
+                setCurrentOwner(await callViewChainFunction("ownerOf",[vehicle.injected.id]))
+                const [isForSale, isAuction, isOwner] = await Promise.all([callViewChainFunction("isForSale",[vehicle.injected.id]), callViewChainFunction("isAuction",[vehicle.injected.id]), getIfIsOwner(vehicle.injected.id)])
                 setSettings({
                     isForSale: isForSale,
                     isAuction: isAuction,
@@ -46,7 +46,7 @@ const Vehicle = () => {
 
     return (
         <div>
-            {exists ?
+            {eexists ?
                 <div>
                     <div>
                         <img

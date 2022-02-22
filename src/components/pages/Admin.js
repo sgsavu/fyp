@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from "react-hook-form";
 import { roles, actions, getAdminOptionsFor } from '../utils/PermissionsAndRoles';
-import { burn, grantRole, revokeRole, setOdometerAddress } from '../utils/BlockchainGateway';
+import { callChainFunction } from '../utils/BlockchainGateway';
 import { alerts } from '../../redux/app/appActions';
 import Web3 from "web3";
 
@@ -19,10 +19,10 @@ const Admin = () => {
   const onSubmit = (values) => {
     switch (values.action) {
       case actions.GIVE:
-        dispatch(grantRole(roles[values.role], values.userAddress))
+        dispatch(callChainFunction("grantRole",[roles[values.role], values.userAddress]))
         break;
       case actions.REVOKE:
-        dispatch(revokeRole(roles[values.role], values.userAddress))
+        dispatch(callChainFunction("revokeRole",[roles[values.role], values.userAddress]))
         break;
     }
   }
@@ -53,7 +53,7 @@ const Admin = () => {
         <input onChange={(e) => { setVehicleToBurn(e.target.value) }} value={vehicleToBurn} placeholder="Vehicle To Burn"></input>
         <button onClick={() => {
           if (vehicleToBurn != "")
-            dispatch(burn(vehicleToBurn))
+            dispatch(callChainFunction("destroyVehicle",[vehicleToBurn]))
           else
             dispatch(alerts({ alert: "error", message: "Required fields not filled or address format incorrect." }))
         }}>Burn</button>
@@ -63,7 +63,7 @@ const Admin = () => {
         <input onChange={(e) => { setOddAddr(e.target.value) }} value={oddAddr} placeholder="Odometer Address"></input>
         <button onClick={() => {
           if (vehicleToOdd != "" && oddAddr != "" && Web3.utils.isAddress(oddAddr))
-            dispatch(setOdometerAddress(vehicleToOdd, oddAddr))
+            dispatch(callChainFunction("setOdometerAddress",[vehicleToOdd, oddAddr]))
           else
             dispatch(alerts({ alert: "error", message: "Required fields not filled or address format incorrect." }))
         }}>Set Odometer</button>

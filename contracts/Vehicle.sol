@@ -1,27 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./BoolBitStorage.sol";
 import "./RolesAndPermissions.sol";
 
-contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
+import "@openzeppelin/contracts/utils/Counters.sol";
 
+
+contract Vehicle is ERC721Enumerable, RolesAndPermissions {
+    
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
-
-    event Received(uint256 indexed tokenId, address indexed depositer, uint256 amount);
     event SaleStatus(uint256 indexed tokenId, bool status, bool isAuction);
 
-    receive() external payable {
-    }
-
+    receive() external payable {}
 
     mapping(uint256 => address) internal _odometerAddress;
     mapping(uint256 => uint256) internal _odometerValue;
 
     mapping(uint256 => string) internal _tokenURIs;
+
     mapping(string => bool) private _uriRegistered;
 
     mapping(uint256 => uint256) private _forSale;
@@ -40,63 +39,44 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
 
     constructor() ERC721("Vehicle", "VHC") {}
 
-    modifier onlyIfNotRegistered(string memory uri) {
-        require(_uriRegistered[uri] == false, "Duplicate URI's detected.");
-        _;
-    }
+
+    // MODIFIERS
 
     modifier onlyOwnerOf(uint256 tokenId) {
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "Message sender is not the owner/authorized for the tokenId provided."
-        );
-        _;
-    }
-
-    modifier onlyIfExists(uint256 tokenId) {
-        require(_exists(tokenId), "Token/Vehicle does not exist.");
-        _;
-    }
-
-    modifier onlyIfAuction(uint256 tokenId) {
-        require(_isAuction(tokenId), "Vehicle is not an auction.");
+        require(ownerOf(tokenId) == msg.sender, "E2");
         _;
     }
 
     modifier onlyIfForSale(uint256 tokenId) {
-        require(_isForSale(tokenId), "Vehicle is not for sale.");
+        require(_isForSale(tokenId), "E4");
         _;
     }
 
     modifier onlyIfNotForSale(uint256 tokenId) {
-        require(!_isForSale(tokenId), "Vehicle is already for sale.");
+        require(!_isForSale(tokenId), "E5");
+        _;
+    }
+
+    modifier onlyIfAuction(uint256 tokenId) {
+        require(_isAuction(tokenId), "E6");
         _;
     }
 
     modifier onlyIfNotAuction(uint256 tokenId) {
-        require(!_isAuction(tokenId), "Vehicle is already an auction.");
-        _;
-    }
-
-    modifier onlyIfNotTopBidder(uint256 tokenId) {
-        require(
-            _getTopBidder(tokenId) != msg.sender,
-            "Cannot withdraw bid while being top bidder."
-        );
+        require(!_isAuction(tokenId), "E7");
         _;
     }
 
     modifier onlyIfPriceNonNull(uint256 price) {
-        require(price > 0, "Cannot set price to 0.");
+        require(price > 0, "E8");
         _;
     }
 
-    // MONEY TRANSFERING AND BALANCE
+    // MONEY TRANSFERING
 
     function _secureMoneyTransfer(address beneficiary, uint256 money) internal {
-        address payable _beneficiary = payable(beneficiary);
-        (bool sent, bytes memory data) = _beneficiary.call{value: money}("");
-        require(sent, "Failed to send money to beneficiary");
+        (bool sent, bytes memory data) = payable(beneficiary).call{value: money}("");
+        require(sent, "E12");
     }
 
     function _classicExchange(
@@ -109,7 +89,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _transfer(seller, buyer, vehicle);
         require(
             ownerOf(vehicle) == buyer,
-            "Failed to transfer vehicle to buyer"
+            "E13"
         );
     }
 
@@ -120,7 +100,6 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         uint256 currentTopBid = _getVehiclePrice(tokenId);
         if (currentTopBid != 0 && currentTopBidder != address(0))
             _secureMoneyTransfer(currentTopBidder, currentTopBid);
-        
     }
 
     function _resetAuction(uint256 tokenId) internal {
@@ -184,29 +163,37 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
     function _isForSale(uint256 tokenId) internal view returns (bool) {
         uint256 multiplier;
         uint256 bit;
-        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
-        return _getBoolean(_forSale[multiplier], bit);
+        (multiplier, bit) = BoolBitStorage._tokenIdToBoolBit(tokenId);
+        return BoolBitStorage._getBoolean(_forSale[multiplier], bit);
     }
 
     function _isAuction(uint256 tokenId) internal view returns (bool) {
         uint256 multiplier;
         uint256 bit;
-        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
-        return _getBoolean(_auction[multiplier], bit);
+        (multiplier, bit) = BoolBitStorage._tokenIdToBoolBit(tokenId);
+        return BoolBitStorage._getBoolean(_auction[multiplier], bit);
     }
 
     function _setIsForSale(uint256 tokenId, bool value) internal {
         uint256 multiplier;
         uint256 bit;
-        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
-        _forSale[multiplier] = _setBoolean(_forSale[multiplier], bit, value);
+        (multiplier, bit) = BoolBitStorage._tokenIdToBoolBit(tokenId);
+        _forSale[multiplier] = BoolBitStorage._setBoolean(
+            _forSale[multiplier],
+            bit,
+            value
+        );
     }
 
     function _setIsAuction(uint256 tokenId, bool value) internal {
         uint256 multiplier;
         uint256 bit;
-        (multiplier, bit) = _tokenIdToBoolBit(tokenId);
-        _auction[multiplier] = _setBoolean(_auction[multiplier], bit, value);
+        (multiplier, bit) = BoolBitStorage._tokenIdToBoolBit(tokenId);
+        _auction[multiplier] = BoolBitStorage._setBoolean(
+            _auction[multiplier],
+            bit,
+            value
+        );
     }
 
     //URI
@@ -215,9 +202,12 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _tokenURIs[tokenId] = _tokenURI;
     }
 
-    //MINT
+    // MINT/BURN
 
-    function mint(string memory uri) internal {
+    function mint(string memory uri)
+        internal
+    {
+        require(_uriRegistered[uri] == false, "E3");
         uint256 _tokenId = _tokenIds.current();
         _mint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, uri);
@@ -225,8 +215,13 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions, BoolBitStorage {
         _tokenIds.increment();
     }
 
-    function burn(uint256 _tokenId) internal {
+
+    function burn(uint256 _tokenId)
+        internal
+    {
+        _removeFromSale(_tokenId);
+        emit SaleStatus(_tokenId, false, false);
         _burn(_tokenId);
-        _setTokenURI(_tokenId, "Vehicle Deleted");
+        _setTokenURI(_tokenId, "N/A");
     }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getIfIsTopBidder, getTopBid, getTopBidder, getVehiclePrice, buyVehicle, bidVehicle } from "../utils/BlockchainGateway";
+import { getIfIsTopBidder, callChainFunction, callViewChainFunction } from "../utils/BlockchainGateway";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
 import { alerts } from '../../redux/app/appActions';
 
@@ -19,9 +19,9 @@ function PurchaseOptions({ vehicle, settings }) {
     const [isTopBidder, setIsTopBidder] = useState(false)
 
     useEffect(async () => {
-        setDisplayPrice(await weiToMyCurrency(await getVehiclePrice(vehicle.injected.id)))
+        setDisplayPrice(await weiToMyCurrency(await callViewChainFunction("getVehiclePrice",[vehicle.injected.id])))
         if (isAuction) {
-            setTopBidder(await getTopBidder(vehicle.injected.id))
+            setTopBidder(await callViewChainFunction("getTopBidder",[vehicle.injected.id]))
             setIsTopBidder(await getIfIsTopBidder(vehicle.injected.id))
         }
     }, [app.alerts.loading])
@@ -37,7 +37,7 @@ function PurchaseOptions({ vehicle, settings }) {
                             <label>{myPrefferedCurrency}</label>
                             <button onClick={() => {
                                 if (desiredPrice > displayPrice)
-                                    dispatch(bidVehicle(vehicle.injected.id, desiredPrice))
+                                    dispatch(callChainFunction("bidVehicle",[vehicle.injected.id, desiredPrice]))
                                 else
                                     dispatch(alerts({ alert: "other", message: "Your price needs to be higher than the current top bid." }))
 
@@ -60,7 +60,7 @@ function PurchaseOptions({ vehicle, settings }) {
                     :
                     <button onClick={() => {
                         if (blockchain.account) {
-                            dispatch(buyVehicle(vehicle.injected.id))
+                            dispatch(callChainFunction("buyVehicle",[vehicle.injected.id]))
                         }
                         else {
                             dispatch(alerts({ alert: "other", message: "You need to login." }))

@@ -4,11 +4,10 @@ pragma solidity >=0.6.0 <0.9.0;
 import "./Vehicle.sol";
 
 contract ExternalGateway is Vehicle {
-
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
 
-    function getIfTokenExists(uint256 tokenId) external view returns (bool) {
+    function exists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
 
@@ -17,7 +16,6 @@ contract ExternalGateway is Vehicle {
         view
         virtual
         override
-        onlyIfExists(tokenId)
         returns (string memory)
     {
         return _tokenURIs[tokenId];
@@ -26,7 +24,6 @@ contract ExternalGateway is Vehicle {
     function getVehiclePrice(uint256 tokenId)
         external
         view
-        onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         returns (uint256)
     {
@@ -36,28 +33,17 @@ contract ExternalGateway is Vehicle {
     function getTopBidder(uint256 tokenId)
         external
         view
-        onlyIfExists(tokenId)
         onlyIfAuction(tokenId)
         returns (address)
     {
         return _getTopBidder(tokenId);
     }
 
-    function isAuction(uint256 tokenId)
-        external
-        view
-        onlyIfExists(tokenId)
-        returns (bool)
-    {
+    function isAuction(uint256 tokenId) external view returns (bool) {
         return _isAuction(tokenId);
     }
 
-    function isForSale(uint256 tokenId)
-        external
-        view
-        onlyIfExists(tokenId)
-        returns (bool)
-    {
+    function isForSale(uint256 tokenId) external view returns (bool) {
         return _isForSale(tokenId);
     }
 
@@ -72,7 +58,6 @@ contract ExternalGateway is Vehicle {
 
     function listAuction(uint256 tokenId, uint256 price)
         external
-        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
         onlyIfNotAuction(tokenId)
@@ -84,7 +69,6 @@ contract ExternalGateway is Vehicle {
 
     function listForSale(uint256 tokenId, uint256 price)
         external
-        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
         onlyIfPriceNonNull(price)
@@ -95,7 +79,6 @@ contract ExternalGateway is Vehicle {
 
     function removeFromSale(uint256 tokenId)
         external
-        onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         onlyOwnerOf(tokenId)
     {
@@ -116,7 +99,6 @@ contract ExternalGateway is Vehicle {
     function buyVehicle(uint256 tokenId)
         external
         payable
-        onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         onlyIfNotAuction(tokenId)
     {
@@ -133,7 +115,6 @@ contract ExternalGateway is Vehicle {
     function bidVehicle(uint256 tokenId)
         external
         payable
-        onlyIfExists(tokenId)
         onlyIfAuction(tokenId)
     {
         require(
@@ -156,12 +137,14 @@ contract ExternalGateway is Vehicle {
     function createVehicle(string memory uri)
         external
         onlyClass(ROLE_CLASS.MINTER)
-        onlyIfNotRegistered(uri)
     {
         mint(uri);
     }
 
-    function destroyVehicle(uint256 _tokenId) external {
+    function destroyVehicle(uint256 _tokenId)
+        external
+        onlyClass(ROLE_CLASS.AUTHORITY)
+    {
         _removeFromSale(_tokenId);
         burn(_tokenId);
         emit SaleStatus(_tokenId, false, false);
@@ -169,23 +152,22 @@ contract ExternalGateway is Vehicle {
 
     //ODOMETER
 
-
-    function getOdometerValue(uint256 tokenId) public view onlyIfExists(tokenId) returns (uint256) {
+    function getOdometerValue(uint256 tokenId) external view returns (uint256) {
         return _odometerValue[tokenId];
     }
 
-
-    function increaseOdometer(uint256 tokenId, uint256 value) public onlyClass(ROLE_CLASS.ODOMETER)  {
-        require(msg.sender==_odometerAddress[tokenId]);
+    function increaseOdometer(uint256 tokenId, uint256 value)
+        external
+        onlyRole(ODOMETER_ROLE)
+    {
+        require(msg.sender == _odometerAddress[tokenId]);
         _odometerValue[tokenId] = _odometerValue[tokenId] + value;
     }
 
-    function setOdometerAddress(uint256 tokenId, address odometer) public  {
-
-        require(hasRole(keccak256("AUTHORITY_ROLE_ADMIN"), msg.sender));
+    function setOdometerAddress(uint256 tokenId, address odometer)
+        external
+        onlyRole(AUTHORITY_ROLE_ADMIN)
+    {
         _odometerAddress[tokenId] = odometer;
     }
-
-    
-
 }

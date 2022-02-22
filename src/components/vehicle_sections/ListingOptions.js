@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { listForSale, listAuction } from "../utils/BlockchainGateway";
+import { listForSale, listAuction, callChainFunction } from "../utils/BlockchainGateway";
 import { useDispatch } from 'react-redux';
 import { alerts } from '../../redux/app/appActions';
+import { myCurrencyToWei } from '../utils/PricesCoinsExchange';
 
 
 function ListingOptions({ vehicle, settings }) {
@@ -32,7 +33,7 @@ function ListingOptions({ vehicle, settings }) {
                 {listingType == "INSTANT" ?
                     <button onClick={() => {
                         if (desiredPrice > 0) {
-                            dispatch(listForSale(vehicle.injected.id, desiredPrice))
+                            dispatch(callChainFunction("listForSale",[vehicle.injected.id, desiredPrice]))
                         }
                         else {
                             dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))
@@ -43,7 +44,7 @@ function ListingOptions({ vehicle, settings }) {
                     :
                     <button onClick={() => {
                         if (desiredPrice > 0) {
-                            dispatch(listAuction(vehicle.injected.id, desiredPrice))
+                            dispatch(callChainFunction("listAuction",[vehicle.injected.id, desiredPrice]))
                         }
                         else {
                             dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))

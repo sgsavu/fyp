@@ -5,9 +5,8 @@ import FormFields from '../minting_form/FormFields';
 import ImageUpload from '../minting_form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
-import { fetchMyData, refreshMyVehicles } from "../../redux/data/dataActions";
 import { finishSubmit, errorSubmit } from '../../redux/minting/formActions';
-import { mint, getUserAccount } from '../utils/BlockchainGateway'
+import {  callChainFunction, getUserAccount } from '../utils/BlockchainGateway'
 import { scramble, randomIntFromInterval } from '../utils/CryptographyUtils'
 import { alerts } from '../../redux/app/appActions';
 
@@ -39,7 +38,7 @@ const Mint = () => {
 
             const addedMetaData = await ipfsClient.add(JSON.stringify(metaDataObj));
             console.log(ipfsBaseUrl + addedMetaData.path);
-            dispatch(mint(ipfsBaseUrl + addedMetaData.path))
+            dispatch(callChainFunction("createVehicle",[ipfsBaseUrl + addedMetaData.path]))
             dispatch(alerts({ alert: "other", message: "Transaction sent for processing."}))
             dispatch(finishSubmit());
 

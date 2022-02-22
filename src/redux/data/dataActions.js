@@ -1,7 +1,7 @@
-import { roles, superUsers } from "../../components/utils/PermissionsAndRoles";
+import { roles } from "../../components/utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
-import { getAccountBalance, getVehicleOfOwnerByIndex, getVehicleURI, getVehicleMetadata, getIfForSale, getIfAuction, getTopBidder, getTotalNrOfVehicles, getVehicleByIndex, getRole, getUserAccount, getVehiclePrice } from "../../components/utils/BlockchainGateway";
+import { getRole, getUserAccount, callViewChainFunction } from "../../components/utils/BlockchainGateway";
 import { alerts, updateDataState } from "../app/appActions";
 
 function injectTokenId(vehicle, tokenId) {
@@ -10,22 +10,22 @@ function injectTokenId(vehicle, tokenId) {
 }
 
 export async function injectPrice(vehicle) {
-  vehicle.injected.price = await getVehiclePrice(vehicle.injected.id)
+  vehicle.injected.price = await callViewChainFunction("getVehiclePrice",[vehicle.injected.id])
   vehicle.injected.display_price = await weiToMyCurrency(vehicle.injected.price)
 }
 
 export async function injectIfTopBidder(vehicle) {
-  if (await getTopBidder(vehicle.injected.id) == await getUserAccount())
+  if (await callViewChainFunction("getTopBidder",[vehicle.injected.id]) == await getUserAccount())
     vehicle.injected.bid = true
 }
 
 export async function getVehicleInfo(vehicleID) {
-  let vehicleURI = await getVehicleURI(vehicleID)
-  let vehicleMetadata = await getVehicleMetadata(vehicleURI)
+  let vehicleURI = await callViewChainFunction("tokenURI",[vehicleID])
+  let vehicleMetadata = await (await fetch(vehicleURI)).json()
   injectTokenId(vehicleMetadata, vehicleID)
-  if (await getIfForSale(vehicleID)) {
+  if (await callViewChainFunction("isForSale",[vehicleID])) {
     await injectPrice(vehicleMetadata)
-    if (await getIfAuction(vehicleID)) {
+    if (await callViewChainFunction("isAuction",[vehicleID])) {
       vehicleMetadata.injected.auction = true
       await injectIfTopBidder(vehicleMetadata)
     }
@@ -34,10 +34,10 @@ export async function getVehicleInfo(vehicleID) {
 }
 
 async function getAllVehicles() {
-  let totalNrOfVehicles = await getTotalNrOfVehicles()
+  let totalNrOfVehicles = await callViewChainFunction("totalSupply",[])
   let allVehicles = {}
   for (var i = 0; i < totalNrOfVehicles; i++) {
-    let vehicleID = await getVehicleByIndex(i)
+    let vehicleID = await callViewChainFunction("tokenByIndex",[i])
     allVehicles[vehicleID] = await getVehicleInfo(vehicleID)
   }
   return allVehicles
@@ -59,10 +59,10 @@ function getSaleVehicles(allVehicles) {
 }
 
 async function getVehiclesForAccount(account) {
-  let accountBalance = await getAccountBalance(account)
+  let accountBalance = await callViewChainFunction("balanceOf",[account])
   let myVehicles = {}
   for (var i = 0; i < accountBalance; i++) {
-    let vehicleID = await getVehicleOfOwnerByIndex(account, i)
+    let vehicleID = await callViewChainFunction("tokenOfOwnerByIndex",[account, i])
     myVehicles[vehicleID] = await getVehicleInfo(vehicleID)
   }
   return myVehicles

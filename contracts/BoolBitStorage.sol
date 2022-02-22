@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
-contract BoolBitStorage {
+library BoolBitStorage {
     function _getBoolean(uint256 _packedBools, uint256 _boolNumber)
-        internal
+        public
         pure
         returns (bool)
     {
@@ -15,13 +15,13 @@ contract BoolBitStorage {
         uint256 _packedBools,
         uint256 _boolNumber,
         bool _value
-    ) internal pure returns (uint256) {
+    ) public pure returns (uint256) {
         if (_value) return _packedBools | (uint256(1) << _boolNumber);
         else return _packedBools & ~(uint256(1) << _boolNumber);
     }
 
     function _tokenIdToBoolBit(uint256 tokenId)
-        internal
+        public
         pure
         returns (uint256, uint256)
     {

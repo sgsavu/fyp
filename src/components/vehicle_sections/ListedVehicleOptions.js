@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { weiToMyCurrency } from '../utils/PricesCoinsExchange'
-import { getUserAccount, concludeAuction, setVehiclePrice, removeFromSale, getVehicleHistory, ownerOf, getVehiclePrice, getContractBalance, getIfForSale, getIfAuction, getTopBidder } from "../utils/BlockchainGateway";
+import { getVehiclePrice, getTopBidder, callChainFunction, callViewChainFunction } from "../utils/BlockchainGateway";
 import { alerts } from '../../redux/app/appActions';
-
 
 function ListedVehicleOptions({ vehicle, settings }) {
 
@@ -19,9 +18,9 @@ function ListedVehicleOptions({ vehicle, settings }) {
 
     useEffect(async () => {
 
-        setDisplayPrice(await weiToMyCurrency(await getVehiclePrice(vehicle.injected.id)))
+        setDisplayPrice(await weiToMyCurrency(await callViewChainFunction("getVehiclePrice",[vehicle.injected.id])))
         if (isAuction) {
-            setTopBidder(await getTopBidder(vehicle.injected.id))
+            setTopBidder(await callViewChainFunction("getTopBidder",[vehicle.injected.id]))
         }
     }, [])
 
@@ -35,7 +34,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                 <div>
                     {topBidder != "0x0000000000000000000000000000000000000000" ?
                         <button onClick={() => {
-                            dispatch(concludeAuction(vehicle.injected.id))
+                            dispatch(callChainFunction("concludeAuction",[vehicle.injected.id]))
                         }}>
                             Conclude Auction
                         </button>
@@ -51,7 +50,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                         <label>{myPrefferedCurrency}</label>
                         <button onClick={() => {
                             if (desiredPrice > 0) {
-                                dispatch(setVehiclePrice(vehicle.injected.id, desiredPrice))
+                                dispatch(callChainFunction("setVehiclePrice",[vehicle.injected.id, desiredPrice]))
                             }
                             else {
                                 dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))
@@ -63,7 +62,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                 </div>
             }
             <button onClick={() => {
-                dispatch(removeFromSale(vehicle.injected.id))
+                dispatch(callChainFunction("removeFromSale",[vehicle.injected.id]))
             }}>
                 Delist Vehicle
             </button>

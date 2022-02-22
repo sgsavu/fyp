@@ -16,6 +16,7 @@ const Marketplace = () => {
   const [sortType, setSortType] = useState("ascending")
 
   const [multipleFilter, setMultipleFilter] = useState([])
+  const [multipleFilter2, setMultipleFilter2] = useState([])
 
   const [pool, setPool] = useState([])
   const [backupPool, setBackupPool] = useState([])
@@ -38,6 +39,7 @@ const Marketplace = () => {
     multipleFilter.forEach((obj) => {
       copy = filterByAttributeValue(Object.keys(obj)[0], obj[Object.keys(obj)[0]], copy)
     })
+
 
     const filter2 = sorting(copy, sortType)
 
@@ -65,8 +67,6 @@ const Marketplace = () => {
   }, [useSelector((state) => state.data).saleVehicles])
 
 
-  console.log(data.saleVehicles.instant)
-
   useEffect(() => {
     splitIntoPages(pool)
   }, [pool, sortType, multipleFilter])
@@ -87,6 +87,16 @@ const Marketplace = () => {
     return result;
   }
 
+
+  function checkIfTypePresent(list, object) {
+    for (var i = 0; i < list.length; i++) {
+      if (object in list[i])
+        return true
+    }
+    return false
+  }
+
+
   return (
 
     <div>
@@ -99,22 +109,27 @@ const Marketplace = () => {
         }}>AUCTIONS</button>
 
 
-        <SearchFilter pool={pool} modifier={setPool} reset={backupPool}/>
-
-       
-
+        <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
 
         <select multiple onChange={(e) => { setMultipleFilter(getSelectValues(e.target)) }}>
-          <option value='{"company":"213451235"}'>
-            Company 213451235
+          <option value='{"company":"Tesla"}'>
+            Company: Tesla
           </option>
-          <option value='{"company":"123512"}'>
-            Company 123512
+          {checkIfTypePresent(multipleFilter,"company")? null : 
+            
+            <option value='{"company":"Ford"}'>
+              Company: Ford
+            </option>}
+
+          <option value='{"model":"X"}'>
+            Model: X
           </option>
-          <option value='{"company":"0"}'>
-            Company 0
+          <option value='{"model":"Y"}'>
+            Model: Y
           </option>
         </select>
+
+
         <div>
           {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
             return (

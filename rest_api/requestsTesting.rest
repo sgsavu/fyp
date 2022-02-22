@@ -33,9 +33,9 @@ Content-Type: application/json
 
 {   
     "chain":"0xfa2",
-    "operation":"destroyVehicle",
+    "operation":"burn",
     "data": {
-        "tokenId": 7,  
+        "tokenId": 0,  
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
@@ -49,7 +49,7 @@ Content-Type: application/json
     "chain":"0xfa2",
     "operation":"listForSale",
     "data": {
-        "tokenId": 4,
+        "tokenId": 0,
         "price":"358107188643704830",
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
@@ -63,11 +63,26 @@ Content-Type: application/json
 
 {
     "chain":"0xfa2",
-    "operation":"getIfTokenExists",
+    "operation":"exists",
     "data": {
         "tokenId": 0
     }
 }
+
+
+###
+#ANY GET
+GET https://localhost:8443/
+Content-Type: application/json
+
+{
+    "chain":"0xfa2",
+    "operation":"tokenURI",
+    "data": {
+        "tokenId": 0
+    }
+}
+
 
 ###
 #ANY GET
@@ -79,7 +94,7 @@ Content-Type: application/json
     "operation":"hasRole",
     "data": {
         "role": "ODOMETER_ROLE",
-        "address": "0xc1375A3812518208373474cCaB030CBb9cD9A499"
+        "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a"
     }
 }
 
@@ -93,7 +108,7 @@ Content-Type: application/json
     "operation":"grantRole",
     "data": {
         "role": "ODOMETER_ROLE",
-        "address": "0xc1375A3812518208373474cCaB030CBb9cD9A499",
+        "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a",
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
@@ -107,8 +122,8 @@ Content-Type: application/json
     "chain":"0xfa2",
     "operation":"revokeRole",
     "data": {
-        "role": "MINTER_ROLE",
-        "address": "0xc1375A3812518208373474cCaB030CBb9cD9A499",
+        "role": "ODOMETER_ROLE",
+        "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a",
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
@@ -137,7 +152,7 @@ Content-Type: application/json
     "data": {
         "tokenId": "0",
         "value": "10",
-        "private_key": "3f91e9e358b16585c445f8fd6e6edc67a6ee07aa4f422c25d82c4d24b2a507e1"
+        "private_key": "ceddfa13d00d47e636b7f36203d29197c4f9b3a0b47766ba5e8bf214ede7daff"
     }
 }
 
@@ -152,7 +167,7 @@ Content-Type: application/json
     "operation":"setOdometerAddress",
     "data": {
         "tokenId": "0",
-        "address": "0xc1375A3812518208373474cCaB030CBb9cD9A499",
+        "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a",
         "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     }
 }
