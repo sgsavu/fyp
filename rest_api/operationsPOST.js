@@ -16,7 +16,7 @@ async function callChainFunction(obj) {
         obj.data = {"uri":tokenURI}
     }
 
-    obj.smartContractMethod = obj.smartContract.methods[obj.operation](...(Object.values(obj.data)))
+    obj.smartContractMethod = await obj.smartContract.methods[obj.operation](...(Object.values(obj.data)))
 
     const sentTx = await sendAuthenticatedTransaction(obj)
     response.tx = sentTx

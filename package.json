@@ -41,11 +41,8 @@
   },
   "scripts": {
     "start": "npm-run-all -p -r app api",
-    "build": "react-scripts build",
     "app": "react-scripts start",
-    "api": "node ./rest_api/server.js",
-    "test": "npm-run-all -p -r bruh bruh2",
-    "eject": "react-scripts eject"
+    "api": "node ./rest_api/server.js"
   },
   "eslintConfig": {
     "extends": [

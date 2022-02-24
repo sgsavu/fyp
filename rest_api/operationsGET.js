@@ -6,7 +6,7 @@ async function callViewChainFunction(obj) {
     if (obj.operation == "hasRole")
         obj.data.role = keccak256(obj.data.role)
 
-    return obj.smartContract.methods
+    return await obj.smartContract.methods
     [obj.operation](...(Object.values(obj.data)))
         .call();
 }
