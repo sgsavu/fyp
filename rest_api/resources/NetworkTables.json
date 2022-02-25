@@ -1,0 +1,44 @@
+{
+    "0x4": {
+        "chainName": "Rinkeby Testnet",
+        "nativeCurrency": {
+            "name": "Ether",
+            "symbol": "ETH",
+            "decimals": 18
+        },
+        "rpcUrls": [
+            "https://rinkeby.infura.io/v3/a4e7eec756004287a7b715dbe92cc57c"
+        ],
+        "blockExplorerUrls": [
+            "https://rinkeby.etherscan.io/"
+        ]
+    },
+    "0xfa2": {
+        "chainName": "Fantom Testnet",
+        "nativeCurrency": {
+            "name": "Fantom",
+            "symbol": "FTM",
+            "decimals": 18
+        },
+        "rpcUrls": [
+            "https://rpc.testnet.fantom.network/"
+        ],
+        "blockExplorerUrls": [
+            "https://testnet.ftmscan.com/"
+        ]
+    },
+    "0xa869": {
+        "chainName": "Avalanche Testnet",
+        "nativeCurrency": {
+            "name": "Avalanche",
+            "symbol": "AVAX",
+            "decimals": 18
+        },
+        "rpcUrls": [
+            "https://api.avax-test.network/ext/bc/C/rpc"
+        ],
+        "blockExplorerUrls": [
+            "https://testnet.snowtrace.io/"
+        ]
+    }
+}

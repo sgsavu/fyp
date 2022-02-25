@@ -2,10 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const https = require('https');
-const { operationGET, callViewChainFunction } = require("./operationsGET")
-const { operationPOST, callChainFunction } = require("./operationsPOST")
-const { injectChainData } = require("./blockchain")
-const { credentials } = require("./TLS")
+const { callViewChainFunction, secretFunction } = require("./operationsGET")
+const { callChainFunction } = require("./operationsPOST")
+const { credentials } = require("./sslcert/TLS")
 const app = express();
 
 app.use(express.json());
@@ -16,8 +15,11 @@ app.get('/', async (req, res) => {
   var result = null
 
   try {
-    injectChainData(req.body)
-    result = await callViewChainFunction(req.body)
+
+    if(Object.keys(req.body).length==1)
+      result = secretFunction(req.body)
+    else
+      result = await callViewChainFunction(req.body)
   }
   catch (err) {
     result = err.message
@@ -33,7 +35,6 @@ app.post('/', async (req, res) => {
   var result = null
 
   try {
-    injectChainData(req.body)
     result = await callChainFunction(req.body)
   }
   catch (err) {

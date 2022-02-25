@@ -1,9 +1,11 @@
 const { uploadToIPFS } = require("./ipfsTool")
 const { sendAuthenticatedTransaction } = require("./blockchain")
 const keccak256 = require('keccak256')
-
+const { injectChainData } = require("./blockchain")
 
 async function callChainFunction(obj) {
+
+    injectChainData(obj)
 
     var response = {}
 

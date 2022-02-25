@@ -1,8 +1,8 @@
 const { create } = require('ipfs-http-client')
 const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
 const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
-const { scramble, randomIntFromInterval } = require('./cryptographyUtils')
-const { urlToBuffer } = require("./imageManipulation")
+const { scramble, randomIntFromInterval } = require('./libraries/cryptographyUtils')
+const { urlToBuffer } = require("./libraries/imageManipulation")
 
 async function uploadToIPFS(obj) {
 

@@ -1,28 +1,57 @@
-from itertools import chain
-from web3 import Web3
 import os
 import json
 import sched
 import time
-from web3.middleware import geth_poa_middleware
 import requests
 import sys
+import random
 from dotenv import load_dotenv
+from web3 import Web3
+from web3.middleware import geth_poa_middleware
 import obd 
 from elm import Elm
-import random
+import math
 
+REST_API_LINK = "https://localhost:8443/"
 LOOPIG_TIME = 1
 LOCAL_ODOMETER = 0
 ODOMETER_LOAD = 0
-TRANSACTION_THRESHOLD = 0.5 #in kilometers
+TRANSACTION_THRESHOLD = 1 #in kilometers
 TRANSACTION_WINDOW = False
+PULL_COOLDOWN = 0
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
+def restart_device():
+    os.system("shutdown /r /t 1")
+
+def decrement_pull_cooldown():
+    global PULL_COOLDOWN
+    if PULL_COOLDOWN is not 0:
+        PULL_COOLDOWN = PULL_COOLDOWN - 1
+
 def refresh_cache():
-    pass
+    global PULL_COOLDOWN
+    refresh_contract()
+    refresh_network_tables()
+    PULL_COOLDOWN = 30
+
+def refresh_contract():
+    global external_gateway
+    response = requests.get(REST_API_LINK, data={'operation':'getContract'}, verify=False)
+    external_gateway = response.json()
+    f = open("ExternalGateway.json", "w")
+    f.write(external_gateway)
+    f.close()
+
+def refresh_network_tables():
+    global network_tables
+    response = requests.get(REST_API_LINK, data={'operation':'getNetworkTables'}, verify=False)
+    network_tables = response.json()
+    f = open("NetworkTables.json", "w")
+    f.write(network_tables)
+    f.close()
 
 def load_environment_file():
     global PRIVATE_KEY
@@ -32,21 +61,19 @@ def load_environment_file():
     VEHICLE_ID = int(os.environ['VEHICLE_ID'])
     CHAIN = os.environ['CHAIN']
 
-def load_default_cache():
+def load_cache():
     global external_gateway
-    global network_table
+    global network_tables
     external_gateway = json.load(
         open(os.path.join(__location__, 'ExternalGateway.json')))
-    network_table = json.load(
+    network_tables = json.load(
         open(os.path.join(__location__, 'NetworkTables.json')))
 
 def load_web3():
     global web3
-    global nonce
-    web3 = Web3(Web3.HTTPProvider(network_table[CHAIN]["rpcUrls"][0]))
+    web3 = Web3(Web3.HTTPProvider(network_tables[CHAIN]["rpcUrls"][0]))
     web3.eth.default_account = web3.eth.account.from_key(PRIVATE_KEY).address
     web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-    nonce = web3.eth.getTransactionCount(web3.eth.default_account)
 
 def load_contract():
     global contract
@@ -58,22 +85,34 @@ def load_contract():
 def init ():
     load_dotenv()
     load_environment_file()
-    load_default_cache()
+    load_cache()
     load_web3()
     load_contract()
 
-def increment_odometer(value):
-    global nonce
+def increment_odometer():
     global TRANSACTION_WINDOW
     global ODOMETER_LOAD
-    tx = contract.functions.increaseOdometer(VEHICLE_ID, value).buildTransaction(
-        {'nonce': nonce})
+
+    floored = math.floor(ODOMETER_LOAD)
+
+    tx = contract.functions.increaseOdometer(VEHICLE_ID, floored).buildTransaction(
+        {'nonce': web3.eth.getTransactionCount(web3.eth.default_account)})
     signed_tx = web3.eth.account.signTransaction(tx, private_key=PRIVATE_KEY)
     web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    print("SENT" + str(ODOMETER_LOAD) + str(signed_tx))
-    nonce = nonce + 1
-    ODOMETER_LOAD = 0
+
+    print("SENT " + str(floored))
+    ODOMETER_LOAD = ODOMETER_LOAD - floored
     TRANSACTION_WINDOW = False
+
+def check_if_pull_cache():
+    wow = contract.functions.getPullCache().call()
+    print(wow)
+    return wow
+
+def check_if_restart():
+    wow = contract.functions.getRestart().call()
+    print(wow)
+    return wow
 
 def activate_window():
     global TRANSACTION_WINDOW
@@ -86,7 +125,16 @@ def loop_forever(sc):
     global TRANSACTION_WINDOW
     global TRANSACTION_THRESHOLD
     try:
-    
+
+        decrement_pull_cooldown()
+
+        if check_if_restart():
+            restart_device()
+
+        if check_if_pull_cache():
+            if PULL_COOLDOWN is not 0:
+                refresh_cache()
+
         raw_reading = float(str(connection.query(obd.commands.SPEED).value)[:-4])
         if raw_reading != 0.0:
             distance = raw_reading*LOOPIG_TIME/3600
@@ -98,8 +146,9 @@ def loop_forever(sc):
                 print("WINDOW ACTIVE")
                 random_num = random.random()
                 if (random_num>0.90):
-                    increment_odometer(1)
-            print(str(LOCAL_ODOMETER))
+                    increment_odometer()
+        
+        print("TOTAL: " + str(LOCAL_ODOMETER) + " LOAD: " + str(ODOMETER_LOAD) + " SPEED: " + str(raw_reading))
 
     except Exception as e: print(e)
     s.enter(1, 1, loop_forever, (sc,))

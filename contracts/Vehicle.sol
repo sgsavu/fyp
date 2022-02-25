@@ -28,6 +28,9 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions {
     mapping(uint256 => uint256) private _vehiclePrice;
     mapping(uint256 => address) private _topBidder;
 
+    bool internal pullCache = false;
+    bool internal restart = false;
+
     function supportsInterface(bytes4 interfaceId)
         public
         view

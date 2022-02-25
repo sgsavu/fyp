@@ -62,7 +62,7 @@ GET https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0xa869",
+    "chain":"0x4",
     "operation":"exists",
     "data": {
         "tokenId": "0"
@@ -120,7 +120,7 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0xfa2",
+    "chain":"0x4",
     "operation":"revokeRole",
     "data": {
         "role": "ODOMETER_ROLE",
@@ -152,7 +152,7 @@ Content-Type: application/json
     "operation":"increaseOdometer",
     "data": {
         "tokenId": "0",
-        "value": "10"
+        "value": "1"
     },
     "private_key": "ceddfa13d00d47e636b7f36203d29197c4f9b3a0b47766ba5e8bf214ede7daff"
 }
@@ -179,5 +179,53 @@ GET https://localhost:8443/
 Content-Type: application/json
 
 {
-    "operation":"getDeployedNetworks"
+    "operation":"getNetworkTables"
+}
+
+###
+#ANY GET
+GET https://localhost:8443/
+Content-Type: application/json
+
+{
+    "operation":"getContract"
+}
+
+
+###
+#ANY GET
+POST https://localhost:8443/
+Content-Type: application/json
+
+{
+    "chain":"0x4",
+    "operation":"setPullCache",
+    "data": {
+        "value": false
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+#ANY GET
+GET https://localhost:8443/
+Content-Type: application/json
+
+{
+    "chain":"0x4",
+    "operation":"getPullCache",
+    "data": {
+    }
+}
+
+###
+#ANY GET
+GET https://localhost:8443/
+Content-Type: application/json
+
+{
+    "chain":"0x4",
+    "operation":"getRestart",
+    "data": {
+    }
 }

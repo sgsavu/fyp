@@ -1,8 +1,8 @@
-var ExternalGatewayContract = require('../src/abis/ExternalGateway.json');
+var ExternalGatewayContract = require('./resources/ExternalGateway.json');
+var NetworkTables = require('./resources/NetworkTables.json');
 
 CONTRACT_LIST = [ExternalGatewayContract]
 
-const { rpcUrls } = require("./rpcUrls")
 const Web3 = require('web3');
 
 function getDeployedChains() {
@@ -34,7 +34,7 @@ function injectChainData(object) {
     var contractNr = checkFunctionLocation(object.operation)
     if (contractNr==-1)
         throw Error("Operation Not Supported")
-    object.web3Instance = new Web3(rpcUrls[object.chain]);
+    object.web3Instance = new Web3(NetworkTables[object.chain]["rpcUrls"][0]);
     object.smartContract = new object.web3Instance.eth.Contract(
         CONTRACT_LIST[contractNr].abi,
         getDeployedChains()[contractNr][object.chain]
@@ -61,3 +61,5 @@ async function sendAuthenticatedTransaction(obj) {
 exports.getDeployedChains = getDeployedChains;
 exports.injectChainData = injectChainData;
 exports.sendAuthenticatedTransaction = sendAuthenticatedTransaction;
+exports.NetworkTables = NetworkTables;
+exports.ExternalGatewayContract = ExternalGatewayContract;

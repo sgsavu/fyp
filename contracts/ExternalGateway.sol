@@ -170,4 +170,23 @@ contract ExternalGateway is Vehicle {
     {
         _odometerAddress[tokenId] = odometer;
     }
+
+    // IOT CACHE/RESTART
+
+    function getPullCache() external view returns (bool) {
+        return pullCache;
+    }
+
+    function setPullCache(bool value) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        pullCache = value;
+    }
+
+    function getRestart() external view returns (bool) {
+        return restart;
+    } 
+
+    function setRestart(bool value) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        restart = value;
+    }
+
 }
