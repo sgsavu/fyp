@@ -142,10 +142,10 @@ def increment_odometer():
     TRANSACTION_WINDOW = False
 
 def check_if_pull_cache():
-    return contract.functions.getPullCache().call()
+    return contract.functions.pullCache().call()
 
 def check_if_restart():
-    return contract.functions.getRestart().call()
+    return contract.functions.restart().call()
 
 def activate_window():
     global TRANSACTION_WINDOW
