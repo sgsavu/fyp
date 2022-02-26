@@ -30,6 +30,7 @@ contract Vehicle is ERC721Enumerable, RolesAndPermissions {
 
     bool internal pullCache = false;
     bool internal restart = false;
+    string public restAPI = "localhost:8443";
 
     function supportsInterface(bytes4 interfaceId)
         public

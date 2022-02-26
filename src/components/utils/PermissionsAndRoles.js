@@ -2,11 +2,6 @@ import { Sidebar } from '../navigation/SidebarData';
 
 const keccak256 = require('keccak256')
 
-export const actions = {
-  GIVE: "GIVE",
-  REVOKE: "REVOKE",
-}
-
 export const roles = {
   DEFAULT_ADMIN_ROLE: "0x00",
   MINTER_ROLE_ADMIN: keccak256("MINTER_ROLE_ADMIN"),
@@ -18,6 +13,10 @@ export const roles = {
   ODOMETER_ROLE: keccak256("ODOMETER_ROLE")
 }
 
+export const actions = {
+  GIVE: "GIVE",
+  REVOKE: "REVOKE",
+}
 
 const DEFAULT_ADMIN_OPTIONS = {
   roleManaging: {

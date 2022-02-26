@@ -55,6 +55,16 @@ async function sendAuthenticatedTransaction(obj) {
     return sentTx
 }
 
+function secretFunction(obj) {
+    
+    if (obj.operation == "getContract")
+        return getFile("ExternalGateway.json")
+    else if (obj.operation == "getNetworkTables")
+        return getFile("NetworkTables.json")
+
+}
+
 exports.getDeployedChains = getDeployedChains;
 exports.injectChainData = injectChainData;
 exports.sendAuthenticatedTransaction = sendAuthenticatedTransaction;
+exports.secretFunction = secretFunction
