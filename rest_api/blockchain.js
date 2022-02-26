@@ -1,14 +1,10 @@
-var ExternalGatewayContract = require('./resources/ExternalGateway.json');
-var NetworkTables = require('./resources/NetworkTables.json');
-
-CONTRACT_LIST = [ExternalGatewayContract]
-
 const Web3 = require('web3');
+const { getFile } = require('./files');
 
 function getDeployedChains() {
+    const CONTRACT_LIST = [getFile("ExternalGateway.json")]
     const deployed = {}
-    for (var contract in CONTRACT_LIST)
-    {
+    for (var contract in CONTRACT_LIST) {
         const chains_deployed = {}
         for (var property in CONTRACT_LIST[contract].networks)
             chains_deployed[Web3.utils.numberToHex(property)] = CONTRACT_LIST[contract].networks[property].address
@@ -17,13 +13,13 @@ function getDeployedChains() {
     return deployed
 }
 
-function checkFunctionLocation (functionName) {
-    for (var contract in CONTRACT_LIST)
-    {   
-        for (var func in CONTRACT_LIST[contract].abi ) {
+function checkFunctionLocation(functionName) {
+    const CONTRACT_LIST = [getFile("ExternalGateway.json")]
+    for (var contract in CONTRACT_LIST) {
+        for (var func in CONTRACT_LIST[contract].abi) {
             if (CONTRACT_LIST[contract].abi[func].type == "function")
                 if (CONTRACT_LIST[contract].abi[func].name == functionName)
-                        return contract   
+                    return contract
         }
     }
 
@@ -31,10 +27,11 @@ function checkFunctionLocation (functionName) {
 }
 
 function injectChainData(object) {
+    const CONTRACT_LIST = [getFile("ExternalGateway.json")]
     var contractNr = checkFunctionLocation(object.operation)
-    if (contractNr==-1)
+    if (contractNr == -1)
         throw Error("Operation Not Supported")
-    object.web3Instance = new Web3(NetworkTables[object.chain]["rpcUrls"][0]);
+    object.web3Instance = new Web3(getFile("NetworkTables.json")[object.chain]["rpcUrls"][0]);
     object.smartContract = new object.web3Instance.eth.Contract(
         CONTRACT_LIST[contractNr].abi,
         getDeployedChains()[contractNr][object.chain]
@@ -61,5 +58,3 @@ async function sendAuthenticatedTransaction(obj) {
 exports.getDeployedChains = getDeployedChains;
 exports.injectChainData = injectChainData;
 exports.sendAuthenticatedTransaction = sendAuthenticatedTransaction;
-exports.NetworkTables = NetworkTables;
-exports.ExternalGatewayContract = ExternalGatewayContract;

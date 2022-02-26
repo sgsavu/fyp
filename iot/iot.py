@@ -23,35 +23,37 @@ PULL_COOLDOWN = 0
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
+print(__location__)
+
 def restart_device():
-    os.system("shutdown /r /t 1")
+    os.system("reboot")
 
 def decrement_pull_cooldown():
     global PULL_COOLDOWN
-    if PULL_COOLDOWN is not 0:
+    if PULL_COOLDOWN != 0:
         PULL_COOLDOWN = PULL_COOLDOWN - 1
 
 def refresh_cache():
     global PULL_COOLDOWN
+    print("refreeshing cache")
     refresh_contract()
     refresh_network_tables()
+    init()
     PULL_COOLDOWN = 30
 
 def refresh_contract():
     global external_gateway
     response = requests.get(REST_API_LINK, data={'operation':'getContract'}, verify=False)
-    external_gateway = response.json()
-    f = open("ExternalGateway.json", "w")
-    f.write(external_gateway)
-    f.close()
+    external_gateway = response.json()['result']
+    with open(__location__ + '/ExternalGateway.json', "w") as myfile:
+        myfile.write(json.dumps(external_gateway))
 
 def refresh_network_tables():
     global network_tables
     response = requests.get(REST_API_LINK, data={'operation':'getNetworkTables'}, verify=False)
-    network_tables = response.json()
-    f = open("NetworkTables.json", "w")
-    f.write(network_tables)
-    f.close()
+    network_tables = response.json()['result']
+    with open(__location__ + '/NetworkTables.json', "w") as myfile:
+        myfile.write(json.dumps(network_tables))
 
 def load_environment_file():
     global PRIVATE_KEY
@@ -64,10 +66,14 @@ def load_environment_file():
 def load_cache():
     global external_gateway
     global network_tables
-    external_gateway = json.load(
-        open(os.path.join(__location__, 'ExternalGateway.json')))
-    network_tables = json.load(
-        open(os.path.join(__location__, 'NetworkTables.json')))
+
+    with open(__location__ + '/ExternalGateway.json') as myfile:
+        external_gateway = json.load(myfile)
+
+    with open(__location__ + '/NetworkTables.json') as myfile:
+        network_tables = json.load(myfile)
+  
+
 
 def load_web3():
     global web3
@@ -106,12 +112,12 @@ def increment_odometer():
 
 def check_if_pull_cache():
     wow = contract.functions.getPullCache().call()
-    print(wow)
+    print("Cache " + str(wow))
     return wow
 
 def check_if_restart():
     wow = contract.functions.getRestart().call()
-    print(wow)
+    print("Restart " + str(wow))
     return wow
 
 def activate_window():
@@ -124,17 +130,21 @@ def loop_forever(sc):
     global ODOMETER_LOAD
     global TRANSACTION_WINDOW
     global TRANSACTION_THRESHOLD
+
+    decrement_pull_cooldown()
+
     try:
-
-        decrement_pull_cooldown()
-
         if check_if_restart():
             restart_device()
+    except Exception as e: print(e)
 
+    try:
         if check_if_pull_cache():
-            if PULL_COOLDOWN is not 0:
+            if PULL_COOLDOWN == 0:
                 refresh_cache()
+    except Exception as e: print(e)
 
+    try:
         raw_reading = float(str(connection.query(obd.commands.SPEED).value)[:-4])
         if raw_reading != 0.0:
             distance = raw_reading*LOOPIG_TIME/3600
@@ -147,7 +157,7 @@ def loop_forever(sc):
                 random_num = random.random()
                 if (random_num>0.90):
                     increment_odometer()
-        
+        print("PULL CD: " + str(PULL_COOLDOWN))
         print("TOTAL: " + str(LOCAL_ODOMETER) + " LOAD: " + str(ODOMETER_LOAD) + " SPEED: " + str(raw_reading))
 
     except Exception as e: print(e)

@@ -1,5 +1,6 @@
 const keccak256 = require('keccak256')
-const { injectChainData, NetworkTables, ExternalGatewayContract } = require("./blockchain")
+const { injectChainData} = require("./blockchain")
+const { getFile } = require('./files')
 
 async function callViewChainFunction(obj) {
 
@@ -14,14 +15,11 @@ async function callViewChainFunction(obj) {
 }
 
 function secretFunction(obj) {
-
-    console.log(ExternalGatewayContract)
-    console.log(NetworkTables)
     
     if (obj.operation == "getContract")
-        return ExternalGatewayContract
-    else if (obj.operation =="getNetworkTables")
-        return NetworkTables
+        return getFile("ExternalGateway.json")
+    else if (obj.operation == "getNetworkTables")
+        return getFile("NetworkTables.json")
 
 }
 
