@@ -1,25 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
-import "./Vehicle.sol";
 
-contract ExternalGateway is Vehicle {
+contract Gateway {
+
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
+    event SaleStatus(uint256 indexed tokenId, bool status, bool isAuction);
 
-    function exists(uint256 tokenId) external view returns (bool) {
-        return _exists(tokenId);
+    // MODIFIERS
+
+    modifier onlyOwnerOf(uint256 tokenId) {
+        require(ownerOf(tokenId) == msg.sender, "E2");
+        _;
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        return _tokenURIs[tokenId];
+    modifier onlyIfForSale(uint256 tokenId) {
+        require(_isForSale(tokenId), "E4");
+        _;
     }
+
+    modifier onlyIfNotForSale(uint256 tokenId) {
+        require(!_isForSale(tokenId), "E5");
+        _;
+    }
+
+    modifier onlyIfAuction(uint256 tokenId) {
+        require(_isAuction(tokenId), "E6");
+        _;
+    }
+
+    modifier onlyIfNotAuction(uint256 tokenId) {
+        require(!_isAuction(tokenId), "E7");
+        _;
+    }
+
+    modifier onlyIfPriceNonNull(uint256 price) {
+        require(price > 0, "E8");
+        _;
+    }
+
+    ///
 
     function getVehiclePrice(uint256 tokenId)
         external
@@ -47,15 +68,6 @@ contract ExternalGateway is Vehicle {
         return _isForSale(tokenId);
     }
 
-    function concludeAuction(uint256 tokenId)
-        external
-        onlyOwnerOf(tokenId)
-        onlyIfAuction(tokenId)
-    {
-        _concludeAuction(tokenId);
-        emit SaleStatus(tokenId, false, false);
-    }
-
     function listAuction(uint256 tokenId, uint256 price)
         external
         onlyOwnerOf(tokenId)
@@ -67,7 +79,7 @@ contract ExternalGateway is Vehicle {
         emit SaleStatus(tokenId, true, true);
     }
 
-    function listForSale(uint256 tokenId, uint256 price)
+    function listInstant(uint256 tokenId, uint256 price)
         external
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
@@ -77,7 +89,17 @@ contract ExternalGateway is Vehicle {
         emit SaleStatus(tokenId, true, false);
     }
 
-    function removeFromSale(uint256 tokenId)
+    function delistAuction(uint256 tokenId)
+        external
+        onlyIfForSale(tokenId)
+        onlyOwnerOf(tokenId)
+    {
+        _refundCurentTopBidder(tokenId);
+        _removeFromSale(tokenId);
+        emit SaleStatus(tokenId, false, false);
+    }
+
+    function delistInstant(uint256 tokenId)
         external
         onlyIfForSale(tokenId)
         onlyOwnerOf(tokenId)
@@ -104,11 +126,11 @@ contract ExternalGateway is Vehicle {
     {
         require(
             msg.value == _getVehiclePrice(tokenId),
-            "Money sent either not enough or too much."
+            "E9"
         );
 
         _classicExchange(ownerOf(tokenId), msg.sender, tokenId, msg.value);
-        _removeFromSale(tokenId);
+
         emit SaleStatus(tokenId, false, false);
     }
 
@@ -119,71 +141,43 @@ contract ExternalGateway is Vehicle {
     {
         require(
             msg.value > _getVehiclePrice(tokenId),
-            "Bid must be higher than the current price."
+            "E10"
         );
         require(
             msg.sender != ownerOf(tokenId),
-            "You cannot bid on your own auction."
+            "E11"
         );
 
         _secureMoneyTransfer(address(this), msg.value);
-        _refundCurentTopBidder(tokenId);
-        _setVehiclePrice(tokenId, msg.value);
-        _setTopBidder(tokenId, msg.sender);
+       
         emit NewPrice(tokenId);
         emit NewTopBidder(tokenId);
     }
 
-    function createVehicle(string memory uri)
+    function concludeAuction(uint256 tokenId)
         external
-        onlyClass(ROLE_CLASS.MINTER)
+        onlyOwnerOf(tokenId)
+        onlyIfAuction(tokenId)
     {
-        mint(uri);
+        _secureMoneyTransfer(address(this), _getVehiclePrice(tokenId));
+        _concludeAuction(tokenId);
+        emit SaleStatus(tokenId, false, false);
     }
 
-    function destroyVehicle(uint256 _tokenId)
-        external
-        onlyRole(AUTHORITY_ROLE_ADMIN)
-    {
-        _removeFromSale(_tokenId);
-        burn(_tokenId);
-        emit SaleStatus(_tokenId, false, false);
+    // MONEY HANDLING
+
+    function _secureMoneyTransfer(address beneficiary, uint256 money) internal {
+        (bool sent, bytes memory data) = payable(beneficiary).call{
+            value: money
+        }("");
+        require(sent, "E12");
     }
 
-    //ODOMETER
-
-    function getOdometerValue(uint256 tokenId) external view returns (uint256) {
-        return _odometerValue[tokenId];
+    function _refundCurentTopBidder(uint256 tokenId) internal {
+        address currentTopBidder = _getTopBidder(tokenId);
+        uint256 currentTopBid = _getVehiclePrice(tokenId);
+        if (currentTopBid != 0 && currentTopBidder != address(0))
+            _secureMoneyTransfer(currentTopBidder, currentTopBid);
     }
-
-    function increaseOdometer(uint256 tokenId, uint256 value)
-        external
-        onlyRole(ODOMETER_ROLE)
-    {
-        require(msg.sender == _odometerAddress[tokenId]);
-        _odometerValue[tokenId] = _odometerValue[tokenId] + value;
-    }
-
-    function setOdometerAddress(uint256 tokenId, address odometer)
-        external
-        onlyRole(AUTHORITY_ROLE_ADMIN)
-    {
-        _odometerAddress[tokenId] = odometer;
-    }
-
-    // IOT MANAGEMENT
-
-    function setPullCache(bool value) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        pullCache = value;
-    }
-
-    function setRestart(bool value) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        restart = value;
-    }
-
-    function setRestAPI(string memory value) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        restAPI = value;
-    }
-
 
 }

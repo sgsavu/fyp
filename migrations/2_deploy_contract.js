@@ -2,6 +2,7 @@ const BoolBitStorage = artifacts.require("BoolBitStorage");
 const RolesAndPermissions = artifacts.require("RolesAndPermissions");
 const Vehicle = artifacts.require("Vehicle");
 const ExternalGateway = artifacts.require("ExternalGateway");
+const IoTManagement = artifacts.require("IoTManagement");
 
 
 module.exports = function (deployer) {
@@ -11,4 +12,5 @@ module.exports = function (deployer) {
  deployer.deploy(RolesAndPermissions);
  deployer.deploy(Vehicle);
  deployer.deploy(ExternalGateway);
+ deployer.deploy(IoTManagement);
 };
