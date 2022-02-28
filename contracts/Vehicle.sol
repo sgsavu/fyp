@@ -10,23 +10,16 @@ contract Vehicle is ERC721Enumerable {
 
     using Counters for Counters.Counter;
     Counters.Counter _tokenIds;
-    Roles roles = Roles(0x8ba57a208228fABD36C7d51184f16a7DbF01e9da);
+
+    Roles roles;
 
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
 
-    constructor() ERC721("Vehicle", "VHC") {}
-    /*
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721Enumerable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+    constructor(address addr) ERC721("Vehicle", "VHC") {
+        roles = Roles(addr);
     }
-    */
-
+  
     function tokenURI(uint256 tokenId)
         public
         view

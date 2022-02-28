@@ -1,17 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
+import "./Marketplace.sol";
+import "./Vehicle.sol";
 
-contract Gateway {
-
+contract Gateway is Marketplace {
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
     event SaleStatus(uint256 indexed tokenId, bool status, bool isAuction);
+    uint256 tax = 100000000000000 wei;
+    Vehicle vhc;
+    
+    receive() external payable {}
 
-    // MODIFIERS
+    constructor (address addr) {
+        vhc = Vehicle(addr);
+    }
+
+    function balanceOfSC () public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    //MODIFIERS
+
+    modifier onlyIfExists(uint256 tokenId) {
+        require(vhc.exists(tokenId));
+        _;
+    }
 
     modifier onlyOwnerOf(uint256 tokenId) {
-        require(ownerOf(tokenId) == msg.sender, "E2");
+        require(vhc.ownerOf(tokenId) == msg.sender, "E2");
         _;
     }
 
@@ -36,15 +54,16 @@ contract Gateway {
     }
 
     modifier onlyIfPriceNonNull(uint256 price) {
-        require(price > 0, "E8");
+        require(price > 1000000000000000, "E8");
         _;
     }
 
-    ///
+    // GETTERS
 
     function getVehiclePrice(uint256 tokenId)
         external
         view
+        onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         returns (uint256)
     {
@@ -54,22 +73,37 @@ contract Gateway {
     function getTopBidder(uint256 tokenId)
         external
         view
+        onlyIfExists(tokenId)
+        onlyIfForSale(tokenId)
         onlyIfAuction(tokenId)
         returns (address)
     {
         return _getTopBidder(tokenId);
     }
 
-    function isAuction(uint256 tokenId) external view returns (bool) {
+    function isAuction(uint256 tokenId)
+        external
+        view
+        onlyIfExists(tokenId)
+        returns (bool)
+    {
         return _isAuction(tokenId);
     }
 
-    function isForSale(uint256 tokenId) external view returns (bool) {
+    function isForSale(uint256 tokenId)
+        external
+        view
+        onlyIfExists(tokenId)
+        returns (bool)
+    {
         return _isForSale(tokenId);
     }
 
+    // LISTING/DELISTING
+
     function listAuction(uint256 tokenId, uint256 price)
         external
+        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
         onlyIfNotAuction(tokenId)
@@ -81,36 +115,44 @@ contract Gateway {
 
     function listInstant(uint256 tokenId, uint256 price)
         external
+        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfNotForSale(tokenId)
         onlyIfPriceNonNull(price)
     {
-        _listForSale(tokenId, price);
+        _listInstant(tokenId, price);
         emit SaleStatus(tokenId, true, false);
     }
 
     function delistAuction(uint256 tokenId)
         external
-        onlyIfForSale(tokenId)
+        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
+        onlyIfAuction(tokenId)
     {
         _refundCurentTopBidder(tokenId);
-        _removeFromSale(tokenId);
-        emit SaleStatus(tokenId, false, false);
+        _delistAuction(tokenId);
+        emit SaleStatus(tokenId, false, true);
     }
 
     function delistInstant(uint256 tokenId)
         external
-        onlyIfForSale(tokenId)
+        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
+        onlyIfForSale(tokenId)
+        onlyIfNotAuction(tokenId)
     {
-        _removeFromSale(tokenId);
+        _delistInstant(tokenId);
         emit SaleStatus(tokenId, false, false);
     }
 
+    // SETTERS
+
     function setVehiclePrice(uint256 tokenId, uint256 _price)
         external
+        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
+        onlyIfForSale(tokenId)
         onlyIfNotAuction(tokenId)
         onlyIfPriceNonNull(_price)
     {
@@ -118,49 +160,63 @@ contract Gateway {
         emit NewPrice(tokenId);
     }
 
-    function buyVehicle(uint256 tokenId)
+    //// MONEY TX
+
+    function buy(uint256 tokenId)
         external
         payable
+        onlyIfExists(tokenId)
         onlyIfForSale(tokenId)
         onlyIfNotAuction(tokenId)
     {
-        require(
-            msg.value == _getVehiclePrice(tokenId),
-            "E9"
-        );
+        require(msg.value == _getVehiclePrice(tokenId), "E9");
 
-        _classicExchange(ownerOf(tokenId), msg.sender, tokenId, msg.value);
+        _secureMoneyTransfer(vhc.ownerOf(tokenId), msg.value - tax);
+
+        vhc.transferFrom(vhc.ownerOf(tokenId), msg.sender, tokenId);
+        require(vhc.ownerOf(tokenId) == msg.sender, "E13");
+        _delistInstant(tokenId);
 
         emit SaleStatus(tokenId, false, false);
     }
 
-    function bidVehicle(uint256 tokenId)
+    function bid(uint256 tokenId)
         external
         payable
+        onlyIfExists(tokenId)
         onlyIfAuction(tokenId)
     {
-        require(
-            msg.value > _getVehiclePrice(tokenId),
-            "E10"
-        );
-        require(
-            msg.sender != ownerOf(tokenId),
-            "E11"
-        );
+        require(msg.value > _getVehiclePrice(tokenId), "E10");
+        require(msg.sender != vhc.ownerOf(tokenId), "E11");
 
+        _refundCurentTopBidder(tokenId);
         _secureMoneyTransfer(address(this), msg.value);
-       
+
+        _setVehiclePrice(tokenId, msg.value);
+        _setTopBidder(tokenId, msg.sender);
+
         emit NewPrice(tokenId);
         emit NewTopBidder(tokenId);
     }
 
     function concludeAuction(uint256 tokenId)
         external
+        onlyIfExists(tokenId)
         onlyOwnerOf(tokenId)
         onlyIfAuction(tokenId)
     {
-        _secureMoneyTransfer(address(this), _getVehiclePrice(tokenId));
-        _concludeAuction(tokenId);
+        address topBidder = _getTopBidder(tokenId);
+        require(topBidder != address(0));
+
+        _secureMoneyTransfer(vhc.ownerOf(tokenId), _getVehiclePrice(tokenId) - tax);
+
+        vhc.transferFrom(vhc.ownerOf(tokenId), topBidder, tokenId);
+        require(vhc.ownerOf(tokenId) == topBidder, "E13");
+
+        _setIsAuction(tokenId, false);
+        _setTopBidder(tokenId, address(0));
+        _delistInstant(tokenId);
+
         emit SaleStatus(tokenId, false, false);
     }
 
@@ -179,5 +235,4 @@ contract Gateway {
         if (currentTopBid != 0 && currentTopBidder != address(0))
             _secureMoneyTransfer(currentTopBidder, currentTopBid);
     }
-
 }

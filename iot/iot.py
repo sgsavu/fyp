@@ -12,78 +12,62 @@ import obd
 from elm import Elm
 import math
 
-LOOPIG_TIME = 1
-ODOMETER_LOAD = 0
-TRANSACTION_THRESHOLD = 1 #in kilometers
-TRANSACTION_WINDOW = False
-PULL_COOLDOWN = 0
-RANDOMNESS_THRESHOLD = 10 #in percentage
+TIME = 1 #in seconds
+ODOMETER = 0 #in kilometers
+THRESHOLD = 1 #in kilometers
+REFRESH_COOLDOWN = 0
+HANDICAP = 10 #in percentage
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-
-def rollover_odometer():
-    global ODOMETER_LOAD
-    ODOMETER_LOAD = ODOMETER_LOAD + contract.functions.getOdometerValue(VEHICLE_ID).call()
-
 def restart_device():
     os.system("reboot")
 
-def decrement_pull_cooldown():
-    global PULL_COOLDOWN
-    if PULL_COOLDOWN != 0:
-        PULL_COOLDOWN = PULL_COOLDOWN - 1
+# REFRESHING
+
+def check_refresh():
+    return management_contract.functions.getRefreshCache().call()
+
+def check_restart():
+    return management_contract.functions.getRestart().call()
+
+def decrement_refresh_cooldown():
+    global REFRESH_COOLDOWN
+    if REFRESH_COOLDOWN != 0:
+        REFRESH_COOLDOWN = REFRESH_COOLDOWN - 1
+
+def refresh_file(file):
+    REST_API_LINK = "https://" + management_contract.functions.getApiAddress().call()
+    response = requests.get(REST_API_LINK, data={'operation':'getFile','file':file["contractName"]}, verify=False)
+    initial_file = file
+    new_file = response.json()['result']
+    if initial_file != new_file:
+        with open(__location__ + '/' + file["contractName"] + '.json', "w") as myfile:
+            myfile.write(json.dumps(new_file))
+        return 1
+    else:
+        return 0
 
 def refresh_cache():
-    global PULL_COOLDOWN
-
-    new_contract = refresh_contract()
-    new_network_table = refresh_network_tables()
-
-    if new_contract:
-        rollover_odometer()
-
-    if new_contract == 1 or new_network_table == 1:
-        init()
-
-    PULL_COOLDOWN = random.randrange(5,30)
-
-def refresh_contract():
-    global external_gateway
-
-    REST_API_LINK = "https://" + contract.functions.restAPI().call()
-
-    response = requests.get(REST_API_LINK, data={'operation':'getContract'}, verify=False)
-
-    initial_value = external_gateway
-    external_gateway = response.json()['result']
-    post_value = external_gateway
-
-    if initial_value != post_value:
-        with open(__location__ + '/ExternalGateway.json', "w") as myfile:
-            myfile.write(json.dumps(external_gateway))
-        return 1
-    else:
-        return 0
-
-def refresh_network_tables():
+    global REFRESH_COOLDOWN
+    global odometer
+    global management
     global network_tables
 
-    REST_API_LINK = "https://" + contract.functions.restAPI().call()
+    new_odometer = refresh_file(odometer)
+    new_management = refresh_file(management)
+    new_network_tables = refresh_file(network_tables)
 
-    response = requests.get(REST_API_LINK, data={'operation':'getNetworkTables'}, verify=False)
-    
-    initial_value = network_tables
-    network_tables = response.json()['result']
-    post_value = network_tables
+    if new_odometer:
+        rollover_odometer()
 
-    if initial_value != post_value:
-        with open(__location__ + '/NetworkTables.json', "w") as myfile:
-            myfile.write(json.dumps(network_tables))
-        return 1
-    else:
-        return 0
+    if new_odometer == 1 or new_management == 1 or new_network_tables == 1:
+        init()
+
+    REFRESH_COOLDOWN = random.randrange(5,30)
+
+#INIT
 
 def load_environment_file():
     global PRIVATE_KEY
@@ -95,96 +79,93 @@ def load_environment_file():
     CHAIN = os.environ['CHAIN']
 
 def load_cache():
-    global external_gateway
+    global odometer
+    global management
     global network_tables
 
-    with open(__location__ + '/ExternalGateway.json') as myfile:
-        external_gateway = json.load(myfile)
+    with open(__location__ + '/Odometer.json') as myfile:
+        odometer = json.load(myfile)
+
+    with open(__location__ + '/Management.json') as myfile:
+        management = json.load(myfile)
 
     with open(__location__ + '/NetworkTables.json') as myfile:
         network_tables = json.load(myfile)
 
 def load_web3():
     global web3
-
     web3 = Web3(Web3.HTTPProvider(network_tables[CHAIN]["rpcUrls"][0]))
     web3.eth.default_account = web3.eth.account.from_key(PRIVATE_KEY).address
     web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-def load_contract():
-    global contract
+def create_contract(contract_file):
+    abi = contract_file["abi"]
+    addr = Web3.toChecksumAddress(
+        contract_file["networks"][str(Web3.toInt(hexstr=CHAIN))]["address"])
+    return web3.eth.contract(address=addr, abi=abi)
 
-    contract_abi = external_gateway["abi"]
-    contract_address = Web3.toChecksumAddress(
-        external_gateway["networks"][str(Web3.toInt(hexstr=CHAIN))]["address"])
-    contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+def load_contracts():
+    global odometer_contract
+    global management_contract
+    odometer_contract = create_contract(odometer)
+    management_contract = create_contract(management)
 
 def init ():
     load_dotenv()
     load_environment_file()
     load_cache()
     load_web3()
-    load_contract()
+    load_contracts()
+
+# BREAD AND BUTTER
+
+def rollover_odometer():
+    global ODOMETER
+    ODOMETER = ODOMETER + odometer_contract.functions.getOdometerValue(VEHICLE_ID).call()
 
 def increment_odometer():
-    global TRANSACTION_WINDOW
-    global ODOMETER_LOAD
+    global ODOMETER
 
-    floored = math.floor(ODOMETER_LOAD)
+    floored = math.floor(ODOMETER)
 
-    tx = contract.functions.increaseOdometer(VEHICLE_ID, floored).buildTransaction(
+    tx = odometer_contract.functions.increaseOdometer(VEHICLE_ID, floored).buildTransaction(
         {'nonce': web3.eth.getTransactionCount(web3.eth.default_account)})
     signed_tx = web3.eth.account.signTransaction(tx, private_key=PRIVATE_KEY)
     web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
     print("SENT " + str(floored))
-    ODOMETER_LOAD = ODOMETER_LOAD - floored
-    TRANSACTION_WINDOW = False
-
-def check_if_pull_cache():
-    return contract.functions.pullCache().call()
-
-def check_if_restart():
-    return contract.functions.restart().call()
-
-def activate_window():
-    global TRANSACTION_WINDOW
-    if TRANSACTION_WINDOW is False:
-        TRANSACTION_WINDOW = True
+    ODOMETER = ODOMETER - floored
 
 def loop_forever(sc):
-    global ODOMETER_LOAD
-    global TRANSACTION_WINDOW
-    global TRANSACTION_THRESHOLD
+    global ODOMETER
+    global THRESHOLD
 
-    decrement_pull_cooldown()
+    decrement_refresh_cooldown()
 
     try:
-        if check_if_restart():
+        if check_restart():
             restart_device()
     except Exception as e: print(e)
 
     try:
-        if check_if_pull_cache():
-            if PULL_COOLDOWN == 0:
+        if check_refresh():
+            if REFRESH_COOLDOWN == 0:
                 refresh_cache()
     except Exception as e: print(e)
 
     try:
         raw_reading = float(str(connection.query(obd.commands.SPEED).value)[:-4])
         if raw_reading != 0.0:
-            distance = raw_reading*LOOPIG_TIME/3600
-            ODOMETER_LOAD = ODOMETER_LOAD + distance
-            if ODOMETER_LOAD>TRANSACTION_THRESHOLD:
-                activate_window()
-            if TRANSACTION_WINDOW:
+            distance = raw_reading*TIME/3600
+            ODOMETER = ODOMETER + distance
+            if ODOMETER>THRESHOLD:
                 print("WINDOW ACTIVE")
                 random_num = random.random()
-                if (random_num>((100-RANDOMNESS_THRESHOLD)/100)):
+                if (random_num>((100-HANDICAP)/100)):
                     increment_odometer()
 
-        print("PULL CD: " + str(PULL_COOLDOWN))
-        print(" LOAD: " + str(ODOMETER_LOAD) + " SPEED: " + str(raw_reading))
+        print("PULL CD: " + str(REFRESH_COOLDOWN))
+        print("ODOMETER: " + str(ODOMETER) + " SPEED: " + str(raw_reading))
 
     except Exception as e: print(e)
     s.enter(1, 1, loop_forever, (sc,))

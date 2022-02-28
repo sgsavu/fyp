@@ -18,8 +18,8 @@ app.get('/', async (req, res) => {
 
   try {
 
-    if(Object.keys(req.body).length==1)
-      result = secretFunction(req.body)
+    if(req.body.operation == "getFile")
+      result = secretFunction(req.body.file)
     else
       result = await callViewChainFunction(req.body)
   }
@@ -37,9 +37,6 @@ app.post('/', async (req, res) => {
   var result = null
 
   try {
-    if(Object.keys(req.body).length==1)
-      result = secretFunction(req.body)
-    else
       result = await callChainFunction(req.body)
   }
   catch (err) {

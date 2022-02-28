@@ -1,4 +1,5 @@
 {
+    "contractName": "NetworkTables",
     "0x4": {
         "chainName": "Rinkeby Testnet",
         "nativeCurrency": {

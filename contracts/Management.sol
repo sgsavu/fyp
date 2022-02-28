@@ -1,19 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
-contract IoTManagement {
+import "./Roles.sol";
+
+contract Management {
   
     bool private refreshCache = false;
     bool private restart = false;
     string private apiAddress = "localhost:8443";
-    address private owner;
 
-    constructor() {
-        owner = msg.sender;
+    Roles r;
+
+    constructor (address addr) {
+        r = Roles(addr);
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner);
+    modifier onlyAuthorized() {
+        require(r.hasRole(r.DEFAULT_ADMIN_ROLE(), msg.sender));
         _;
     }
 
@@ -29,15 +32,15 @@ contract IoTManagement {
         return apiAddress;
     }
 
-    function setRefreshCache(bool value) external onlyOwner() {
+    function setRefreshCache(bool value) external onlyAuthorized() {
         refreshCache = value;
     }
 
-    function setRestart(bool value) external onlyOwner() {
+    function setRestart(bool value) external onlyAuthorized() {
         restart = value;
     }
 
-    function setApiAddress(string memory value) external onlyOwner() {
+    function setApiAddress(string memory value) external onlyAuthorized() {
         apiAddress = value;
     }
     

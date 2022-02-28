@@ -2,8 +2,8 @@ const Web3 = require('web3');
 const { getFile } = require('./files');
 
 
-function checkFunctionLocation(functionName) {
-    const CONTRACT_LIST = [getFile("ExternalGateway.json")]
+function locateFunction(functionName) {
+    const CONTRACT_LIST = [getFile("Gateway.json"),getFile("Vehicle.json"),getFile("Roles.json"),getFile("Odometer.json"),getFile("Management.json")]
     for (var contract in CONTRACT_LIST) {
         for (var func in CONTRACT_LIST[contract].abi) {
             if (CONTRACT_LIST[contract].abi[func].type == "function")
@@ -20,7 +20,7 @@ function checkFunctionLocation(functionName) {
 }
 
 function injectChainData(object) {
-    var contract = checkFunctionLocation(object.operation)
+    var contract = locateFunction(object.operation)
     if (contract == -1)
         throw Error("Operation Not Supported")
     object.web3Instance = new Web3(getFile("NetworkTables.json")[object.chain]["rpcUrls"][0]);
@@ -47,13 +47,16 @@ async function sendAuthenticatedTransaction(obj) {
     return sentTx
 }
 
-function secretFunction(obj) {
-    
-    if (obj.operation == "getContract")
-        return getFile("ExternalGateway.json")
-    else if (obj.operation == "getNetworkTables")
-        return getFile("NetworkTables.json")
+function secretFunction(file) {
 
+    if (file == "Odometer")
+        return getFile("Odometer.json")
+    else if (file == "Management")
+        return getFile("Management.json")
+    else if (file == "NetworkTables")
+        return getFile("NetworkTables.json")
+    
+    throw Error("Operation Not Supported")
 }
 
 exports.injectChainData = injectChainData;

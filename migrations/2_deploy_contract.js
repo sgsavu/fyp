@@ -1,16 +1,17 @@
 const BoolBitStorage = artifacts.require("BoolBitStorage");
-const RolesAndPermissions = artifacts.require("RolesAndPermissions");
+const Roles = artifacts.require("Roles");
 const Vehicle = artifacts.require("Vehicle");
-const ExternalGateway = artifacts.require("ExternalGateway");
-const IoTManagement = artifacts.require("IoTManagement");
+const Gateway = artifacts.require("Gateway");
+const Management = artifacts.require("Management");
+const Odometer = artifacts.require("Odometer");
+const Marketplace = artifacts.require("Marketplace");
 
-
-module.exports = function (deployer) {
- deployer.deploy(BoolBitStorage);
- deployer.link(BoolBitStorage,Vehicle);
- deployer.link(BoolBitStorage,ExternalGateway);
- deployer.deploy(RolesAndPermissions);
- deployer.deploy(Vehicle);
- deployer.deploy(ExternalGateway);
- deployer.deploy(IoTManagement);
+module.exports = async function (deployer) {
+    await deployer.deploy(BoolBitStorage);
+    await deployer.link(BoolBitStorage, Gateway);
+    await deployer.deploy(Roles)
+    await deployer.deploy(Odometer, Roles.address);
+    await deployer.deploy(Management, Roles.address);
+    await deployer.deploy(Vehicle, Roles.address)
+    await deployer.deploy(Gateway, Vehicle.address);
 };

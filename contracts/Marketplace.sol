@@ -4,51 +4,20 @@ pragma solidity >=0.6.0 <0.9.0;
 import "./BoolBitStorage.sol";
 
 contract Marketplace {
-    receive() external payable {}
 
     mapping(uint256 => uint256) private _forSale;
     mapping(uint256 => uint256) private _auction;
     mapping(uint256 => uint256) private _vehiclePrice;
     mapping(uint256 => address) private _topBidder;
+    
+    // LISTING/DELISTING
 
-
-    // AUCTIONING
-
-    function buyVehicle(uint256 tokenId, uint256 money, address buyer)
-        internal
-    {
-        _transfer(ownerOf(tokenId), buyer, tokenId);
-        require(ownerOf(tokenId) == buyer, "E13");
-        _delistInstant(tokenId);
-    }
-
-    function bidVehicle(uint256 tokenId, uint256 money)
-        internal
-    {
-        _refundCurentTopBidder(tokenId);
-        _setVehiclePrice(tokenId, money);
-        _setTopBidder(tokenId, msg.sender);
-    }
-
-    function _concludeAuction(uint256 tokenId) internal {
-        address topBidder = _getTopBidder(tokenId);
-        require(topBidder != address(0));
-       
-        _transfer(ownerOf(tokenId), topBidder, tokenId);
-        require(ownerOf(tokenId) == topBidder, "E13");
-
-        _setIsAuction(tokenId, false);
-        _setTopBidder(tokenId, address(0));
-        _delistInstant(tokenId);
-    }
-
-
-    function _listAuction(uint256 tokenId, uint256 price) internal {
+    function _listAuction(uint256 tokenId, uint256 price) internal  {
         _listInstant(tokenId, price);
         _setIsAuction(tokenId, true);
     }
 
-    function _listInstant(uint256 tokenId, uint256 price) internal {
+    function _listInstant(uint256 tokenId, uint256 price) internal  {
         _setIsForSale(tokenId, true);
         _setVehiclePrice(tokenId, price);
     }
@@ -61,34 +30,34 @@ contract Marketplace {
 
     }
 
-    function _delistInstant (uint256 tokenId) internal {
+    function _delistInstant (uint256 tokenId) internal  {
         _setIsForSale(tokenId, false);
         if (_getVehiclePrice(tokenId) != 0) _setVehiclePrice(tokenId, 0);
     }
 
     // TOP BIDDER
 
-    function _getTopBidder(uint256 tokenId) internal view returns (address) {
+    function _getTopBidder(uint256 tokenId) internal  view returns (address) {
         return _topBidder[tokenId];
     }
 
-    function _setTopBidder(uint256 tokenId, address _account) internal {
+    function _setTopBidder(uint256 tokenId, address _account) internal  {
         _topBidder[tokenId] = _account;
     }
 
     // VEHICLE PRICE
 
-    function _getVehiclePrice(uint256 tokenId) internal view returns (uint256) {
+    function _getVehiclePrice(uint256 tokenId) internal  view returns (uint256) {
         return _vehiclePrice[tokenId];
     }
 
-    function _setVehiclePrice(uint256 tokenId, uint256 _price) internal {
+    function _setVehiclePrice(uint256 tokenId, uint256 _price) internal  {
         _vehiclePrice[tokenId] = _price;
     }
 
     //BOOL BIT STORAGE
 
-    function _isForSale(uint256 tokenId) internal view returns (bool) {
+    function _isForSale(uint256 tokenId) internal  view returns (bool) {
         uint256 multiplier;
         uint256 bit;
         (multiplier, bit) = BoolBitStorage._tokenIdToBoolBit(tokenId);
