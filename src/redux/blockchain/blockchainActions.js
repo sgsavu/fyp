@@ -6,15 +6,15 @@ import Odometer from "../../api/resources/Odometer.json";
 import Management from "../../api/resources/Management.json";
 import NetworkTables from "../../api/resources/NetworkTables.json";
 import detectEthereumProvider from '@metamask/detect-provider';
-import { ALL_TEMPLATES, getNetworkRpcUrl, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
+
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
 import { clearMyData } from "../data/dataActions";
 import { subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
+import { getNetworkRpcUrl } from "../../components/utils/BlockchainGateway";
 
 const CONTRACT_LIST = [Gateway, Vehicle, Roles, Odometer, Management]
-
 const fetchWalletProvider = async () => {
   const provider = await detectEthereumProvider({ timeout: 5 })
   if (!provider) {
@@ -43,7 +43,7 @@ const addChain = async (newNetwork) => {
 
   (await getWalletProvider()).request({
     method: 'wallet_addEthereumChain',
-    params: [ALL_TEMPLATES[newNetwork]]
+    params: [NetworkTables.networks[newNetwork]]
   });
 }
 
@@ -56,7 +56,7 @@ const switchChain = async (newNetwork) => {
 }
 
 export const addOrSwitchNetwork = async (newNetwork) => {
-  if (newNetwork in METAMASK_DEFAULT)
+  if (["0x4","0x3","0x1"].includes(newNetwork))
     await switchChain(newNetwork)
   else
     await addChain(newNetwork)
@@ -160,7 +160,7 @@ export const loadSmartContracts = () => {
       const currentNetwork = await getCurrentNetwork()
 
       if (!(await getWalletProvider())) {
-        await dispatch(updateWeb3(getNetworkRpcUrl(currentNetwork)))
+        await dispatch(updateWeb3(await getNetworkRpcUrl(currentNetwork)))
       }
 
       var smartContractList = []

@@ -83,7 +83,7 @@ export function getDefaultVehicles() {
   return async (dispatch) => {
     let allVehicles = await getAllVehicles()
     let saleVehicles = getSaleVehicles(allVehicles)
-
+    console.log(allVehicles)
     dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
     dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
 

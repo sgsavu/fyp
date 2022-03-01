@@ -2,7 +2,6 @@ import { roles } from "./PermissionsAndRoles";
 import store from "../../redux/store";
 import { myCurrencyToWei } from './PricesCoinsExchange'
 import { alerts, TX } from "../../redux/app/appActions";
-import { getNetworkExplorer } from "./NetworkTemplates";
 import { getUserAccount } from "../../redux/reduxUtils";
 
 
@@ -14,6 +13,13 @@ export async function getRole(account) {
     return roles.USER_ROLE
 }
 
+export const getNetworkRpcUrl = async (network) => {
+    return await store.getState().blockchain.networkTables.networks[network].rpcUrls[0]
+}
+
+export const getNetworkExplorer = async (network) => {
+    return await store.getState().blockchain.networkTables.networks[network].blockExplorerUrls[0]
+}
 
 export async function getIfIsTopBidder(id) {
     return await callViewChainFunction("getTopBidder", [id]) == await getUserAccount()
@@ -38,14 +44,11 @@ async function locateFunction(functionName) {
 
     const smartContracts = await store.getState().blockchain.smartContracts
     for (var contract in smartContracts) {
-        if (Object.keys(smartContracts[contract].methods).includes(functionName)) {
-            console.log(contract)
+        if (Object.keys(smartContracts[contract].methods).includes(functionName))
             return smartContracts[contract]
-        }
     }
     return -1
 }
-
 
 export function callChainFunction(functionName, args) {
     return async (dispatch) => {
@@ -58,7 +61,6 @@ export function callChainFunction(functionName, args) {
 
         if (functionName == "buy") {
             send_field.value = await callViewChainFunction("getVehiclePrice", [args[0]])
-            console.log(send_field.value)
         }
         else if (functionName == "bid") {
             const price = args[args.length - 1]
@@ -90,9 +92,8 @@ export function callChainFunction(functionName, args) {
     }
 }
 
-
 async function successAlert(tx) {
-    const EXPLORER_BASE_URL = getNetworkExplorer(await store.getState().blockchain.currentNetwork) + "tx/"
+    const EXPLORER_BASE_URL = await getNetworkExplorer(await store.getState().blockchain.currentNetwork) + "tx/"
     return { alert: "other", url: EXPLORER_BASE_URL + tx.transactionHash, message: `Transaction successful.\n` }
 }
 

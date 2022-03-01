@@ -2,6 +2,7 @@
     "contractName": "NetworkTables",
     "networks": {
         "0x4": {
+            "chainId": "0x4",
             "chainName": "Rinkeby Testnet",
             "nativeCurrency": {
                 "name": "Ether",
@@ -16,6 +17,7 @@
             ]
         },
         "0xfa2": {
+            "chainId": "0xFA2",
             "chainName": "Fantom Testnet",
             "nativeCurrency": {
                 "name": "Fantom",
@@ -30,6 +32,7 @@
             ]
         },
         "0xa869": {
+            "chainId": "0xA869",
             "chainName": "Avalanche Testnet",
             "nativeCurrency": {
                 "name": "Avalanche",

@@ -15,6 +15,7 @@ contract Vehicle is ERC721Enumerable {
 
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
+    mapping(uint256 => address) private _approvedGarage;
 
     constructor(address addr) ERC721("Vehicle", "VHC") {
         roles = Roles(addr);
@@ -34,9 +35,20 @@ contract Vehicle is ERC721Enumerable {
         return _exists(tokenId);
     }
 
+    function getApprovedGarage (uint256 tokenId) public view returns (address) {
+        return _approvedGarage[tokenId];
+    }
+
+    function setApprovedGarage (uint256 tokenId, address addr) external {
+        require(msg.sender == ownerOf(tokenId));
+        _approvedGarage[tokenId] = addr;
+    }
+
     function setTokenURI(uint256 tokenId, string memory _tokenURI) external {
+        require (getApprovedGarage(tokenId) == msg.sender);
         require (roles.hasRole(roles.GARAGE_ROLE(), msg.sender));
         _setTokenURI(tokenId, _tokenURI);
+        _approvedGarage[tokenId] = 0x0000000000000000000000000000000000000000;
     }
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
