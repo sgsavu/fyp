@@ -1,8 +1,9 @@
 import { roles } from "../../components/utils/PermissionsAndRoles";
 import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
 import store from "../store";
-import { getRole, getUserAccount, callViewChainFunction } from "../../components/utils/BlockchainGateway";
+import { getRole, callViewChainFunction } from "../../components/utils/BlockchainGateway";
 import { alerts, updateDataState } from "../app/appActions";
+import { getUserAccount } from "../reduxUtils";
 
 function injectTokenId(vehicle, tokenId) {
   vehicle.injected = {}
@@ -83,8 +84,6 @@ export function getDefaultVehicles() {
     let allVehicles = await getAllVehicles()
     let saleVehicles = getSaleVehicles(allVehicles)
 
-    console.log("all", allVehicles)
-    console.log("sale", saleVehicles)
     dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
     dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
 
@@ -96,13 +95,10 @@ export function getAuthenticatedVehicles() {
     let myVehicles = await getVehiclesForAccount(await getUserAccount())
     let myBids = getMyBids(await store.getState().data.allVehicles)
 
-    console.log("myVehicles", myVehicles)
-    console.log("myBids", myBids)
     dispatch(updateDataState({ field: "myVehicles", value: myVehicles }));
     dispatch(updateDataState({ field: "myBids", value: myBids }));
   }
 }
-
 
 export const clearMyData = () => {
   return async (dispatch) => {

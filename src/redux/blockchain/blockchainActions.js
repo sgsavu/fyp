@@ -1,23 +1,21 @@
 import Web3 from "web3";
-import ExternalGatewayContract from "../../abis/ExternalGateway.json";
+import Gateway from "../../api/resources/Gateway.json";
+import Vehicle from "../../api/resources/Vehicle.json";
+import Roles from "../../api/resources/Roles.json";
+import Odometer from "../../api/resources/Odometer.json";
+import Management from "../../api/resources/Management.json";
+import NetworkTables from "../../api/resources/NetworkTables.json";
 import detectEthereumProvider from '@metamask/detect-provider';
-import store from "../store";
 import { ALL_TEMPLATES, getNetworkRpcUrl, METAMASK_DEFAULT } from "../../components/utils/NetworkTemplates";
 import MetaMaskOnboarding from '@metamask/onboarding';
-import { alerts, updateAppState, updateBlockchainState, updateDataState } from "../app/appActions";
+import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
 import { clearMyData } from "../data/dataActions";
-import { roles } from "../../components/utils/PermissionsAndRoles";
-import { subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "../data/eventSubscriber";
+import { subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
+import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
 
+const CONTRACT_LIST = [Gateway, Vehicle, Roles, Odometer, Management]
 
-const getDeployedChains = (contract) => {
-  const deployed = {}
-  for (var property in contract.networks)
-    deployed[Web3.utils.numberToHex(property)] = contract.networks[property].address
-  return deployed
-}
-
-const fetchProvider = async () => {
+const fetchWalletProvider = async () => {
   const provider = await detectEthereumProvider({ timeout: 5 })
   if (!provider) {
     new MetaMaskOnboarding().startOnboarding();
@@ -26,7 +24,7 @@ const fetchProvider = async () => {
   return provider
 }
 
-const fetchAccounts = async (provider) => {
+const fetchWalletAccounts = async (provider) => {
   const accounts = await provider.request({
     method: "eth_requestAccounts",
   });
@@ -35,7 +33,7 @@ const fetchAccounts = async (provider) => {
   return accounts[0]
 }
 
-const fetchChain = async (provider) => {
+const fetchWalletChain = async (provider) => {
   return await provider.request({
     method: "eth_chainId",
   });
@@ -43,7 +41,7 @@ const fetchChain = async (provider) => {
 
 const addChain = async (newNetwork) => {
 
-  (await getProvider()).request({
+  (await getWalletProvider()).request({
     method: 'wallet_addEthereumChain',
     params: [ALL_TEMPLATES[newNetwork]]
   });
@@ -51,90 +49,10 @@ const addChain = async (newNetwork) => {
 
 const switchChain = async (newNetwork) => {
 
-  (await getProvider()).request({
+  (await getWalletProvider()).request({
     method: 'wallet_switchEthereumChain',
     params: [{ chainId: newNetwork }]
   });
-}
-
-
-export const initApp = () => {
-  return async (dispatch) => {
-    try {
-      await dispatch(updateAppState({ field: "initializedApp", value: true }))
-      await dispatch(updateBlockchainState({ field: "availableNetworks", value: getDeployedChains(ExternalGatewayContract) }))
-      await dispatch(updateAppNetwork("0x4"))
-    }
-    catch (err) {
-      dispatch(alerts({ alert: "error", message: err.message }))
-    }
-  }
-}
-
-export const login = () => {
-  return async (dispatch) => {
-    try {
-      const provider = await fetchProvider()
-      const account = await fetchAccounts(provider)
-      const network = await fetchChain(provider)
-      await dispatch(updateWalletProvider(provider))
-      await dispatch(updateWeb3(provider))
-      await dispatch(updateAppAccount(account));
-      if (network == await getCurrentNetwork())
-        await dispatch(loadSmartContract())
-      else
-        await dispatch(updateAppNetwork(network))
-
-    } catch (err) {
-      dispatch(alerts({ alert: "error", message: err.message }))
-    }
-  }
-}
-
-export const signout = () => {
-  return async (dispatch) => {
-    try {
-      dispatch(updateWalletProvider(null))
-      dispatch(updateAppAccount(null));
-      dispatch(clearMyData())
-    } catch (err) {
-      dispatch(alerts({ alert: "error", message: err.message }))
-    }
-  }
-}
-
-export const loadSmartContract = () => {
-  return async (dispatch) => {
-
-    try {
-      const currentNetwork = await getCurrentNetwork()
-      if (!(await store.getState().blockchain.walletProvider)) {
-        await dispatch(updateWeb3(getNetworkRpcUrl(currentNetwork)))
-      }
-      const web3 = await getWeb3()
-      const availableNetworks = await getAvailableNetworks()
-      const SmartContractObj = new web3.eth.Contract(
-        ExternalGatewayContract.abi,
-        availableNetworks[currentNetwork]
-      );
-      await dispatch(updateBlockchainState({ field: "smartContract", value: SmartContractObj }))
-
-      dispatch(subscribeToChainEvents())
-
-    }
-    catch (err) {
-      dispatch(alerts({ alert: "error", message: err.message }))
-    }
-  }
-}
-
-export const subscribeToChainEvents = () => {
-  return async (dispatch) => {
-    dispatch(subscribeToTransfers())
-    dispatch(subscribeToSaleStatus())
-    dispatch(subscribeToNewPrice())
-    dispatch(subscribeToNewTopBidder())
-  }
 }
 
 export const addOrSwitchNetwork = async (newNetwork) => {
@@ -142,22 +60,6 @@ export const addOrSwitchNetwork = async (newNetwork) => {
     await switchChain(newNetwork)
   else
     await addChain(newNetwork)
-}
-
-const getWeb3 = async () => {
-  return await store.getState().blockchain.web3
-}
-
-const getProvider = async () => {
-  return await store.getState().blockchain.walletProvider
-}
-
-const getAvailableNetworks = async () => {
-  return await store.getState().blockchain.availableNetworks
-}
-
-const getCurrentNetwork = async () => {
-  return await store.getState().blockchain.currentNetwork
 }
 
 export const updateWalletProvider = (wallet) => {
@@ -183,9 +85,9 @@ export const updateAppAccount = (account) => {
 export const updateAppNetwork = (newNetwork) => {
   return async (dispatch) => {
     try {
-      const availableNetworks = await getAvailableNetworks()
-      if (!(newNetwork in availableNetworks))
-        await addOrSwitchNetwork(Object.keys(availableNetworks)[0])
+      const networkTables = await getNetworkTables()
+      if (!(newNetwork in networkTables.networks))
+        await addOrSwitchNetwork(Object.keys(networkTables.networks)[0])
       else
         dispatch(updateBlockchainState({ field: "currentNetwork", value: newNetwork }))
     }
@@ -195,3 +97,95 @@ export const updateAppNetwork = (newNetwork) => {
   };
 };
 
+
+
+export const init = () => {
+  return async (dispatch) => {
+    try {
+      await dispatch(updateAppState({ field: "initializedApp", value: true }))
+      await dispatch(updateBlockchainState({ field: "networkTables", value: NetworkTables }))
+      await dispatch(updateAppNetwork(Object.keys(NetworkTables.networks)[0]))
+    }
+    catch (err) {
+      dispatch(alerts({ alert: "error", message: err.message }))
+    }
+  }
+}
+
+export const login = () => {
+  return async (dispatch) => {
+    try {
+      const provider = await fetchWalletProvider()
+      const account = await fetchWalletAccounts(provider)
+      const network = await fetchWalletChain(provider)
+      await dispatch(updateWalletProvider(provider))
+      await dispatch(updateWeb3(provider))
+      await dispatch(updateAppAccount(account));
+      if (network == await getCurrentNetwork())
+        await dispatch(loadSmartContracts())
+      else
+        await dispatch(updateAppNetwork(network))
+    } catch (err) {
+      dispatch(alerts({ alert: "error", message: err.message }))
+    }
+  }
+}
+
+export const signout = () => {
+  return async (dispatch) => {
+    try {
+      dispatch(updateWalletProvider(null))
+      dispatch(updateAppAccount(null));
+      dispatch(clearMyData())
+    } catch (err) {
+      dispatch(alerts({ alert: "error", message: err.message }))
+    }
+  }
+}
+
+async function loadSmartContract(contract, chain) {
+  const web3 = await getWeb3()
+  const sc = new web3.eth.Contract(
+    contract.abi,
+    contract.networks[Web3.utils.hexToNumber(chain)]["address"]
+  );
+  return sc
+}
+
+export const loadSmartContracts = () => {
+  return async (dispatch) => {
+
+    try {
+
+      const currentNetwork = await getCurrentNetwork()
+
+      if (!(await getWalletProvider())) {
+        await dispatch(updateWeb3(getNetworkRpcUrl(currentNetwork)))
+      }
+
+      var smartContractList = []
+      for (var i = 0; i < CONTRACT_LIST.length; i++) {
+        smartContractList.push(await loadSmartContract(CONTRACT_LIST[i], currentNetwork))
+      }
+
+      console.log(smartContractList)
+
+      await dispatch(updateBlockchainState({ field: "smartContracts", value: smartContractList }))
+
+      dispatch(subscribeToChainEvents())
+
+    }
+    catch (err) {
+      dispatch(alerts({ alert: "error", message: err.message }))
+    }
+  }
+}
+
+const subscribeToChainEvents = () => {
+  return async (dispatch) => {
+    dispatch(subscribeToTransfers())
+    dispatch(subscribeToSaleStatus())
+    dispatch(subscribeToNewPrice())
+    dispatch(subscribeToNewTopBidder())
+  }
+}

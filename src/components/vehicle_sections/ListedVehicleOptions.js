@@ -62,7 +62,10 @@ function ListedVehicleOptions({ vehicle, settings }) {
                 </div>
             }
             <button onClick={() => {
-                dispatch(callChainFunction("removeFromSale",[vehicle.injected.id]))
+                if (isAuction)
+                    dispatch(callChainFunction("delistAuction",[vehicle.injected.id]))
+                else
+                    dispatch(callChainFunction("delistInstant",[vehicle.injected.id]))
             }}>
                 Delist Vehicle
             </button>

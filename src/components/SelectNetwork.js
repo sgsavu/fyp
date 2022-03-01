@@ -1,8 +1,7 @@
 import React from "react";
 import '../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { addChain, addOrSwitchNetwork, switchChain, updateAppNetwork } from "../redux/blockchain/blockchainActions";
-import { ALL_TEMPLATES } from "./utils/NetworkTemplates";
+import { addOrSwitchNetwork, updateAppNetwork } from "../redux/blockchain/blockchainActions";
 
 
 
@@ -24,18 +23,18 @@ function SelectNetwork() {
         <div>
             <select defaultValue={blockchain.currentNetwork} onChange={(e) => changeNetwork(e.target.value)}>
                 {
-                    blockchain.availableNetworks ?
-                        Object.keys(blockchain.availableNetworks).map(key => {
+                    blockchain.networkTables ?
+                        Object.keys(blockchain.networkTables.networks).map(key => {
                             if (key == blockchain.currentNetwork)
                                 return (
                                     <option selected key={key} value={key}>
-                                        {ALL_TEMPLATES[key].chainName}
+                                        {blockchain.networkTables.networks[key].chainName}
                                     </option>
                                 )
                             else
                                 return (
                                     <option key={key} value={key}>
-                                        {ALL_TEMPLATES[key].chainName}
+                                        {blockchain.networkTables.networks[key].chainName}
                                     </option>
                                 );
                         }) : null

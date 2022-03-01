@@ -19,7 +19,7 @@ const History = ({ vehicle }) => {
             setVehicleHistory(vehicleHistory)
         }
         
-        blockchain.smartContract.getPastEvents(
+        (blockchain.smartContracts)[1].getPastEvents(
             'Transfer',
             {
                 filter: { tokenId: vehicle.injected.id },

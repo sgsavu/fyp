@@ -3,13 +3,7 @@ import store from "../../redux/store";
 import { myCurrencyToWei } from './PricesCoinsExchange'
 import { alerts, TX } from "../../redux/app/appActions";
 import { getNetworkExplorer } from "./NetworkTemplates";
-
-
-export async function getUserAccount() {
-    return await store
-        .getState()
-        .blockchain.account
-}
+import { getUserAccount } from "../../redux/reduxUtils";
 
 
 export async function getRole(account) {
@@ -21,7 +15,6 @@ export async function getRole(account) {
 }
 
 
-
 export async function getIfIsTopBidder(id) {
     return await callViewChainFunction("getTopBidder", [id]) == await getUserAccount()
 }
@@ -30,37 +23,60 @@ export async function getIfIsOwner(vehicleId) {
     return await callViewChainFunction("ownerOf", [vehicleId]) == await getUserAccount()
 }
 
-
-
 export async function callViewChainFunction(functionName, args) {
-    return await store
-        .getState()
-        .blockchain.smartContract.methods
+    
+    const theContract = await locateFunction(functionName)
+    if (theContract==-1)
+        throw Error ('Not supported')
+
+    return await theContract.methods
     [functionName](...args)
         .call();
+}
+
+async function locateFunction(functionName) {
+
+    const smartContracts = await store.getState().blockchain.smartContracts
+    for (var contract in smartContracts) {
+        if (Object.keys(smartContracts[contract].methods).includes(functionName)) {
+            console.log(contract)
+            return smartContracts[contract]
+        }
+    }
+    return -1
 }
 
 
 export function callChainFunction(functionName, args) {
     return async (dispatch) => {
 
+        const theContract = await locateFunction(functionName)
+        if (theContract==-1)
+            throw Error ('Not supported')
+
         const send_field = { from: await getUserAccount() }
 
-        if (functionName == "buyVehicle") {
+        if (functionName == "buy") {
             send_field.value = await callViewChainFunction("getVehiclePrice", [args[0]])
+            console.log(send_field.value)
         }
-        else if (functionName == "bidVehicle") {
+        else if (functionName == "bid") {
             const price = args[args.length - 1]
+            args = args[0]
             send_field.value = await myCurrencyToWei(price)
         }
-        else if (functionName == "listForSale" || functionName == "listAuction" || functionName == "setVehiclePrice") {
+        else if (functionName == "listInstant" || functionName == "listAuction" || functionName == "setVehiclePrice") {
             const price = args[args.length - 1]
             args[args.length - 1] = await myCurrencyToWei(price)
+        }
+        else if (functionName == "approve")
+        {
+            args.unshift((await store.getState().blockchain.smartContracts)[0]._address)
         }
 
         dispatch(TX({ message: "+1" }))
 
-        return await store.getState().blockchain.smartContract.methods
+        return await theContract.methods
         [functionName](...args)
             .send(send_field)
             .once("error", (err) => {

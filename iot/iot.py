@@ -94,7 +94,7 @@ def load_cache():
 
 def load_web3():
     global web3
-    web3 = Web3(Web3.HTTPProvider(network_tables[CHAIN]["rpcUrls"][0]))
+    web3 = Web3(Web3.HTTPProvider(network_tables["networks"][CHAIN]["rpcUrls"][0]))
     web3.eth.default_account = web3.eth.account.from_key(PRIVATE_KEY).address
     web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 

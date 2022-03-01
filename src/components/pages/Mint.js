@@ -6,9 +6,10 @@ import ImageUpload from '../minting_form/imageUpload';
 import { useDispatch, useSelector } from "react-redux";
 import { create } from "ipfs-http-client";
 import { finishSubmit, errorSubmit } from '../../redux/minting/formActions';
-import {  callChainFunction, getUserAccount } from '../utils/BlockchainGateway'
+import {  callChainFunction } from '../utils/BlockchainGateway'
 import { scramble, randomIntFromInterval } from '../utils/CryptographyUtils'
 import { alerts } from '../../redux/app/appActions';
+import { getUserAccount } from '../../redux/reduxUtils';
 
 const Mint = () => {
 

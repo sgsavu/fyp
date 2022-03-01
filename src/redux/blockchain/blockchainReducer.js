@@ -1,9 +1,9 @@
 const initialState = {
   account: null,
-  smartContract: null,
+  smartContracts: [],
   web3: null,
   currentNetwork: null,
-  availableNetworks: null,
+  networkTables: null,
   walletProvider: null,
   pendingTx: [], 
 };

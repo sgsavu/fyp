@@ -42,7 +42,7 @@
   "scripts": {
     "start": "npm-run-all -p -r app api",
     "app": "react-scripts start",
-    "api": "node ./rest_api/server.js"
+    "api": "node ./src/api/server.js"
   },
   "eslintConfig": {
     "extends": [

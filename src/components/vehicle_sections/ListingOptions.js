@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { listForSale, listAuction, callChainFunction } from "../utils/BlockchainGateway";
-import { useDispatch } from 'react-redux';
+import { listForSale, listAuction, callChainFunction, callViewChainFunction } from "../utils/BlockchainGateway";
+import { useDispatch, useSelector } from 'react-redux';
 import { alerts } from '../../redux/app/appActions';
 import { myCurrencyToWei } from '../utils/PricesCoinsExchange';
 
@@ -9,7 +9,7 @@ function ListingOptions({ vehicle, settings }) {
 
     const dispatch = useDispatch();
     const myPrefferedCurrency = settings.myCurrency
-
+    const blockchain = useSelector((state) => state.blockchain);
     const [listingType, setListingType] = useState("INSTANT")
     const [desiredPrice, setDesiredPrice] = useState(0)
 
@@ -31,9 +31,11 @@ function ListingOptions({ vehicle, settings }) {
             </div>
             <div>
                 {listingType == "INSTANT" ?
-                    <button onClick={() => {
+                    <button onClick={ async () => {
                         if (desiredPrice > 0) {
-                            dispatch(callChainFunction("listForSale",[vehicle.injected.id, desiredPrice]))
+                            if (await callViewChainFunction("getApproved",[vehicle.injected.id]) != blockchain.smartContracts[0]._address)
+                                await dispatch(callChainFunction("approve",[vehicle.injected.id]))
+                            dispatch(callChainFunction("listInstant",[vehicle.injected.id, desiredPrice]))
                         }
                         else {
                             dispatch(alerts({ alert: "other", message: "Cannot set price to 0." }))
@@ -42,8 +44,10 @@ function ListingOptions({ vehicle, settings }) {
                         List for sale
                     </button>
                     :
-                    <button onClick={() => {
+                    <button onClick={async () => {
                         if (desiredPrice > 0) {
+                            if (await callViewChainFunction("getApproved",[vehicle.injected.id]) != blockchain.smartContracts[0]._address)
+                                await dispatch(callChainFunction("approve",[vehicle.injected.id]))
                             dispatch(callChainFunction("listAuction",[vehicle.injected.id, desiredPrice]))
                         }
                         else {
