@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 
-const VehicleCard = ({vehicle}) => {
+const VehicleCard = ({ vehicle }) => {
 
     const data = useSelector((state) => state.data);
     return (
@@ -15,14 +15,17 @@ const VehicleCard = ({vehicle}) => {
             <p>Year: {vehicle.attributes.year}</p>
             <p>Company: {vehicle.attributes.company}</p>
             <p>Model: {vehicle.attributes.model}</p>
-            <p>{window.location.pathname=="/"? "Price: "+ vehicle.injected.display_price + " " + data.displayCurrency :null}</p>
-            <Link to={{
+            <p>{window.location.pathname == "/" ? "Price: " + vehicle.injected.display_price + " " + data.displayCurrency : null}</p>
+            <Link to={window.location.pathname == "/garage" ? {
+                pathname: "/edit",
+                state: { metadata: vehicle },
+            } : {
                 pathname: "/vehicle",
                 state: { metadata: vehicle },
             }}>
                 <p>VIEW </p>
             </Link>
-            
+
         </div>
     );
 }

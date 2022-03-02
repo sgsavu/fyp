@@ -4,22 +4,22 @@ const formFields = {
   step: 1,
   preview: "https://s3-alpha.figma.com/hub/file/948140848/1f4d8ea7-e9d9-48b7-b70c-819482fb10fb-cover.png",
   buffer: [],
-  submitting: false,
   fields: {
-    company: '',
-    model: '',
-    vhcid: '',
-    year: '',
-    color: '',
-    body: '',
-    transmission: '',
-    fuel: '',
-    engine: '',
-    doors: '',
-    seats: '',
-    driver_side: '',
+    company: "",
+    model: "",
+    vhcid: "",
+    year: "",
+    color: "",
+    body: "",
+    transmission: "",
+    fuel: "",
+    engine: "",
+    doors: "",
+    seats: "",
+    driver_side: "",
   },
-  errors: {}
+  errors: {},
+  edit: {}
 };
 
 const formReducer = (state = formFields, action) => {
@@ -48,24 +48,14 @@ const formReducer = (state = formFields, action) => {
         preview: action.payload.preview,
         buffer: action.payload.buffer
       }
-    case "START_SUBMIT":
-      return {
-        ...state,
-        submitting: true
-      }
-    case "FINISH_SUBMIT":
+    case "RESET":
       return {
         ...formFields
       }
-    case "ERROR_SUBMIT":
+    case "UPDATE_ENTRY":
       return {
         ...state,
-        submitting: false
-      }
-    case "ERROR_UPDATE":
-      return {
-        ...state,
-        errors: action.payload.errors
+        [action.payload.name]: action.payload.value
       }
     default:
       return state;

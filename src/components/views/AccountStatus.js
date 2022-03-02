@@ -14,7 +14,7 @@ function AccountStatus() {
     useEffect(async () => {
         if(blockchain.currentNetwork)
             setExplorerUrl((await getNetworkExplorer(blockchain.currentNetwork)) + "address/" + blockchain.account)
-      }, [blockchain.currentNetwork])
+      }, [blockchain.currentNetwork,blockchain.account])
 
     return (
         <div>

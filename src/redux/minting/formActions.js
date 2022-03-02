@@ -1,135 +1,109 @@
+import { create } from "ipfs-http-client";
+import { callChainFunction } from "../../components/utils/BlockchainGateway";
+import { randomIntFromInterval, scramble } from "../../components/utils/CryptographyUtils";
+import { alerts } from "../app/appActions";
+import { getUserAccount } from "../reduxUtils";
 import store from "../store";
-import validate from "../../components/minting_form/validate";
 
-const formNextStep = () => {
+export const nextStep = () => {
   return {
     type: "NEXT_STEP",
   };
 };
 
-const formPrevStep = () => {
+export const prevStep = () => {
   return {
     type: "PREV_STEP",
   };
 };
 
-const formUpdate = (payload) => {
+export const formUpdate = (payload) => {
   return {
     type: "UPDATE",
     payload: payload,
   };
 };
 
-const formUploadImage = (payload) => {
+export const updateEntry = (payload) => {
+  return {
+    type: "UPDATE_ENTRY",
+    payload: payload,
+  };
+};
+
+export const uploadImage = (payload) => {
   return {
     type: "UPLOAD_IMAGE",
     payload: payload,
   };
 };
 
-const formStartSubmit = () => {
+export const resetForm = () => {
   return {
-    type: "START_SUBMIT",
+    type: "RESET",
   };
 };
 
-const formFinishSubmit = () => {
-  return {
-    type: "FINISH_SUBMIT",
-  };
-};
-
-const formErrorSubmit = () => {
-  return {
-    type: "ERROR_SUBMIT",
-  };
-};
-
-const formUpdateErrors = (payload) => {
-  return {
-    type: "ERROR_UPDATE",
-    payload: payload,
-  };
-};
-
-const getStoreState = () => {
-  return store.getState().form;
-}
-
-
-export const handleChange = e => {
+export const createMetaDataAndMint = () => {
   return async (dispatch) => {
-    const { name, value } = e.target;
-    dispatch(
-      formUpdate({ name, value })
-    );
-  }
-};
+    try {
+      const form = await store.getState().form
+      const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
+      const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
+      const image = ipfsBaseUrl + (await ipfsClient.add(form.buffer)).path;
+      const metaDataObj = {
+        image: image,
+        created: Date.now(),
+        updated: Date.now(),
+        attributes: form.fields,
+        nonce1: scramble(await getUserAccount()),
+        nonce2: randomIntFromInterval(1, 1000000)
+      };
+      const vehicle = ipfsBaseUrl + (await ipfsClient.add(JSON.stringify(metaDataObj))).path;
+      dispatch(alerts({ alert: "loading", message: "Fetching data..." }))
+      await dispatch(callChainFunction("mint", [vehicle]))
+      dispatch(alerts({ alert: "loading" }))
+      dispatch(resetForm())
 
-export const nextStep = () => {
-  return async (dispatch) => {
-    const form = getStoreState();
-    if (form.errors && Object.entries(form.errors).length === 0) {
-      dispatch(
-        formNextStep()
-      );
-    }
+    } catch (err) {
+      dispatch(alerts({ alert: "loading" }))
+      dispatch(alerts({ alert: "error", message: err.message }))
+    };
   };
 };
 
-export const checkForErrors = e => {
+export const updateMetadata = () => {
   return async (dispatch) => {
-    e.preventDefault();
-    const form = getStoreState();
-    let errors = validate(form.step, form)
-    dispatch(
-      formUpdateErrors({ errors })
-    );
+    try {
+      console.log("aye")
+      const form = await store.getState().form
+      console.log("daform",form)
+      const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
+      const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
+      let vehicle = form.edit
+
+      vehicle.attributes = form.fields
+      var vehicleId = vehicle.injected.id
+      delete vehicle.injected
+      vehicle.updated = Date.now()
+
+      if (form.buffer.length != 0) {
+        const image = ipfsBaseUrl + (await ipfsClient.add(form.buffer)).path;
+        vehicle.image = image
+      }
+
+      const vehicleObj = ipfsBaseUrl + (await ipfsClient.add(JSON.stringify(vehicle))).path;
+      dispatch(alerts({ alert: "loading", message: "Saving changes..." }))
+      await dispatch(await callChainFunction("setTokenURI", [vehicleId, vehicleObj]))
+      dispatch(alerts({ alert: "loading" }))
+      dispatch(resetForm())
+
+    } catch (err) {
+      dispatch(alerts({ alert: "loading" }))
+      dispatch(alerts({ alert: "error", message: err.message }))
+    };
   };
 };
-
-export const prevStep = () => {
-  return async (dispatch) => {
-    dispatch(
-      formPrevStep()
-    );
-  };
-};
-
-export const startSubmit = e => {
-  return async (dispatch) => {
-    e.preventDefault();
-    const form = getStoreState();
-    if (form.errors && Object.entries(form.errors).length === 0) {
-      dispatch(
-        formStartSubmit()
-      );
-    }
-  };
-};
-
-export const finishSubmit = e => {
-  return async (dispatch) => {
-    dispatch(
-      formFinishSubmit())
-  };
-};
-
-export const errorSubmit = e => {
-  return async (dispatch) => {
-    dispatch(
-      formErrorSubmit())
-  };
-};
-
-export const uploadImage = (preview, buffer) => {
-  return async (dispatch) => {
-    dispatch(
-      formUploadImage({ preview, buffer })
-    );
-  };
-};
-
 
 
 

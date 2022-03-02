@@ -10,7 +10,8 @@ export const roles = {
   AUTHORITY_ROLE: keccak256("AUTHORITY_ROLE"),
   USER_ROLE: keccak256("USER_ROLE"),
   VIEWER_ROLE: keccak256("VIEWER_ROLE"),
-  ODOMETER_ROLE: keccak256("ODOMETER_ROLE")
+  ODOMETER_ROLE: keccak256("ODOMETER_ROLE"),
+  GARAGE_ROLE: keccak256("GARAGE_ROLE")
 }
 
 export const actions = {
@@ -82,11 +83,15 @@ export const getSidebarFor = (role) => {
       return Sidebar.MINTER_ADMIN
     case roles.AUTHORITY_ROLE_ADMIN:
       return Sidebar.AUTHORITY_ADMIN
+      case roles.GARAGE_ROLE:
+        return Sidebar.GARAGE
   }
 }
 
 
 const pageAccess = {
+  EDIT: [roles.GARAGE_ROLE],
+  GARAGE: [roles.GARAGE_ROLE],
   MINT: [roles.MINTER_ROLE, roles.MINTER_ROLE_ADMIN, roles.DEFAULT_ADMIN_ROLE],
   VERIFY: [roles.AUTHORITY_ROLE, roles.AUTHORITY_ROLE_ADMIN, roles.DEFAULT_ADMIN_ROLE],
   ADMIN: [roles.MINTER_ROLE_ADMIN, roles.AUTHORITY_ROLE_ADMIN, roles.DEFAULT_ADMIN_ROLE]

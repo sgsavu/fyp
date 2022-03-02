@@ -6193,18 +6193,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0xE0c1990fAb49a2B503260917E5147B640619c467",
-      "transactionHash": "0x033856621374159b0e3483a8c73cddbb881cf0beed27ae360ef1122cea7dcbbf"
-    },
-    "4002": {
-      "events": {},
-      "links": {},
-      "address": "0x9332A3A588A5feBD0D944366906956A346aA9816",
-      "transactionHash": "0x63541e28ca8ce2751f004b3fb048b1f747d0e362c5de94a23ec098ff74ab88a8"
+      "address": "0xEC07599b53aD6e3bBf819f69E4148868701f3EF9",
+      "transactionHash": "0x3e76307332da03b03cf3b1880423d7d1d9e6ed78b338e2569ff6a67bc0c03c5d"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-03-01T15:51:00.407Z",
+  "updatedAt": "2022-03-02T09:05:24.361Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

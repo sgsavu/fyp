@@ -12,20 +12,13 @@ import MyBids from '../pages/MyBids';
 import ControlledRoute from '../navigation/ControlledRoute';
 import Vehicle from "../pages/Vehicle";
 import Support from "../pages/Support";
-import SelectNetwork from "../SelectNetwork";
-import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../redux/blockchain/blockchainActions";
 import Error from "./Error";
-import Modal from "./Modal";
 import Loading from "./Loading";
 import CustomModal from "./CustomModal";
-
+import Garage from "../pages/Garage";
+import Edit from "../pages/Edit";
 
 function NormalView() {
-
-    const dispatch = useDispatch();
-    const blockchain = useSelector((state) => state.blockchain);
-
 
     return (
         <div>
@@ -40,7 +33,9 @@ function NormalView() {
                     <ControlledRoute path='/' exact component={Marketplace} />
                     <ControlledRoute path='/verify' component={Verify} />
                     <ControlledRoute path='/mint' component={Mint} />
+                    <Route path='/garage' component={Garage} />
                     <ControlledRoute path='/admin' component={Admin} />
+                    <ControlledRoute path='/edit' component={Edit} />
                     <Route path='/vehicle' component={Vehicle} />
                     <Route path='/options' component={Options} />
                     <Route path='/mybids' component={MyBids} />

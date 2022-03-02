@@ -28,6 +28,12 @@ const UserSidebar = [
         cName: 'nav-text'
     },
     {
+        title: 'Garage',
+        path: '/garage',
+        icon: <FaIcons.FaTools />,
+        cName: 'nav-text'
+    },
+    {
         title: 'Support',
         path: '/support',
         icon: <IoIcons.IoMdHelpCircle />,
@@ -97,6 +103,8 @@ const DefaultAdminSidebar = [
     }
 ];
 
+
+
 export const Sidebar = {
     VIEWER: ViewerSidebar,
     USER: UserSidebar,
@@ -104,5 +112,6 @@ export const Sidebar = {
     AUTHORITY_ADMIN: AuthorityAdminSidebar,
     MINTER: MinterSidebar,
     MINTER_ADMIN: MinterAdminSidebar,
+    GARAGE: UserSidebar,
     DEFAULT_ADMIN: DefaultAdminSidebar
 }

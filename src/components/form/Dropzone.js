@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../../styles/Form.css';
 import '../../styles/drop.css';
 import { useDispatch, useSelector } from "react-redux";
 import { uploadImage } from "../../redux/minting/formActions";
 import { useDropzone } from "react-dropzone"
 
-const ImageUpload = () => {
+const Dropzone = () => {
+
 
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
@@ -16,7 +17,7 @@ const ImageUpload = () => {
             const reader = new FileReader();
             reader.readAsDataURL(acceptedFiles[0]);
             reader.onload = () => {
-                dispatch(uploadImage(URL.createObjectURL(acceptedFiles[0]),Buffer(reader.result.split(",")[1], "base64")))
+                dispatch(uploadImage({ preview: URL.createObjectURL(acceptedFiles[0]), buffer: Buffer(reader.result.split(",")[1], "base64") }))
             };
             /*
             const i = new Image()
@@ -35,9 +36,8 @@ const ImageUpload = () => {
                 <img src={form.preview} className="form-img" />
                 <p>Drag & drop <br></br> OR <br></br>Click to upload an image</p>
             </div>
-            {form.errors.image && <p>{form.errors.image}</p>}
         </div>
     );
 };
 
-export default ImageUpload;
+export default Dropzone;
