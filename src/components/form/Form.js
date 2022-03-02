@@ -68,16 +68,24 @@ const Form = () => {
             return (
               <div key={field} className='form-inputs'>
                 <label className='form-label'>{field}</label>
-                <input
+                {Object.keys(form.edit).length != 0 && form.step == 1?<input 
                   className='form-input'
                   type='text'
                   name={field}
-                  //placeholder='eg. Tesla, Mercedes'
+                  disabled
                   value={form.fields[field]}
-                  onChange={(e) =>
-                    dispatch(formUpdate({ name: e.target.name, value: e.target.value })
-                    )}
-                />
+                /> : <input 
+                className='form-input'
+                type='text'
+                name={field}
+                //placeholder='eg. Tesla, Mercedes'
+                value={form.fields[field]}
+                onChange={(e) =>
+                  dispatch(formUpdate({ name: e.target.name, value: e.target.value })
+                  )}
+              /> }
+
+                
                 {form.errors[field] && <p>{form.errors[field]}</p>}
               </div>
             );

@@ -13,6 +13,8 @@ contract Vehicle is ERC721Enumerable {
 
     Roles roles;
 
+    event NewGarageApproval(uint256 indexed tokenId);
+
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
     mapping(uint256 => address) private _approvedGarage;
@@ -42,6 +44,7 @@ contract Vehicle is ERC721Enumerable {
     function setApprovedGarage (uint256 tokenId, address addr) external {
         require(msg.sender == ownerOf(tokenId));
         _approvedGarage[tokenId] = addr;
+        emit NewGarageApproval(tokenId);
     }
 
     function setTokenURI(uint256 tokenId, string memory _tokenURI) external {
@@ -49,6 +52,7 @@ contract Vehicle is ERC721Enumerable {
         require (roles.hasRole(roles.GARAGE_ROLE(), msg.sender));
         _setTokenURI(tokenId, _tokenURI);
         _approvedGarage[tokenId] = 0x0000000000000000000000000000000000000000;
+        emit NewGarageApproval(tokenId);
     }
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {

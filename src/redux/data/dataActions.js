@@ -20,10 +20,18 @@ export async function injectIfTopBidder(vehicle) {
     vehicle.injected.bid = true
 }
 
+export async function injectIfApprovedGarage(vehicle) {
+  if (await getUserAccount() == await callViewChainFunction("getApprovedGarage", [vehicle.injected.id]))
+    vehicle.injected.garage = true
+  else
+    vehicle.injected.garage = false
+}
+
 export async function getVehicleInfo(vehicleID) {
   let vehicleURI = await callViewChainFunction("tokenURI",[vehicleID])
   let vehicleMetadata = await (await fetch(vehicleURI)).json()
   injectTokenId(vehicleMetadata, vehicleID)
+  await injectIfApprovedGarage(vehicleMetadata)
   if (await callViewChainFunction("isForSale",[vehicleID])) {
     await injectPrice(vehicleMetadata)
     if (await callViewChainFunction("isAuction",[vehicleID])) {
@@ -78,6 +86,7 @@ function getMyBids(allVehicles) {
   }
   return myBids
 }
+
 
 export function getDefaultVehicles() {
   return async (dispatch) => {

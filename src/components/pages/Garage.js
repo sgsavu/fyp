@@ -14,16 +14,11 @@ const Garage = () => {
     const [address,setAddress] = useState("")
     const [vehicle,setVehicle] = useState("")
 
-    useEffect(async () => {
-        let temp = []
-        for (var i = 0; i < Object.keys(data.allVehicles).length; i++) {
-            if (await getUserAccount() == await callViewChainFunction("getApprovedGarage", [i]))
-                temp.push(data.allVehicles[i])
-        }
-        setMyVehicles(temp)
+    useEffect(() => {
+    
 
     }, [data.allVehicles])
-
+    
 
     async function approve () {
         dispatch(await callChainFunction("setApprovedGarage", [vehicle,address]))
@@ -31,14 +26,19 @@ const Garage = () => {
 
     return (
         <div>
-            {data.myRole == roles.GARAGE_ROLE ? myVehicles.map((vehicle, index) => {
+            {data.myRole == roles.GARAGE_ROLE ? Object.values(data.allVehicles).map((vehicle, index) => {
+                if (vehicle.injected.garage)
                 return (
                     <VehicleCard key={index} vehicle={vehicle}></VehicleCard>
                 );
             }) : <div>
-
             <label>Approve garage: </label>
-            <input onChange={(e) => {setVehicle(e.target.value)}} placeholder='VehicleId' value={vehicle}></input>
+            <select onChange={(e) => setVehicle(e.target.value)}>
+                {Object.keys(data.myVehicles).map((value,index)=> {
+                   
+                    return <option key={index} value={value}>{value}</option>
+                })}
+            </select>
             <input onChange={(e) => {setAddress(e.target.value)}} placeholder='Address' value={address}></input>
             <button onClick={approve}>Approve</button>
             </div>}

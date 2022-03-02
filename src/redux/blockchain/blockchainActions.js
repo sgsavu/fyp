@@ -10,7 +10,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
 import { clearMyData } from "../data/dataActions";
-import { subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
+import { subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
 import { getNetworkRpcUrl } from "../../components/utils/BlockchainGateway";
 
@@ -187,5 +187,6 @@ const subscribeToChainEvents = () => {
     dispatch(subscribeToSaleStatus())
     dispatch(subscribeToNewPrice())
     dispatch(subscribeToNewTopBidder())
+    dispatch(subscribeToNewGarageApproval())
   }
 }

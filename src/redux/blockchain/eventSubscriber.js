@@ -1,6 +1,6 @@
 import { deleteFieldKey, entryDataState, updateDataState } from "../app/appActions";
 import store from "../store";
-import { getVehicleInfo, injectIfTopBidder, injectPrice } from "../data/dataActions";
+import { getVehicleInfo, injectIfApprovedGarage, injectIfTopBidder, injectPrice } from "../data/dataActions";
 import { getUserAccount } from "../reduxUtils";
 
 
@@ -63,12 +63,23 @@ export function subscribeToNewPrice() {
 export function subscribeToNewTopBidder() {
     return async (dispatch) => {
         const smartContract = (await store.getState().blockchain.smartContracts)[0]
-        const thisAccount = await getUserAccount()
         smartContract.events.NewTopBidder({
         },  function (error, event) {
             console.log("NewTopBidder", event)
             if (!error)
                 dispatch(updateTopBidder(event.returnValues.tokenId))
+        })
+    }
+}
+
+export function subscribeToNewGarageApproval() {
+    return async (dispatch) => {
+        const smartContract = (await store.getState().blockchain.smartContracts)[1]
+        smartContract.events.NewGarageApproval({
+        },  function (error, event) {
+            console.log("NewGarageApproval", event)
+            if (!error)
+                dispatch(updateGarage(event.returnValues.tokenId))
         })
     }
 }
@@ -94,6 +105,16 @@ function updateTopBidder(tokenId) {
             await injectIfTopBidder(saleVehicles.auctions[tokenId])
 
         dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
+    }
+}
+
+function updateGarage(tokenId) {
+    return async (dispatch) => {
+        var allVehicles = await store.getState().data.allVehicles
+
+        await injectIfApprovedGarage(allVehicles[tokenId])
+
+        dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
     }
 }
 
