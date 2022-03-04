@@ -60,13 +60,19 @@ export const createMetaDataAndMint = () => {
         nonce2: randomIntFromInterval(1, 1000000)
       };
       const vehicle = ipfsBaseUrl + (await ipfsClient.add(JSON.stringify(metaDataObj))).path;
-      dispatch(alerts({ alert: "loading", message: "Fetching data..." }))
+      dispatch(
+        updateEntry({ name: "loading", value: true })
+      );
       await dispatch(callChainFunction("mint", [vehicle]))
-      dispatch(alerts({ alert: "loading" }))
+      dispatch(
+        updateEntry({ name: "loading", value: false })
+      );
       dispatch(resetForm())
 
     } catch (err) {
-      dispatch(alerts({ alert: "loading" }))
+      dispatch(
+        updateEntry({ name: "loading", value: false })
+      );
       dispatch(alerts({ alert: "error", message: err.message }))
     };
   };
@@ -75,9 +81,8 @@ export const createMetaDataAndMint = () => {
 export const updateMetadata = () => {
   return async (dispatch) => {
     try {
-      console.log("aye")
+
       const form = await store.getState().form
-      console.log("daform",form)
       const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
       const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
       let vehicle = form.edit
@@ -93,13 +98,19 @@ export const updateMetadata = () => {
       }
 
       const vehicleObj = ipfsBaseUrl + (await ipfsClient.add(JSON.stringify(vehicle))).path;
-      dispatch(alerts({ alert: "loading", message: "Saving changes..." }))
+      dispatch(
+        updateEntry({ name: "loading", value: true })
+      );
       await dispatch(await callChainFunction("setTokenURI", [vehicleId, vehicleObj]))
-      dispatch(alerts({ alert: "loading" }))
+      dispatch(
+        updateEntry({ name: "loading", value: false })
+      );
       dispatch(resetForm())
 
     } catch (err) {
-      dispatch(alerts({ alert: "loading" }))
+      dispatch(
+        updateEntry({ name: "loading", value: false })
+      );
       dispatch(alerts({ alert: "error", message: err.message }))
     };
   };

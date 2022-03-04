@@ -9,9 +9,6 @@ const Form = () => {
   const form = useSelector((state) => state.form);
   const [forceUpdate, setForceUpdate] = useState(0)
 
-
-  console.log("edit",form)
-
   function validate() {
     var currentFields = getCurrentFields()
     var pass = true
@@ -68,32 +65,30 @@ const Form = () => {
             return (
               <div key={field} className='form-inputs'>
                 <label className='form-label'>{field}</label>
-                {Object.keys(form.edit).length != 0 && form.step == 1?<input 
+                {Object.keys(form.edit).length != 0 && form.step == 1 ? <input
                   className='form-input'
                   type='text'
                   name={field}
                   disabled
                   value={form.fields[field]}
-                /> : <input 
-                className='form-input'
-                type='text'
-                name={field}
-                //placeholder='eg. Tesla, Mercedes'
-                value={form.fields[field]}
-                onChange={(e) =>
-                  dispatch(formUpdate({ name: e.target.name, value: e.target.value })
-                  )}
-              /> }
+                /> : <input
+                  className='form-input'
+                  type='text'
+                  name={field}
+                  //placeholder='eg. Tesla, Mercedes'
+                  value={form.fields[field]}
+                  onChange={(e) =>
+                    dispatch(formUpdate({ name: e.target.name, value: e.target.value })
+                    )}
+                />}
 
-                
+
                 {form.errors[field] && <p>{form.errors[field]}</p>}
               </div>
             );
           })
         }
-
-        <button className='form-input-btn' onClick={(e) => {
-          console.log("condition",Object.keys(form.edit).length)
+        {form.loading ? <button className='form-input-btn' disabled>Loading...</button> : <button className='form-input-btn' onClick={(e) => {
           if (validate() == 1)
             if (form.step == form.nrOfSteps)
               if (Object.keys(form.edit).length == 0)
@@ -104,7 +99,8 @@ const Form = () => {
               dispatch(nextStep())
         }}>
           {form.step == form.nrOfSteps ? "Submit" : "Next"}
-        </button>
+        </button>}
+
 
       </div>
     </div>

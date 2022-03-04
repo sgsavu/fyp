@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import VehicleCard from "../vehicle_sections/VehicleCard";
-import { filterByAttributeValue, filterByInjectedValue, sorting } from "../filters/filters";
+import { filterByFilterObject, filterByInjectedValue, sortBy } from "../filters/filters";
 import SearchFilter from "../filters/SearchFilter";
+import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";
 
 
 const Marketplace = () => {
@@ -15,11 +16,13 @@ const Marketplace = () => {
   const [pages, setPages] = useState([]);
   const [sortType, setSortType] = useState("ascending")
 
-  const [multipleFilter, setMultipleFilter] = useState([])
-  const [multipleFilter2, setMultipleFilter2] = useState([])
+  const [filterObject, setFilterObject] = useState([])
 
   const [pool, setPool] = useState([])
   const [backupPool, setBackupPool] = useState([])
+
+  const [allAttributes, setAllAttributes] = useState([])
+  const [allValues, setAllValues] = useState([])
 
   const nextPage = () => {
     if (pageNr != pages.length - 1)
@@ -31,71 +34,90 @@ const Marketplace = () => {
       setPageNr(pageNr - 1)
   }
 
-
-  function splitIntoPages(list) {
-
-    var copy = createCopy(list)
-
-    multipleFilter.forEach((obj) => {
-      copy = filterByAttributeValue(Object.keys(obj)[0], obj[Object.keys(obj)[0]], copy)
-    })
-
-
-    const filter2 = sorting(copy, sortType)
-
-    var pages = []
-    while (filter2.length) {
-      pages = [...pages, filter2.splice(0, perPage)]
-    }
-    setPages(pages)
-  }
-
-  function createCopy(list) {
+  function newCopy(list) {
     const copy = list.filter(() => true);
     return copy
   }
 
+  function splitIntoPages(list) {
+
+    var listOfVehicles = newCopy(list)
+
+    listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
+
+    const filter2 = sortBy(listOfVehicles, sortType)
+
+    setPages(listToNSublists(filter2, perPage))
+  }
+
+
+
+  function getAttributesCollection(listOfVehicles) {
+    var collection = {
+      "company": [],
+      "model": [],
+      "vhcid": [],
+      "year": [],
+      "color": [],
+      "body": [],
+      "transmission": [],
+      "fuel": [],
+      "engine": [],
+      "doors": [],
+      "seats": [],
+      "driver_side": []
+    }
+    for (var vehicle of listOfVehicles) {
+      for (const [key, value] of Object.entries(vehicle.attributes)) {
+        if (!collection[key].includes(value)) {
+          collection[key].push(value)
+        }
+      }
+    }
+    return collection
+  }
+
+
   useEffect(() => {
     if (vehicleList != undefined) {
       setPool(Object.values(vehicleList))
-      setBackupPool(createCopy(Object.values(vehicleList)))
+      setBackupPool(newCopy(Object.values(vehicleList)))
+
+      var allAttributes = getAttributesCollection(Object.values(vehicleList))
+      setAllAttributes(allAttributes)
+      setAllValues(grabAllValuesFromObject(allAttributes))
+
     }
-  }, [vehicleList, data])
-
-
-  useEffect(() => {
-  }, [useSelector((state) => state.data).saleVehicles])
+  }, [vehicleList, data.saleVehicles])
 
 
   useEffect(() => {
     splitIntoPages(pool)
-  }, [pool, sortType, multipleFilter])
+  }, [pool, sortType, filterObject])
+
+
+
+
+  function loadFilterObject(list) {
+    var mf = {}
+    for (var i = 0; i < list.length; i++)
+      mf[Object.keys(list[i])[0]] = Object.values(list[i])[0]
+    setFilterObject(mf)
+  }
 
 
   function getSelectValues(select) {
     var result = [];
     var options = select && select.options;
     var opt;
-
     for (var i = 0, iLen = options.length; i < iLen; i++) {
       opt = options[i];
-
       if (opt.selected) {
         result.push(JSON.parse(opt.value));
       }
     }
     return result;
   }
-
-
-  function checkIfTypePresent(list, object) {
-    for (var i = 0; i < list.length; i++) {
-      if (object in list[i])
-        return true
-    }
-    return false
-  }
-
 
   return (
 
@@ -111,22 +133,16 @@ const Marketplace = () => {
 
         <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
 
-        <select multiple onChange={(e) => { setMultipleFilter(getSelectValues(e.target)) }}>
-          <option value='{"company":"Tesla"}'>
-            Company: Tesla
-          </option>
-          {checkIfTypePresent(multipleFilter,"company")? null : 
-            
-            <option value='{"company":"Ford"}'>
-              Company: Ford
-            </option>}
+        <select multiple onChange={(e) => { loadFilterObject(getSelectValues(e.target)) }}>
+          {allValues.map((element, index) => {
+            if (!(findKeyOfValueInObj(element, allAttributes) in filterObject) || isValueInObject(element, filterObject))
+              return <option key={index} value={"{\"" + findKeyOfValueInObj(element, allAttributes) + "\"" + ":" + "\"" + element + "\"}"}>{element}</option>
+          })}
+        </select>
 
-          <option value='{"model":"X"}'>
-            Model: X
-          </option>
-          <option value='{"model":"Y"}'>
-            Model: Y
-          </option>
+        <select onChange={(e) => setSortType(e.target.value)}>
+            <option value="ascending">Ascending</option>
+            <option value="descending">Descending</option>
         </select>
 
 
@@ -135,9 +151,8 @@ const Marketplace = () => {
             return (
               <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
             );
-          }) : <p>{pageType == "instant" ? "No vehicles are currently available for sale by instant buy." : "No vehicles are currently available for sale by auction."}</p>}
+          }) : <p>No vehicles available.</p>}
         </div>
-
         <button onClick={prevPage}>Prev</button>
         <p>{pageNr + 1}</p>
         <button onClick={nextPage}>Next</button>

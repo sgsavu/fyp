@@ -19,7 +19,8 @@ const formFields = {
     driver_side: "",
   },
   errors: {},
-  edit: {}
+  edit: {},
+  loading: false
 };
 
 const formReducer = (state = formFields, action) => {
