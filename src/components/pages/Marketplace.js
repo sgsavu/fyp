@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import VehicleCard from "../vehicle_sections/VehicleCard";
 import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterPriceRange, sortBy } from "../filters/filters";
-import SearchFilter from "../filters/SearchFilter";
+import SearchFilter from "../filters/Search";
 import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";
 import '../../styles/Marketplace.css';
 
@@ -28,16 +28,6 @@ const Marketplace = () => {
   const [perPage, setPerPage] = useState(10);
   const [sortType, setSortType] = useState("ascending")
   const [filterByProperty, setFilterByProperty] = useState("id")
-
-  const nextPage = () => {
-    if (pageNr != pages.length - 1)
-      setPageNr(pageNr + 1)
-  }
-
-  const prevPage = () => {
-    if (pageNr != 0)
-      setPageNr(pageNr - 1)
-  }
 
   function newCopy(list) {
     const copy = list.filter(() => true);
@@ -127,30 +117,59 @@ const Marketplace = () => {
 
   return (
 
-    <div>
+    <div className="marketplace-main">
       <div>
-        <button onClick={() => {
-          setPageType("instant")
-        }}>INSTANT BUY</button>
-        <button onClick={() => {
-          setPageType("auctions")
-        }}>AUCTIONS</button>
 
-        <input type="radio"></input>
+        <div className="center">
+          <button onClick={() => {
+            setPageType("instant")
+          }}>INSTANT BUY</button>
+          <button onClick={() => {
+            setPageType("auctions")
+          }}>AUCTIONS</button>
+        </div>
 
-        <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
+        <div className="center">
+          <select multiple onChange={(e) => { loadFilterObject(getSelectValues(e.target)) }}>
+            {allValues.map((element, index) => {
+              if (!(findKeyOfValueInObj(element, allAttributes) in filterObject) || isValueInObject(element, filterObject))
+                return <option key={index} value={"{\"" + findKeyOfValueInObj(element, allAttributes) + "\"" + ":" + "\"" + element + "\"}"}>{element}</option>
+            })}
+          </select>
+        </div>
 
-        <select multiple onChange={(e) => { loadFilterObject(getSelectValues(e.target)) }}>
-          {allValues.map((element, index) => {
-            if (!(findKeyOfValueInObj(element, allAttributes) in filterObject) || isValueInObject(element, filterObject))
-              return <option key={index} value={"{\"" + findKeyOfValueInObj(element, allAttributes) + "\"" + ":" + "\"" + element + "\"}"}>{element}</option>
-          })}
-        </select>
 
-        <div>
+
+
+        <div className="center">
+          <label>Show:</label>
+          <select onChange={(e) => setFilterByProperty(e.target.value)}>
+            <option selected value="id">
+              Default
+            </option>
+            {pageType == "auctions" ? <option value="bid">
+              My Bids
+            </option> : null}
+            <option selected value="mine">
+              My Listings
+            </option>
+          </select>
+          <label>Sort:</label>
           <select onChange={(e) => setSortType(e.target.value)}>
             <option value="ascending">Ascending</option>
             <option value="descending">Descending</option>
+          </select>
+          <label>Per page:</label>
+          <select onChange={(e) => setPerPage(e.target.value)}>
+            <option value={5}>
+              5
+            </option>
+            <option value={15}>
+              15
+            </option>
+            <option value={25}>
+              25
+            </option>
           </select>
         </div>
 
@@ -171,35 +190,8 @@ const Marketplace = () => {
         </div>
 
 
-
-        <div>
-          <label>Per page:</label>
-          <select onChange={(e) => setPerPage(e.target.value)}>
-            <option value={5}>
-              5
-            </option>
-            <option value={15}>
-              15
-            </option>
-            <option value={25}>
-              25
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label>Show:</label>
-          <select onChange={(e) => setFilterByProperty(e.target.value)}>
-            <option selected value="id">
-              Default
-            </option>
-            <option value="bid">
-              My Bids
-            </option>
-            <option selected value="mine">
-              My Listings
-            </option>
-          </select>
+        <div className="center">
+          <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
         </div>
 
 
@@ -208,12 +200,22 @@ const Marketplace = () => {
             return (
               <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
             );
-          }) : <p>No vehicles available.</p>}
+          }) : <p className="center">No vehicles available.</p>}
         </div>
 
-        <button onClick={prevPage}>Prev</button>
-        <p>{pageNr + 1}</p>
-        <button onClick={nextPage}>Next</button>
+        <div className="paging">
+          <button disabled={pageNr != 0 ? false : true} onClick={() => setPageNr(pageNr - 1)}>🡠</button>
+          {pages.map((page, index) => {
+            return (
+              <button disabled={pageNr == index ? true : false} key={index}>
+                {index + 1}
+              </button>
+            );
+          })}
+          <button disabled={pageNr != pages.length - 1 ? false : true} onClick={() => setPageNr(pageNr + 1)}>🡢</button>
+        </div>
+
+
       </div>
     </div>
   );

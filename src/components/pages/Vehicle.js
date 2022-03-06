@@ -24,7 +24,7 @@ const Vehicle = () => {
 
     useEffect(async () => {
 
-        if (blockchain.smartContracts) {
+        if (blockchain.smartContracts.length!=0) {
 
             let eexists = await callViewChainFunction("exists",[vehicle.injected.id])
             setEexists(eexists)
@@ -42,7 +42,7 @@ const Vehicle = () => {
         }
 
 
-    }, [blockchain.smartContracts,app.alerts.loading])
+    }, [blockchain.smartContracts,data])
 
     return (
         <div>

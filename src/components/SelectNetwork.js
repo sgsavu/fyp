@@ -21,6 +21,7 @@ function SelectNetwork() {
 
     return (
         <div>
+            
             <select defaultValue={blockchain.currentNetwork} onChange={(e) => changeNetwork(e.target.value)}>
                 {
                     blockchain.networkTables ?

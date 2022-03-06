@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
-import { getVehicleHistory } from "../utils/BlockchainGateway";
 import '../../styles/History.css';
 
 const History = ({ vehicle }) => {
 
     const data = useSelector((state) => state.data);
     const blockchain = useSelector((state) => state.blockchain);
-    const [vehicleHistory, setVehicleHistory] = useState([]);
+    const [vehicleHistory, setVehicleHistory] = useState({});
 
     useEffect(async () => {
 
-        const getVehicleHistory = (events) => {
-            var vehicleHistory = []
-            events.forEach(event => {
-                vehicleHistory.push(event.returnValues.to)
-            })
+        const getVehicleHistory = async (events) => {
+            var vehicleHistory = {}
+
+            for (var event of events) {
+                var timestamp = (await blockchain.web3.eth.getBlock(event.blockHash)).timestamp
+                vehicleHistory[timestamp] = {}
+                vehicleHistory[timestamp].from = event.returnValues.from
+                vehicleHistory[timestamp].to = event.returnValues.to
+            }
             setVehicleHistory(vehicleHistory)
         }
 
@@ -34,20 +36,26 @@ const History = ({ vehicle }) => {
 
     }, [data.myVehicles, data.allVehicles, data.saleVehicles])
 
+
+    function getDate(timestamp) {
+        var date = new Date(timestamp * 1000)
+        return date.toLocaleString()
+    }
+
     return (
         <div>
             <div>
-            Vehicle History:
-
+                Vehicle History:
             </div>
+
             <ul class="timeline">
-                {vehicleHistory.map((owner, index) => {
+                {Object.keys(vehicleHistory).map((time, index) => {
                     return (
-                        <li class="timeline-event">
+                        <li key={index} class="timeline-event">
                             <label class="timeline-event-icon"></label>
                             <div class="timeline-event-copy">
-                                <p class="timeline-event-thumbnail">April 2011 - heute</p>
-                                <h3>{owner}</h3>
+                                <p class="timeline-event-thumbnail">{getDate(time)}</p>
+                                <h3>{vehicleHistory[time]?.to}</h3>
                             </div>
                         </li>
                     )

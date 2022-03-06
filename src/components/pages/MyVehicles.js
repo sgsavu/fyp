@@ -10,16 +10,13 @@ function MyVehicles() {
   const vehicleList = Object.values(data.myVehicles)
 
   return (
-    <div>
-      {app.alerts.loading.length!=0 ? (
-        <p>loading...</p>
-      ) : (
-        vehicleList.map((vehicle, index) => {
+    <div className="cards">
+      {vehicleList.map((vehicle, index) => {
           return (
             <VehicleCard key={index} vehicle={vehicle}></VehicleCard>
           );
         })
-      )}
+      }
     </div>
   );
 }

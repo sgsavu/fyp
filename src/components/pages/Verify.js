@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import SearchFilter from '../filters/SearchFilter';
+import SearchFilter from '../filters/Search';
 import { Link } from 'react-router-dom';
+import '../../styles/Verify.css';
 
 function Verify() {
 
@@ -9,28 +10,38 @@ function Verify() {
   let vehicleList = data.allVehicles
 
   const [pool, setPool] = useState([])
-  const [backupPool, setBackupPool] = useState([])
 
   useEffect(() => {
-    
+
   }, [])
-  
-  
+
+
   return (
-    <div>
-      <SearchFilter pool={Object.values(vehicleList)} modifier={setPool} reset={[]} />
+    <div className='verify-main'>
       <div>
-        {
-          pool.slice(0, 15).map((value, key) => {
-          return (
-            <Link key={key} to={{
-              pathname: "/vehicle",
-              state: { metadata: value },
-            }}>
-              <p>{value.attributes.vhcid} </p>
-            </Link>
-          );
-        })}
+        <div>
+          <SearchFilter pool={Object.values(vehicleList)} modifier={setPool} reset={[]} />
+        </div>
+        <div className='result-list'>
+          <div>
+            {pool.slice(0, 15).map((value, key) => {
+              return (
+                <div key={key} className=''>
+                  <Link
+                    className='result-card'
+                    key={key}
+                    to={{
+                      pathname: "/vehicle",
+                      state: { metadata: value },
+                    }}>
+                    <span className="result-id">{value.injected.id} </span>
+                    <span className="result-vhcid">{value.attributes.vhcid}</span>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

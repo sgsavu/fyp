@@ -8,7 +8,7 @@ function Loading() {
 
   const app = useSelector((state) => state.app);
 
-  //        <div class="spinner"></div>
+  // <div className="spinner"></div>
 
 
   const loadingBox = () => {
@@ -20,17 +20,17 @@ function Loading() {
         </div>
       
 
-        <div class="jambula">
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
+        <div className="jambula">
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
         </div>
 
       </div>

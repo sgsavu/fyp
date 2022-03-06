@@ -12,6 +12,7 @@ function PurchaseOptions({ vehicle, settings }) {
     const isAuction = settings.isAuction
     const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
+    const data = useSelector((state) => state.data);
 
     const [desiredPrice, setDesiredPrice] = useState(0)
     const [displayPrice, setDisplayPrice] = useState(0)
@@ -24,7 +25,7 @@ function PurchaseOptions({ vehicle, settings }) {
             setTopBidder(await callViewChainFunction("getTopBidder",[vehicle.injected.id]))
             setIsTopBidder(await getIfIsTopBidder(vehicle.injected.id))
         }
-    }, [app.alerts.loading])
+    }, [data])
 
     return (
         <div>

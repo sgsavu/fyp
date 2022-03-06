@@ -26,7 +26,11 @@ export function isValueInObject(value, obj) {
 export function listToNSublists(list, n) {
     var sublists = []
     while (list.length) {
-      sublists = [...sublists, list.splice(0, n)]
+        sublists = [...sublists, list.splice(0, n)]
     }
     return sublists
-  }
+}
+
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
