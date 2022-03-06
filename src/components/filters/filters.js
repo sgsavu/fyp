@@ -10,9 +10,18 @@ export function sortBy(list, sortType) {
     return list
 }
 
-export function filterByInjectedValue(field, value, list) {
+export function filterPriceRange(list,minPrice,maxPrice) {
     return list.filter((element) => {
-        return element.injected[field] == value
+        if  (element.injected.display_price>minPrice && element.injected.display_price<maxPrice )
+            return true
+        else
+            return false
+    })
+}
+
+export function filterByPropertyExistence(list,property) {
+    return list.filter((element) => {
+        return element.injected.hasOwnProperty(property);
     });
 }
 

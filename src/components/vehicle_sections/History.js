@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getVehicleHistory } from "../utils/BlockchainGateway";
+import '../../styles/History.css';
 
 const History = ({ vehicle }) => {
 
@@ -18,7 +19,7 @@ const History = ({ vehicle }) => {
             })
             setVehicleHistory(vehicleHistory)
         }
-        
+
         (blockchain.smartContracts)[1].getPastEvents(
             'Transfer',
             {
@@ -26,8 +27,8 @@ const History = ({ vehicle }) => {
                 fromBlock: 0,
                 toBlock: 'latest'
             },
-            (err, events) => { 
-                getVehicleHistory(events) 
+            (err, events) => {
+                getVehicleHistory(events)
             }
         )
 
@@ -35,14 +36,23 @@ const History = ({ vehicle }) => {
 
     return (
         <div>
+            <div>
             Vehicle History:
-            {vehicleHistory.map((owner, index) => {
-                return (
-                    <div key={owner, index}>
-                        <p>{owner}</p>
-                    </div>
-                )
-            })}
+
+            </div>
+            <ul class="timeline">
+                {vehicleHistory.map((owner, index) => {
+                    return (
+                        <li class="timeline-event">
+                            <label class="timeline-event-icon"></label>
+                            <div class="timeline-event-copy">
+                                <p class="timeline-event-thumbnail">April 2011 - heute</p>
+                                <h3>{owner}</h3>
+                            </div>
+                        </li>
+                    )
+                })}
+            </ul>
         </div>
     );
 }

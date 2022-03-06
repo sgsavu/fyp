@@ -27,10 +27,18 @@ export async function injectIfApprovedGarage(vehicle) {
     vehicle.injected.garage = false
 }
 
+export async function injectIfMine(vehicle) {
+  if (await getUserAccount() == await callViewChainFunction("ownerOf", [vehicle.injected.id]))
+    vehicle.injected.mine = true
+  else
+    vehicle.injected.mine = false
+}
+
 export async function getVehicleInfo(vehicleID) {
   let vehicleURI = await callViewChainFunction("tokenURI",[vehicleID])
   let vehicleMetadata = await (await fetch(vehicleURI)).json()
   injectTokenId(vehicleMetadata, vehicleID)
+  await injectIfMine(vehicleMetadata)
   await injectIfApprovedGarage(vehicleMetadata)
   if (await callViewChainFunction("isForSale",[vehicleID])) {
     await injectPrice(vehicleMetadata)

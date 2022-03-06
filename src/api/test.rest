@@ -7,10 +7,10 @@ Content-Type: application/json
     "chain":"0x4",
     "operation":"mint",
     "data": {
-        "image": "https://www.tesla.com/ownersmanual/images/GUID-999EC68D-FD44-4237-8AB8-AB97A724F3B0-online-en-US.png",
+        "image": "https://cdn.pocket-lint.com/r/s/970x/assets/images/144304-cars-review-tesla-model-x-review-lead-image1-vdycmknzck-jpg.webp",
         "attributes": {
             "company": "Tesla",
-            "model": "X",
+            "model": "Model X",
             "vhcid": "Tesla29482032103102",
             "year": "2020",
             "color": "Black",

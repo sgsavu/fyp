@@ -12,9 +12,9 @@ import MyBids from '../pages/MyBids';
 import ControlledRoute from '../navigation/ControlledRoute';
 import Vehicle from "../pages/Vehicle";
 import Support from "../pages/Support";
-import Error from "./Error";
-import Loading from "./Loading";
-import CustomModal from "./CustomModal";
+import Error from "../modals/Error";
+import Loading from "../modals/Loading";
+import CustomModal from "../modals/CustomModal";
 import Garage from "../pages/Garage";
 import Edit from "../pages/Edit";
 

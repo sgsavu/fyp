@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import VehicleCard from "../vehicle_sections/VehicleCard";
-import { filterByFilterObject, filterByInjectedValue, sortBy } from "../filters/filters";
+import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterPriceRange, sortBy } from "../filters/filters";
 import SearchFilter from "../filters/SearchFilter";
 import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";
+import '../../styles/Marketplace.css';
 
 
 const Marketplace = () => {
@@ -11,18 +12,22 @@ const Marketplace = () => {
   const data = useSelector((state) => state.data);
   const [pageType, setPageType] = useState("instant");
   let vehicleList = data.saleVehicles[pageType];
-  const [perPage, setPerPage] = useState(10);
+
   const [pageNr, setPageNr] = useState(0)
   const [pages, setPages] = useState([]);
-  const [sortType, setSortType] = useState("ascending")
-
-  const [filterObject, setFilterObject] = useState([])
 
   const [pool, setPool] = useState([])
   const [backupPool, setBackupPool] = useState([])
 
   const [allAttributes, setAllAttributes] = useState([])
   const [allValues, setAllValues] = useState([])
+  const [filterObject, setFilterObject] = useState([])
+
+  const [minPrice, setMinPrice] = useState(50)
+  const [maxPrice, setMaxPrice] = useState(10000)
+  const [perPage, setPerPage] = useState(10);
+  const [sortType, setSortType] = useState("ascending")
+  const [filterByProperty, setFilterByProperty] = useState("id")
 
   const nextPage = () => {
     if (pageNr != pages.length - 1)
@@ -39,16 +44,6 @@ const Marketplace = () => {
     return copy
   }
 
-  function splitIntoPages(list) {
-
-    var listOfVehicles = newCopy(list)
-
-    listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
-
-    const filter2 = sortBy(listOfVehicles, sortType)
-
-    setPages(listToNSublists(filter2, perPage))
-  }
 
 
 
@@ -91,10 +86,21 @@ const Marketplace = () => {
   }, [vehicleList, data.saleVehicles])
 
 
-  useEffect(() => {
-    splitIntoPages(pool)
-  }, [pool, sortType, filterObject])
 
+  function applyFilters(list) {
+
+    var listOfVehicles = newCopy(list)
+    listOfVehicles = filterByPropertyExistence(listOfVehicles, filterByProperty)
+    listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
+    listOfVehicles = filterPriceRange(listOfVehicles, minPrice, maxPrice)
+    listOfVehicles = sortBy(listOfVehicles, sortType)
+    listOfVehicles = listToNSublists(listOfVehicles, perPage)
+    return listOfVehicles
+  }
+
+  useEffect(() => {
+    setPages(applyFilters(pool))
+  }, [pool, sortType, filterObject, minPrice, maxPrice, perPage, filterByProperty])
 
 
 
@@ -130,6 +136,7 @@ const Marketplace = () => {
           setPageType("auctions")
         }}>AUCTIONS</button>
 
+        <input type="radio"></input>
 
         <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
 
@@ -140,19 +147,70 @@ const Marketplace = () => {
           })}
         </select>
 
-        <select onChange={(e) => setSortType(e.target.value)}>
+        <div>
+          <select onChange={(e) => setSortType(e.target.value)}>
             <option value="ascending">Ascending</option>
             <option value="descending">Descending</option>
-        </select>
+          </select>
+        </div>
+
+        <div>
+          <label>Min Price: {minPrice}</label>
+        </div>
+
+        <div>
+          <input onInput={(e) => setMinPrice(e.target.value)} type="range" min="1" max="10000" value={minPrice} ></input>
+        </div>
+
+        <div>
+          <label>Max Price: {maxPrice}</label>
+        </div>
+
+        <div>
+          <input onInput={(e) => setMaxPrice(e.target.value)} type="range" min="1" max="10000" value={maxPrice}></input>
+        </div>
+
 
 
         <div>
+          <label>Per page:</label>
+          <select onChange={(e) => setPerPage(e.target.value)}>
+            <option value={5}>
+              5
+            </option>
+            <option value={15}>
+              15
+            </option>
+            <option value={25}>
+              25
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label>Show:</label>
+          <select onChange={(e) => setFilterByProperty(e.target.value)}>
+            <option selected value="id">
+              Default
+            </option>
+            <option value="bid">
+              My Bids
+            </option>
+            <option selected value="mine">
+              My Listings
+            </option>
+          </select>
+        </div>
+
+
+        <div className="cards">
           {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
             return (
               <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
             );
           }) : <p>No vehicles available.</p>}
         </div>
+
         <button onClick={prevPage}>Prev</button>
         <p>{pageNr + 1}</p>
         <button onClick={nextPage}>Next</button>

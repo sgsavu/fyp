@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import '../../styles/modal.css';
+import React from "react";
+import '../../styles/Modal.css';
 import { useDispatch, useSelector } from "react-redux";
 
 
