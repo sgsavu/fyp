@@ -16,16 +16,20 @@ const Dropzone = () => {
         onDrop: (acceptedFiles) => {
             const reader = new FileReader();
             reader.readAsDataURL(acceptedFiles[0]);
+            console.log(acceptedFiles[0])
             reader.onload = () => {
                 dispatch(uploadImage({ preview: URL.createObjectURL(acceptedFiles[0]), buffer: Buffer(reader.result.split(",")[1], "base64") }))
             };
-            /*
-            const i = new Image()
-            const w = preview
-            i.src = preview
-            console.log(i.width)
-            console.log(i.height)
-            */
+
+
+            const img = new Image();
+            img.onload = function () {
+                alert(this.width + 'x' + this.height);
+            }
+            img.src = URL.createObjectURL(acceptedFiles[0]);
+
+          
+
         },
     })
     return (
