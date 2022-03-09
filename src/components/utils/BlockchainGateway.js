@@ -31,7 +31,7 @@ export async function getIfIsOwner(vehicleId) {
 
 export async function callViewChainFunction(functionName, args) {
     
-    const theContract = await locateFunction(functionName)
+    const theContract = await getContractFor("methods",functionName)
     if (theContract==-1)
         throw Error ('Not supported')
 
@@ -40,11 +40,16 @@ export async function callViewChainFunction(functionName, args) {
         .call();
 }
 
-async function locateFunction(functionName) {
+export async function listenToEvent (eventName) {
+
+}
+
+
+export async function getContractFor(typeOfWhat, what) {
 
     const smartContracts = await store.getState().blockchain.smartContracts
     for (var contract in smartContracts) {
-        if (Object.keys(smartContracts[contract].methods).includes(functionName))
+        if (Object.keys(smartContracts[contract][typeOfWhat]).includes(what))
             return smartContracts[contract]
     }
     return -1
@@ -53,7 +58,7 @@ async function locateFunction(functionName) {
 export function callChainFunction(functionName, args) {
     return async (dispatch) => {
 
-        const theContract = await locateFunction(functionName)
+        const theContract = await getContractFor("methods",functionName)
         if (theContract==-1)
             throw Error ('Not supported')
 
@@ -73,7 +78,7 @@ export function callChainFunction(functionName, args) {
         }
         else if (functionName == "approve")
         {
-            args.unshift((await store.getState().blockchain.smartContracts)[0]._address)
+            args.unshift((await getContractFor("methods","buy"))._address)
         }
 
         dispatch(TX({ message: "+1" }))

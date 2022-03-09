@@ -25,7 +25,7 @@ const VehicleCard = ({ vehicle }) => {
                             <img className="card__thumb" src="https://cdn.mos.cms.futurecdn.net/xz4NVQhHaHShErxar7YLn.jpg" alt="" />
                             <div className="card__header-text">
                                 <h3 className="card__title"> {vehicle.attributes.company} {vehicle.attributes.model} {vehicle.attributes.year}</h3>
-                                <span className="card__status">{window.location.pathname == "/" ? vehicle.injected.display_price + " " + data.displayCurrency : "Not for sale"}</span>
+                                <span className="card__status">{vehicle.injected.display_price ? vehicle.injected.display_price + " " + data.displayCurrency : "Not listed."}</span>
                             </div>
                             <div>
                             {vehicle.attributes.fuel}

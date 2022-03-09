@@ -5,8 +5,9 @@
 }
 
 .timeline {
+
   position: relative;
-  max-width: 30em;
+  max-width: 40em;
 }
 .timeline:before {
   background-color: black;
@@ -20,6 +21,8 @@
 }
 
 .timeline-event {
+  width: 325px;
+  overflow: hidden;
   position: relative;
 }
 .timeline-event:hover .timeline-event-icon {
@@ -35,9 +38,9 @@
   padding: 2em;
   position: relative;
   top: -1.875em;
-  left: 4em;
-  width: 80%;
-  font-size: 1.35em;
+  left: 3em;
+  width: 10%;
+  font-size: 1.25em;
 }
 
 .timeline-event-icon {
@@ -89,10 +92,6 @@
 .cardwrapper2 {
   display: flex;
   justify-content: center;
-  align-items: top;
+  align-items: center;
   text-align: center;
-  width: 100vw;
-  height: 30vh;
-  padding: 0;
-  margin: 0;
 }

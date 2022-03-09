@@ -2,11 +2,12 @@ import { deleteFieldKey, entryDataState, updateDataState } from "../app/appActio
 import store from "../store";
 import { getVehicleInfo, injectIfApprovedGarage, injectIfTopBidder, injectPrice } from "../data/dataActions";
 import { getUserAccount } from "../reduxUtils";
+import { getContractFor } from "../../components/utils/BlockchainGateway";
 
 
 export function subscribeToSaleStatus() {
     return async (dispatch) => {
-        const smartContract = (await store.getState().blockchain.smartContracts)[0]
+        const smartContract = (await getContractFor("events","SaleStatus"))
         smartContract.events.SaleStatus({
         }, function (error, event) {
             console.log("SaleStatus", event)
@@ -28,7 +29,7 @@ export function subscribeToSaleStatus() {
 
 export function subscribeToTransfers() {
     return async (dispatch) => {
-        const smartContract = (await store.getState().blockchain.smartContracts)[1]
+        const smartContract = (await getContractFor("events","Transfer"))
         const thisAccount = await getUserAccount()
         smartContract.events.Transfer({
         }, function (error, event) {
@@ -49,7 +50,7 @@ export function subscribeToTransfers() {
 
 export function subscribeToNewPrice() {
     return async (dispatch) => {
-        const smartContract = (await store.getState().blockchain.smartContracts)[0]
+        const smartContract = (await getContractFor("events","NewPrice"))
         smartContract.events.NewPrice({
         }, function (error, event) {
             console.log("NewPrice", event)
@@ -62,7 +63,7 @@ export function subscribeToNewPrice() {
 
 export function subscribeToNewTopBidder() {
     return async (dispatch) => {
-        const smartContract = (await store.getState().blockchain.smartContracts)[0]
+        const smartContract = (await getContractFor("events","NewTopBidder"))
         smartContract.events.NewTopBidder({
         },  function (error, event) {
             console.log("NewTopBidder", event)
@@ -74,7 +75,7 @@ export function subscribeToNewTopBidder() {
 
 export function subscribeToNewGarageApproval() {
     return async (dispatch) => {
-        const smartContract = (await store.getState().blockchain.smartContracts)[1]
+        const smartContract = (await getContractFor("events","NewGarageApproval"))
         smartContract.events.NewGarageApproval({
         },  function (error, event) {
             console.log("NewGarageApproval", event)

@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
 import { getIfIsOwner, callViewChainFunction } from "../utils/BlockchainGateway";
 import History from "../vehicle_sections/History";
-import PurchaseOptions from "../vehicle_sections/PurchaseOptions";
-import ListingOptions from "../vehicle_sections/ListingOptions";
-import ListedVehicleOptions from "../vehicle_sections/ListedVehicleOptions";
+import NotMyVehicleListed from "../vehicle_sections/NotMyVehicleListed";
+import MyVehicleNotListed from "../vehicle_sections/MyVehicleNotListed";
+import MyVehicleListed from "../vehicle_sections/MyVehicleListed";
 
 import '../../styles/Vehicle.css';
 
@@ -24,6 +24,9 @@ const Vehicle = () => {
     const [currentOwner, setCurrentOwner] = useState("");
     const [odometerValue, setOdometerValue] = useState(0);
     const [settings, setSettings] = useState({})
+
+    const [pageToggle, setPageToggle] = useState(false)
+    const [typeToggle, setTypeToggle] = useState(false)
 
     useEffect(async () => {
 
@@ -51,7 +54,6 @@ const Vehicle = () => {
         <div>
             {eexists ?
                 <div>
-                    
 
                     <div className="cardwrapper">
                         <div>
@@ -67,7 +69,7 @@ const Vehicle = () => {
                                     <time datetime="2021-03-30" class="card__date">Year</time>
 
                                 </div>
-                               
+
                                 <div class="card__content2">
                                     <span class="card__title2">Black</span>
                                     <time datetime="2021-03-30" class="card__date2">Color</time>
@@ -98,39 +100,55 @@ const Vehicle = () => {
 
 
                         </div>
-
-
                     </div>
-                    <div className="cardwrapper2">
-                        <div>
-                            <p>Total distance traveled: {odometerValue} km</p>
-                            <br></br>
-                            <History vehicle={vehicle}></History>
 
+
+
+
+                    <div className="cardwrapper2">
+                        <div class="phone2">
+                            <div class="content">
+                                <div className="boss" onClick={() => setPageToggle(!pageToggle)}>
+                                    <div className={pageToggle ? "toggle-right" : "toggle-left"}></div>
+                                    <div class="options">
+                                        <p className={pageToggle ? "optionOff" : "optionOn"}>History</p>
+                                        <p className={pageToggle ? "optionOn" : "optionOff"}>Listing</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
 
 
                     <div>
-                        {settings.isOwner
-                            ?
-                            settings.isForSale
-                                ?
-                                <ListedVehicleOptions vehicle={vehicle} settings={settings}>
-                                </ListedVehicleOptions>
-                                :
-                                <ListingOptions vehicle={vehicle} settings={settings}>
-                                </ListingOptions>
-                            : settings.isForSale
-                                ?
-                                <PurchaseOptions vehicle={vehicle} settings={settings}>
-                                </PurchaseOptions>
-                                :
-                                null
+                        {pageToggle ?
+                            <div className="body">
+
+                                {settings.isOwner
+                                    ?
+                                    settings.isForSale
+                                        ?
+                                        <MyVehicleListed vehicle={vehicle} settings={settings} />
+                                        :
+                                        <MyVehicleNotListed vehicle={vehicle} settings={settings} />
+                                    : settings.isForSale
+                                        ?
+                                        <NotMyVehicleListed vehicle={vehicle} settings={settings} />
+                                        :
+                                        <p>Vehicle not for sale.</p>
+                                }
+                            </div>
+                            :
+                            <div className="cardwrapper2">
+                                <div>
+                                    <p>Total distance traveled: {odometerValue} km</p>
+                                    <History vehicle={vehicle}></History>
+                                </div>
+                            </div>
                         }
                     </div>
-                        
+
+
                 </div>
 
                 : <div>

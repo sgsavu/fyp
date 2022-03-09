@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import '../../styles/History.css';
-import { getNetworkExplorer } from '../utils/BlockchainGateway';
+import { getContractFor, getNetworkExplorer } from '../utils/BlockchainGateway';
 
 const History = ({ vehicle }) => {
 
@@ -24,7 +24,7 @@ const History = ({ vehicle }) => {
             setVehicleHistory(vehicleHistory)
         }
 
-        (blockchain.smartContracts)[1].getPastEvents(
+        (await getContractFor("events","Transfer")).getPastEvents(
             'Transfer',
             {
                 filter: { tokenId: vehicle.injected.id },
@@ -67,25 +67,25 @@ const History = ({ vehicle }) => {
                                 <label class="timeline-event-icon"></label>
                                 <div class="timeline-event-info">
                                     <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
-                                    <h4 onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 9) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 10, (vehicleHistory[time]?.to).length)}</h4>
+                                    <h4 onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5 , (vehicleHistory[time]?.to).length)}</h4>
                                     <h6>Proprietor</h6>
                                 </div>
 
                             </div>
-                            <div key={index} class="timeline-event">
+                            <div key={index+1} class="timeline-event">
                                 <label class="timeline-event-icon"></label>
                                 <div class="timeline-event-info">
                                     <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
-                                    <h4 >{(vehicleHistory[time]?.to).slice(0, 9) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 10, (vehicleHistory[time]?.to).length)}</h4>
+                                    <h4 >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
                                     <h6>Proprietor</h6>
                                 </div>
 
                             </div>
-                            <div key={index} class="timeline-event">
+                            <div key={index+2} class="timeline-event">
                                 <label class="timeline-event-icon"></label>
                                 <div class="timeline-event-info">
                                     <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
-                                    <h4 >{(vehicleHistory[time]?.to).slice(0, 9) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 10, (vehicleHistory[time]?.to).length)}</h4>
+                                    <h4 >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
                                     <h6>Proprietor</h6>
                                 </div>
 
