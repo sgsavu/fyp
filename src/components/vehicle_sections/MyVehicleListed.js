@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { myCurrencyToWei, weiToMyCurrency } from '../utils/Exchange'
-import { getVehiclePrice, getTopBidder, callChainFunction, callViewChainFunction } from "../utils/BlockchainGateway";
+import { getVehiclePrice, getTopBidder, callChainFunction, callViewChainFunction } from "../utils/GatewayParser";
 import { alerts } from '../../redux/app/appActions';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
@@ -9,24 +9,32 @@ import * as IoIcons from 'react-icons/io';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
 
-function ListedVehicleOptions({ vehicle, settings }) {
+function MyVehicleListed({ vehicle }) {
 
     const dispatch = useDispatch();
     const data = useSelector((state) => state.data);
     const blockchain = useSelector((state) => state.blockchain);
-    const isAuction = settings.isAuction
-    const myPrefferedCurrency = settings.myCurrency
 
     const [desiredPrice, setDesiredPrice] = useState(0)
     const [displayPrice, setDisplayPrice] = useState(0);
     const [topBidder, setTopBidder] = useState("0x0000000000000000000000000000000000000000")
+    const [isAuction, setIsAuction] = useState(false)
 
     useEffect(async () => {
-        setDisplayPrice(await weiToMyCurrency(await callViewChainFunction("getVehiclePrice", [vehicle.injected.id])))
-        if (isAuction) {
-            setTopBidder(await callViewChainFunction("getTopBidder", [vehicle.injected.id]))
+
+        var isForSale = await callViewChainFunction("isForSale", [vehicle.injected.id])
+        var isAuction = await callViewChainFunction("isAuction", [vehicle.injected.id])
+        setIsAuction(isForSale)
+        setIsAuction(isAuction)
+
+        if (isForSale) {
+            setDisplayPrice(await weiToMyCurrency(await callViewChainFunction("getVehiclePrice", [vehicle.injected.id])))
+            if (isAuction) {
+                setTopBidder(await callViewChainFunction("getTopBidder", [vehicle.injected.id]))
+            }
         }
-        setDesiredPrice (0)
+
+        setDesiredPrice(0)
     }, [data])
 
     function delist() {
@@ -56,7 +64,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                     <p>Type: {isAuction ? "Auction" : "Instant"}</p>
                     <p>
                         {isAuction ? topBidder != "0x0000000000000000000000000000000000000000" ? "Highest Bid: " : "Starting Price: " : "Price: "}
-                        {displayPrice} {myPrefferedCurrency}</p>
+                        {displayPrice} {data.displayCurrency}</p>
                     {topBidder != "0x0000000000000000000000000000000000000000" ? <p>Top Bidder: {topBidder}</p> : null}
                 </div>
 
@@ -69,7 +77,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                             <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
                         </div>
                         <div>
-                            <label>{myPrefferedCurrency}</label>
+                            <label>{data.displayCurrency}</label>
                         </div>
                     </div>
                     :
@@ -77,7 +85,7 @@ function ListedVehicleOptions({ vehicle, settings }) {
                 }
 
             </div>
-            <div className={settings.isForSale && settings.isOwner ? "panel-bottom-2" : "panel-bottom-1"}>
+            <div className="panel-bottom-2">
                 <p onClick={() => {
                     delist()
                 }}>Delist</p>
@@ -113,4 +121,4 @@ function ListedVehicleOptions({ vehicle, settings }) {
     );
 }
 
-export default ListedVehicleOptions;
+export default MyVehicleListed;

@@ -1,4 +1,4 @@
-import { roles } from "./PermissionsAndRoles";
+import { roles } from "./Roles";
 import store from "../../redux/store";
 import { myCurrencyToWei } from './Exchange'
 import { alerts, TX } from "../../redux/app/appActions";

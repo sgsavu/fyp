@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "../../styles/MyVehicles.css";
-import VehicleCard from "../vehicle_sections/VehicleCard";
+import VehicleCard from "../vehicle_sections/MiniCard";
 
 function MyVehicles() {
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { listForSale, listAuction, callChainFunction, callViewChainFunction, getContractFor } from "../utils/BlockchainGateway";
+import { listForSale, listAuction, callChainFunction, callViewChainFunction, getContractFor } from "../utils/GatewayParser";
 import { useDispatch, useSelector } from 'react-redux';
 import { alerts } from '../../redux/app/appActions';
 import { myCurrencyToWei } from '../utils/Exchange';
@@ -9,10 +9,10 @@ import * as IoIcons from 'react-icons/io';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
 
-function ListingOptions({ vehicle, settings }) {
+function MyVehicleNotListed({ vehicle }) {
 
     const dispatch = useDispatch();
-    const myPrefferedCurrency = settings.myCurrency
+ 
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
     const [desiredPrice, setDesiredPrice] = useState(0)
@@ -20,7 +20,7 @@ function ListingOptions({ vehicle, settings }) {
     const [approved, setApproved] = useState(false)
 
     useEffect(async () => {
-        if (await callViewChainFunction("getApproved", [vehicle.injected.id]) != (await getContractFor("methods", "buy"))._address) {
+        if (await callViewChainFunction("getApproved", [vehicle.injected.id]) == (await getContractFor("methods", "buy"))._address) {
             setApproved(true)
         }
     }, [data])
@@ -69,7 +69,7 @@ function ListingOptions({ vehicle, settings }) {
                         <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
                     </div>
                     <div>
-                        <label>{myPrefferedCurrency}</label>
+                        <label>{data.displayCurrency}</label>
                     </div>
                 </div>
 
@@ -102,4 +102,4 @@ function ListingOptions({ vehicle, settings }) {
     );
 }
 
-export default ListingOptions;
+export default MyVehicleNotListed;

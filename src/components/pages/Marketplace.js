@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import VehicleCard from "../vehicle_sections/VehicleCard";
+import VehicleCard from "../vehicle_sections/MiniCard";
 import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterPriceRange, sortBy } from "../filters/filters";
 import SearchFilter from "../filters/Search";
 import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from "react-hook-form";
-import { roles, actions, getAdminOptionsFor } from '../utils/PermissionsAndRoles';
-import { callChainFunction } from '../utils/BlockchainGateway';
+import { roles, actions, getAdminOptionsFor } from '../utils/Roles';
+import { callChainFunction } from '../utils/GatewayParser';
 import { alerts } from '../../redux/app/appActions';
 import Web3 from "web3";
 

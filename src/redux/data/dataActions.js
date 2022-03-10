@@ -1,7 +1,7 @@
-import { roles } from "../../components/utils/PermissionsAndRoles";
+import { roles } from "../../components/utils/Roles";
 import { weiToMyCurrency } from "../../components/utils/Exchange";
 import store from "../store";
-import { getRole, callViewChainFunction } from "../../components/utils/BlockchainGateway";
+import { getRole, callViewChainFunction } from "../../components/utils/GatewayParser";
 import { alerts, updateDataState } from "../app/appActions";
 import { getUserAccount } from "../reduxUtils";
 

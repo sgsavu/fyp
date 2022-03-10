@@ -2,7 +2,7 @@ import { deleteFieldKey, entryDataState, updateDataState } from "../app/appActio
 import store from "../store";
 import { getVehicleInfo, injectIfApprovedGarage, injectIfTopBidder, injectPrice } from "../data/dataActions";
 import { getUserAccount } from "../reduxUtils";
-import { getContractFor } from "../../components/utils/BlockchainGateway";
+import { getContractFor } from "../../components/utils/GatewayParser";
 
 
 export function subscribeToSaleStatus() {

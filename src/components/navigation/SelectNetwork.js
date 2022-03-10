@@ -1,7 +1,7 @@
 import React from "react";
-import '../styles/App.css';
+import '../../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
-import { addOrSwitchNetwork, updateAppNetwork } from "../redux/blockchain/blockchainActions";
+import { addOrSwitchNetwork, updateAppNetwork } from "../../redux/blockchain/blockchainActions";
 
 
 

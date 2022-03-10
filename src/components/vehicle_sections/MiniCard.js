@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 import '../../styles/VehicleCard.css';
 
-const VehicleCard = ({ vehicle }) => {
+const MiniCard = ({ vehicle }) => {
 
     const data = useSelector((state) => state.data);
     return (
@@ -48,4 +48,4 @@ const VehicleCard = ({ vehicle }) => {
     );
 }
 
-export default VehicleCard;
+export default MiniCard;

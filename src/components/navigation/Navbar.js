@@ -7,10 +7,10 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import '../../styles/Navbar.css';
 import { IconContext } from 'react-icons';
-import { getSidebarFor } from '../utils/PermissionsAndRoles';
-import SelectNetwork from '../SelectNetwork';
-import AccountStatus from '../views/AccountStatus';
-import PendingTX from '../views/PendingTX';
+import { getSidebarFor } from '../utils/Roles';
+import SelectNetwork from './SelectNetwork';
+import AccountStatus from './AccountStatus';
+import PendingTX from './PendingTX';
 
 function Navbar() {
   const dispatch = useDispatch();

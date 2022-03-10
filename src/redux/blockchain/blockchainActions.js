@@ -12,7 +12,7 @@ import { alerts, updateAppState, updateBlockchainState } from "../app/appActions
 import { clearMyData } from "../data/dataActions";
 import { subscribeToApproval, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
-import { getNetworkRpcUrl } from "../../components/utils/BlockchainGateway";
+import { getNetworkRpcUrl } from "../../components/utils/GatewayParser";
 
 const CONTRACT_LIST = [Gateway, Vehicle, Roles, Odometer, Management]
 const fetchWalletProvider = async () => {

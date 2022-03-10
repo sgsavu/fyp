@@ -1,4 +1,4 @@
-import { actions, roles } from "../../components/utils/PermissionsAndRoles";
+import { actions, roles } from "../../components/utils/Roles";
 
 const initialState = {
   myVehicles: {},

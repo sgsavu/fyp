@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserAccount } from '../../redux/reduxUtils';
-import { callChainFunction, callViewChainFunction } from '../utils/BlockchainGateway';
-import { roles } from '../utils/PermissionsAndRoles';
-import VehicleCard from '../vehicle_sections/VehicleCard';
+import { callChainFunction, callViewChainFunction } from '../utils/GatewayParser';
+import { roles } from '../utils/Roles';
+import VehicleCard from '../vehicle_sections/MiniCard';
 
 const Garage = () => {
 

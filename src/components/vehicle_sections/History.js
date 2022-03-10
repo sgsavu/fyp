@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import '../../styles/History.css';
-import { getContractFor, getNetworkExplorer } from '../utils/BlockchainGateway';
+import { callViewChainFunction, getContractFor, getNetworkExplorer } from '../utils/GatewayParser';
 
 const History = ({ vehicle }) => {
 
     const data = useSelector((state) => state.data);
     const blockchain = useSelector((state) => state.blockchain);
     const [vehicleHistory, setVehicleHistory] = useState({});
+    const [odometerValue, setOdometerValue] = useState(0);
 
     useEffect(async () => {
 
@@ -24,7 +25,7 @@ const History = ({ vehicle }) => {
             setVehicleHistory(vehicleHistory)
         }
 
-        (await getContractFor("events","Transfer")).getPastEvents(
+        (await getContractFor("events", "Transfer")).getPastEvents(
             'Transfer',
             {
                 filter: { tokenId: vehicle.injected.id },
@@ -36,6 +37,8 @@ const History = ({ vehicle }) => {
             }
         )
 
+        setOdometerValue(await callViewChainFunction("getOdometerValue", [vehicle.injected.id]))
+
     }, [data.myVehicles, data.allVehicles, data.saleVehicles])
 
 
@@ -45,7 +48,7 @@ const History = ({ vehicle }) => {
     }
 
     async function newTabTx(txHash) {
-        
+
         var win = window.open((await getNetworkExplorer(blockchain.currentNetwork)) + "/tx/" + txHash, '_blank');
         win.focus();
     }
@@ -55,24 +58,25 @@ const History = ({ vehicle }) => {
         win.focus();
     }
 
-    
+
 
     return (
         <div>
+            <p>Total distance traveled: {odometerValue} km</p>
             <div class="timeline">
                 {Object.keys(vehicleHistory).map((time, index) => {
                     return (
-                        
-                            <div key={index} class="timeline-event">
-                                <label class="timeline-event-icon"></label>
-                                <div class="timeline-event-info">
-                                    <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
-                                    <h4 onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5 , (vehicleHistory[time]?.to).length)}</h4>
-                                    <h6>Proprietor</h6>
-                                </div>
 
+                        <div key={index} class="timeline-event">
+                            <label class="timeline-event-icon"></label>
+                            <div class="timeline-event-info">
+                                <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
+                                <h4 onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
+                                <h6>Proprietor</h6>
                             </div>
-                       
+
+                        </div>
+
                     )
 
                 })}

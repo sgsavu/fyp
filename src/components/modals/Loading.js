@@ -2,7 +2,7 @@ import React from "react";
 import '../../styles/Loading2.css';
 import '../../styles/Loading4.css';
 import { useSelector } from "react-redux";
-import Modal from "../views/Modal";
+import Modal from "./Modal";
 
 function Loading() {
 

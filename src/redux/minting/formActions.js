@@ -1,5 +1,5 @@
 import { create } from "ipfs-http-client";
-import { callChainFunction } from "../../components/utils/BlockchainGateway";
+import { callChainFunction } from "../../components/utils/GatewayParser";
 import { randomIntFromInterval, scramble } from "../../components/utils/Cryptography";
 import { alerts } from "../app/appActions";
 import { getUserAccount } from "../reduxUtils";

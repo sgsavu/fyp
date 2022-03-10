@@ -8,7 +8,6 @@ import Verify from '../pages/Verify';
 import Mint from '../pages/Mint';
 import Admin from '../pages/Admin';
 import Options from '../pages/Options';
-import MyBids from '../pages/MyBids';
 import ControlledRoute from '../navigation/ControlledRoute';
 import Vehicle from "../pages/Vehicle";
 import Support from "../pages/Support";
@@ -38,7 +37,6 @@ function NormalView() {
                     <ControlledRoute path='/edit' component={Edit} />
                     <Route path='/vehicle' component={Vehicle} />
                     <Route path='/options' component={Options} />
-                    <Route path='/mybids' component={MyBids} />
                     <Route path='/support' component={Support} />
                 </Switch>
             </Router>

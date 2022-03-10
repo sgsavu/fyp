@@ -17,7 +17,7 @@ Content-Type: application/json
             "body": "Hatchback",
             "transmission": "Automatic",
             "fuel": "Electric",
-            "engine": "Dual Motor AWD 60D",
+            "engine": "AWD 60D",
             "doors": "5",
             "seats": "7",
             "driver_side": "Left"

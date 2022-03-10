@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getIfIsTopBidder, callChainFunction, callViewChainFunction } from "../utils/BlockchainGateway";
+import { getIfIsTopBidder, callChainFunction, callViewChainFunction } from "../utils/GatewayParser";
 import { myCurrencyToWei, weiToMyCurrency } from '../utils/Exchange'
 import { alerts } from '../../redux/app/appActions';
 import * as FaIcons from 'react-icons/fa';
@@ -11,12 +11,11 @@ import * as BsIcons from 'react-icons/bs';
 
 import { getUserAccount } from '../../redux/reduxUtils';
 
-function PurchaseOptions({ vehicle, settings }) {
+function NotMyVehicleListed({ vehicle }) {
 
 
     const dispatch = useDispatch();
-    const myPrefferedCurrency = settings.myCurrency
-    const isAuction = settings.isAuction
+
     const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
@@ -24,28 +23,35 @@ function PurchaseOptions({ vehicle, settings }) {
     const [desiredPrice, setDesiredPrice] = useState(0)
     const [displayPrice, setDisplayPrice] = useState(0)
     const [topBidder, setTopBidder] = useState("0x0")
+    const [isForSale, setIsForSale] = useState(false)
+    const [isAuction, setIsAuction] = useState(false)
     const [isTopBidder, setIsTopBidder] = useState(false)
     const [myBalance, setMyBalance] = useState(0)
     const [canBuy, setCanBuy] = useState(false)
 
     useEffect(async () => {
 
+        var isForSale = await callViewChainFunction("isForSale", [vehicle.injected.id])
+        var isAuction = await callViewChainFunction("isAuction", [vehicle.injected.id])
         var myBalanceRaw = await blockchain.web3.eth.getBalance(await getUserAccount())
-        setMyBalance(await weiToMyCurrency(myBalanceRaw))
-        var vehiclePriceRaw = await callViewChainFunction("getVehiclePrice", [vehicle.injected.id])
-        setDisplayPrice(await weiToMyCurrency(vehiclePriceRaw))
 
-       
-        if (parseInt(myBalanceRaw) > parseInt(vehiclePriceRaw))
-        {   
-     
+        setMyBalance(await weiToMyCurrency(myBalanceRaw))
+        setIsAuction(isAuction)
+
+        if (isForSale) {
+            var vehiclePriceRaw = await callViewChainFunction("getVehiclePrice", [vehicle.injected.id])
+            setDisplayPrice(await weiToMyCurrency(vehiclePriceRaw))
+            if (isAuction) {
+                setTopBidder(await callViewChainFunction("getTopBidder", [vehicle.injected.id]))
+                setIsTopBidder(await getIfIsTopBidder(vehicle.injected.id))
+            }
+        }
+
+        if (parseInt(myBalanceRaw) > parseInt(vehiclePriceRaw)) {
             setCanBuy(true)
         }
 
-        if (isAuction) {
-            setTopBidder(await callViewChainFunction("getTopBidder", [vehicle.injected.id]))
-            setIsTopBidder(await getIfIsTopBidder(vehicle.injected.id))
-        }
+        setDesiredPrice(0)
 
     }, [data])
 
@@ -53,20 +59,20 @@ function PurchaseOptions({ vehicle, settings }) {
 
     async function buyOrBid() {
         if (canBuy)
-        if (blockchain.account) {
-            if (isAuction) {
-                if (desiredPrice > displayPrice)
-                    dispatch(callChainFunction("bid", [vehicle.injected.id], { value: await myCurrencyToWei(desiredPrice) }))
-                else
-                    dispatch(alerts({ alert: "other", message: "Your price needs to be higher than the current top bid." }))
+            if (blockchain.account) {
+                if (isAuction) {
+                    if (desiredPrice > displayPrice)
+                        dispatch(callChainFunction("bid", [vehicle.injected.id], { value: await myCurrencyToWei(desiredPrice) }))
+                    else
+                        dispatch(alerts({ alert: "other", message: "Your price needs to be higher than the current top bid." }))
+                }
+                else {
+                    dispatch(callChainFunction("buy", [vehicle.injected.id], { value: await callViewChainFunction("getVehiclePrice", [vehicle.injected.id]) }))
+                }
             }
             else {
-                dispatch(callChainFunction("buy", [vehicle.injected.id], { value: await callViewChainFunction("getVehiclePrice", [vehicle.injected.id]) }))
+                dispatch(alerts({ alert: "other", message: "You need to login." }))
             }
-        }
-        else {
-            dispatch(alerts({ alert: "other", message: "You need to login." }))
-        }
     }
 
     return (
@@ -82,11 +88,11 @@ function PurchaseOptions({ vehicle, settings }) {
                 </div>
 
                 <p class="panel-heading">{isAuction ? "Bid Vehicle" : "Purchase Vehicle"}</p>
-                
+
                 <p>
-                    My Balance: {myBalance} {myPrefferedCurrency}
+                    My Balance: {myBalance} {data.displayCurrency}
                 </p>
-                <p>{isAuction ? topBidder != "0x0000000000000000000000000000000000000000" ? "Top Bid: " : "Starting Price: " : "Price: "} {displayPrice} {myPrefferedCurrency}</p>
+                <p>{isAuction ? topBidder != "0x0000000000000000000000000000000000000000" ? "Top Bid: " : "Starting Price: " : "Price: "} {displayPrice} {data.displayCurrency}</p>
 
                 <div>
                     {isAuction && topBidder != "0x0000000000000000000000000000000000000000" ?
@@ -100,15 +106,16 @@ function PurchaseOptions({ vehicle, settings }) {
                     }
                 </div>
 
-                
+
 
                 {isAuction ?
-                    <div>
+                    <div className='panel-input'>
+                        <p>My Bid:</p>
                         <div>
                             <input type="number" value={desiredPrice} onChange={(e) => { setDesiredPrice(e.target.value) }}></input>
                         </div>
                         <div>
-                            <label>{myPrefferedCurrency}</label>
+                            <label>{data.displayCurrency}</label>
                         </div>
                     </div>
                     :
@@ -118,9 +125,9 @@ function PurchaseOptions({ vehicle, settings }) {
             </div>
             <div className="panel-bottom-1">
                 <div
-                    className={canBuy ? "panel-button" : "panel-button-disabled"}
+                    className={canBuy && desiredPrice> displayPrice ? "panel-button" : "panel-button-disabled"}
                     onClick={async () => {
-                        
+
                         await buyOrBid()
                     }} >
                     <FaIcons.FaCheck />
@@ -133,4 +140,4 @@ function PurchaseOptions({ vehicle, settings }) {
     );
 }
 
-export default PurchaseOptions;
+export default NotMyVehicleListed;

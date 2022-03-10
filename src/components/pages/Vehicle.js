@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom'
-import { getIfIsOwner, callViewChainFunction } from "../utils/BlockchainGateway";
+import { getIfIsOwner, callViewChainFunction } from "../utils/GatewayParser";
 import History from "../vehicle_sections/History";
 import NotMyVehicleListed from "../vehicle_sections/NotMyVehicleListed";
 import MyVehicleNotListed from "../vehicle_sections/MyVehicleNotListed";
 import MyVehicleListed from "../vehicle_sections/MyVehicleListed";
 
 import '../../styles/Vehicle.css';
+import BigCard from "../vehicle_sections/BigCard";
 
 
 const Vehicle = () => {
@@ -16,17 +17,14 @@ const Vehicle = () => {
     const vehicle = location.state?.metadata
 
     const data = useSelector((state) => state.data);
-    const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
-    const myPrefferedCurrency = data.displayCurrency
 
     const [eexists, setEexists] = useState(false)
-    const [currentOwner, setCurrentOwner] = useState("");
-    const [odometerValue, setOdometerValue] = useState(0);
-    const [settings, setSettings] = useState({})
+    const [isForSale, setIsForSale] = useState({})
+    const [isOwner, setIsOwner] = useState({})
 
     const [pageToggle, setPageToggle] = useState(false)
-    const [typeToggle, setTypeToggle] = useState(false)
+
 
     useEffect(async () => {
 
@@ -34,16 +32,11 @@ const Vehicle = () => {
 
             let eexists = await callViewChainFunction("exists", [vehicle.injected.id])
             setEexists(eexists)
-            setOdometerValue(await callViewChainFunction("getOdometerValue", [vehicle.injected.id]))
+
             if (eexists) {
-                setCurrentOwner(await callViewChainFunction("ownerOf", [vehicle.injected.id]))
-                const [isForSale, isAuction, isOwner] = await Promise.all([callViewChainFunction("isForSale", [vehicle.injected.id]), callViewChainFunction("isAuction", [vehicle.injected.id]), getIfIsOwner(vehicle.injected.id)])
-                setSettings({
-                    isForSale: isForSale,
-                    isAuction: isAuction,
-                    isOwner: isOwner,
-                    myCurrency: myPrefferedCurrency
-                })
+                const [isForSale, isOwner] = await Promise.all([callViewChainFunction("isForSale", [vehicle.injected.id]), getIfIsOwner(vehicle.injected.id)])
+                setIsForSale(isForSale)
+                setIsOwner(isOwner)
             }
         }
 
@@ -55,53 +48,8 @@ const Vehicle = () => {
             {eexists ?
                 <div>
 
-                    <div className="cardwrapper">
-                        <div>
-                            <div class="card">
-                                <img src="https://cdn.pocket-lint.com/r/s/970x/assets/images/144304-cars-review-tesla-model-x-review-lead-image1-vdycmknzck-jpg.webp" class="card__image" alt="brown couch" />
-                                <div class="card__content">
-                                    <time datetime="2021-03-30" class="card__date">{vehicle.attributes.vhcid}</time>
-                                    <span class="card__title">{vehicle.attributes.company}</span>
-                                    <time datetime="2021-03-30" class="card__date">Make</time>
-                                    <span class="card__title">{vehicle.attributes.model}</span>
-                                    <time datetime="2021-03-30" class="card__date">Model</time>
-                                    <span class="card__title">{vehicle.attributes.year}</span>
-                                    <time datetime="2021-03-30" class="card__date">Year</time>
-
-                                </div>
-
-                                <div class="card__content2">
-                                    <span class="card__title2">Black</span>
-                                    <time datetime="2021-03-30" class="card__date2">Color</time>
-                                    <span class="card__title2">Hatchback</span>
-                                    <time datetime="2021-03-30" class="card__date2">Body</time>
-                                    <span class="card__title2">Automatic</span>
-                                    <time datetime="2021-03-30" class="card__date2">Transmission</time>
-                                    <span class="card__title2">Electric</span>
-                                    <time datetime="2021-03-30" class="card__date2">Fuel</time>
-                                    <span class="card__title2">AWD 60D</span>
-                                    <time datetime="2021-03-30" class="card__date2">Engine</time>
-                                    <span class="card__title2">Left</span>
-                                    <time datetime="2021-03-30" class="card__date2">Driver Side</time>
-                                    <div className="wow">
-                                        <div>
-                                            <span class="card__title3">5</span>
-                                            <time datetime="2021-03-30" class="card__date3">Doors</time>
-                                        </div>
-                                        <div>
-                                            <span class="card__title3">7</span>
-                                            <time datetime="2021-03-30" class="card__date3">Seats</time>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-
+                    
+                    <BigCard vehicle={vehicle}/>
 
 
 
@@ -124,16 +72,16 @@ const Vehicle = () => {
                         {pageToggle ?
                             <div className="body">
 
-                                {settings.isOwner
+                                {isOwner
                                     ?
-                                    settings.isForSale
+                                    isForSale
                                         ?
-                                        <MyVehicleListed vehicle={vehicle} settings={settings} />
+                                        <MyVehicleListed vehicle={vehicle} />
                                         :
-                                        <MyVehicleNotListed vehicle={vehicle} settings={settings} />
-                                    : settings.isForSale
+                                        <MyVehicleNotListed vehicle={vehicle} />
+                                    : isForSale
                                         ?
-                                        <NotMyVehicleListed vehicle={vehicle} settings={settings} />
+                                        <NotMyVehicleListed vehicle={vehicle} />
                                         :
                                         <p>Vehicle not for sale.</p>
                                 }
@@ -141,7 +89,6 @@ const Vehicle = () => {
                             :
                             <div className="cardwrapper2">
                                 <div>
-                                    <p>Total distance traveled: {odometerValue} km</p>
                                     <History vehicle={vehicle}></History>
                                 </div>
                             </div>
@@ -152,7 +99,7 @@ const Vehicle = () => {
                 </div>
 
                 : <div>
-                    <p>Sorry, this vehicle does no longer exist</p>
+                    <p>Sorry, this vehicle no longer exists.</p>
                     <button onClick={() => {
                         window.location.reload();
                         window.location.replace("/")

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import '../../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
 import { login, signout } from "../../redux/blockchain/blockchainActions";
-import { getNetworkExplorer } from "../utils/BlockchainGateway";
+import { getNetworkExplorer } from "../utils/GatewayParser";
 
 function AccountStatus() {
 
