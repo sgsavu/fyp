@@ -1,6 +1,6 @@
 import { roles } from "./PermissionsAndRoles";
 import store from "../../redux/store";
-import { myCurrencyToWei } from './PricesCoinsExchange'
+import { myCurrencyToWei } from './Exchange'
 import { alerts, TX } from "../../redux/app/appActions";
 import { getUserAccount } from "../../redux/reduxUtils";
 
@@ -30,17 +30,17 @@ export async function getIfIsOwner(vehicleId) {
 }
 
 export async function callViewChainFunction(functionName, args) {
-    
-    const theContract = await getContractFor("methods",functionName)
-    if (theContract==-1)
-        throw Error ('Not supported')
+
+    const theContract = await getContractFor("methods", functionName)
+    if (theContract == -1)
+        throw Error('Not supported')
 
     return await theContract.methods
     [functionName](...args)
         .call();
 }
 
-export async function listenToEvent (eventName) {
+export async function listenToEvent(eventName) {
 
 }
 
@@ -55,32 +55,15 @@ export async function getContractFor(typeOfWhat, what) {
     return -1
 }
 
-export function callChainFunction(functionName, args) {
+export function callChainFunction(functionName, args, send_field = {}) {
     return async (dispatch) => {
 
-        const theContract = await getContractFor("methods",functionName)
-        if (theContract==-1)
-            throw Error ('Not supported')
+        const theContract = await getContractFor("methods", functionName)
+        if (theContract == -1)
+            throw Error('Operation not supported')
 
-        const send_field = { from: await getUserAccount() }
-
-        if (functionName == "buy") {
-            send_field.value = await callViewChainFunction("getVehiclePrice", [args[0]])
-        }
-        else if (functionName == "bid") {
-            const price = args[args.length - 1]
-            args = args[0]
-            send_field.value = await myCurrencyToWei(price)
-        }
-        else if (functionName == "listInstant" || functionName == "listAuction" || functionName == "setVehiclePrice") {
-            const price = args[args.length - 1]
-            args[args.length - 1] = await myCurrencyToWei(price)
-        }
-        else if (functionName == "approve")
-        {
-            args.unshift((await getContractFor("methods","buy"))._address)
-        }
-
+        send_field.from = await getUserAccount()
+        
         dispatch(TX({ message: "+1" }))
 
         return await theContract.methods

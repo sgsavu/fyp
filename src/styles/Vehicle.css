@@ -237,14 +237,89 @@
   animation-iteration-count: infinite;
 }
 
+.circle-status {
+  position: relative;
+  width: 8rem;
+  height: 8rem;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+
 p { 
   font-size: 90%;
 }
 
-.heading {
+.panel-heading {
   font-size: 140%;
   font-weight: bolder;
   margin: 3rem 0 .2rem 0;
+}
+
+.panel-info {
+
+  margin: 2rem 0 .2rem 0;
+}
+
+.panel-input {
+
+  margin: 6rem 0 .2rem 0;
+}
+
+
+
+
+.mark {
+  border-radius: 100px;
+  background-color: black;
+}
+.mark {
+  width: 7%;
+  margin: auto;
+  position: relative;
+  height: .25rem;
+}
+
+.mark::before {
+  content: '';
+  position: absolute;
+  width: .25rem;
+  height: 100%;
+  left: -70%;
+  opacity: .45;
+  background-color: inherit;
+}
+.mark::after {
+  content: '';
+  position: absolute;
+  width: .25rem;
+  height: 100%;
+  right: -70%;
+  opacity: .45;
+  background-color: inherit;
+}
+
+.mark-both {
+
+  margin-top: 60px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+.mark-on {
+  -webkit-text-stroke: 0.2px black;
+
+  opacity: 1;
+  color: greenyellow;
+}
+
+.mark-off {
+  opacity: .35;
+  font-size: 15px;
 }
 
 
@@ -271,7 +346,7 @@ p {
    text-decoration: underline;
 }
 
-.panel-button{
+.panel-button, .panel-button-disabled{
   box-shadow: 0 2px 10px rgba(0,0,0,.2);
   border-radius: 100%;
   width: 3rem;
@@ -283,6 +358,12 @@ p {
   cursor: pointer;
   transition: transform .5s cubic-bezier(0.19, 1, 0.22, 1);
 }
+
+.panel-button-disabled {
+  cursor: not-allowed;
+  opacity: .3;
+}
+
 .panel-button:hover {
   transform: scale(1.2);
 }

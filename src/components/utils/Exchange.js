@@ -22,19 +22,19 @@ export const currencyToCurrency = async (amount, fromCurrency, toCurrency) => {
     return amount / rate
 }
 
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2") + "e-2");
+}
+
 export const weiToMyCurrency = async (price) => {
-    
+
     let myPrefferedCurrency = await store
         .getState()
         .data.displayCurrency
-    
+
     let princeInEth = WeiToEth(price)
     let priceInUserCurrency = await currencyToCurrency(princeInEth, "ETH", myPrefferedCurrency)
 
-    function roundToTwo(num) {
-        return +(Math.round(num + "e+2")  + "e-2");
-    }
-    
     return roundToTwo(priceInUserCurrency)
 }
 
@@ -45,6 +45,6 @@ export const myCurrencyToWei = async (price) => {
         .data.displayCurrency
 
     const priceInETH = await currencyToCurrency(price, myPrefferedCurrency, "ETH")
-    const priceInWei = EthToWei(priceInETH)
+    const priceInWei = EthToWei(roundToTwo(priceInETH))
     return priceInWei
 }

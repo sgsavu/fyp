@@ -1,5 +1,5 @@
 import { roles } from "../../components/utils/PermissionsAndRoles";
-import { weiToMyCurrency } from "../../components/utils/PricesCoinsExchange";
+import { weiToMyCurrency } from "../../components/utils/Exchange";
 import store from "../store";
 import { getRole, callViewChainFunction } from "../../components/utils/BlockchainGateway";
 import { alerts, updateDataState } from "../app/appActions";

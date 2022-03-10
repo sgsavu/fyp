@@ -85,6 +85,24 @@ export function subscribeToNewGarageApproval() {
     }
 }
 
+export function subscribeToApproval() {
+    return async (dispatch) => {
+        const smartContract = (await getContractFor("events","Approval"))
+        const thisAccount = await getUserAccount()
+        smartContract.events.Approval({
+        },  function (error, event) {
+            console.log("NewApproval", event)
+            if (!error)
+            {
+                if (event.returnValues.owner = thisAccount)
+                {
+                    dispatch(updateApproval(event.returnValues.tokenId))
+                }
+            }
+        })
+    }
+}
+
 function updatePrice(tokenId) {
     return async (dispatch) => {
         var saleVehicles = await store.getState().data.saleVehicles
@@ -116,6 +134,12 @@ function updateGarage(tokenId) {
         await injectIfApprovedGarage(allVehicles[tokenId])
 
         dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
+    }
+}
+
+function updateApproval(tokenId) {
+    return async (dispatch) => {
+        dispatch(updateDataState({ field: "approval", value: tokenId }));
     }
 }
 

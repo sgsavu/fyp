@@ -62,7 +62,7 @@ const History = ({ vehicle }) => {
             <div class="timeline">
                 {Object.keys(vehicleHistory).map((time, index) => {
                     return (
-                        <div>
+                        
                             <div key={index} class="timeline-event">
                                 <label class="timeline-event-icon"></label>
                                 <div class="timeline-event-info">
@@ -72,25 +72,7 @@ const History = ({ vehicle }) => {
                                 </div>
 
                             </div>
-                            <div key={index+1} class="timeline-event">
-                                <label class="timeline-event-icon"></label>
-                                <div class="timeline-event-info">
-                                    <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
-                                    <h4 >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
-                                    <h6>Proprietor</h6>
-                                </div>
-
-                            </div>
-                            <div key={index+2} class="timeline-event">
-                                <label class="timeline-event-icon"></label>
-                                <div class="timeline-event-info">
-                                    <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
-                                    <h4 >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
-                                    <h6>Proprietor</h6>
-                                </div>
-
-                            </div>
-                        </div>
+                       
                     )
 
                 })}
