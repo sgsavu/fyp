@@ -16,17 +16,28 @@ import Loading from "../modals/Loading";
 import CustomModal from "../modals/CustomModal";
 import Garage from "../pages/Garage";
 import Edit from "../pages/Edit";
+import TemporaryDrawer from "../navigation/Drawer";
+import AccountStatus from "../navigation/AccountStatus";
+import PendingTX from "../navigation/PendingTX";
+import SelectNetwork from "../navigation/SelectNetwork";
+
 
 function NormalView() {
 
     return (
         <div>
+        
+
+            <AccountStatus></AccountStatus>
+            <PendingTX></PendingTX>
+            <SelectNetwork></SelectNetwork>
+
             <Error></Error>
             <CustomModal></CustomModal>
             <Loading></Loading>
+            
             <Router>
-                <Navbar>
-                </Navbar>
+            <TemporaryDrawer></TemporaryDrawer>
                 <Switch>
                     <ControlledRoute path='/myvehicles' component={MyVehicles} />
                     <ControlledRoute path='/' exact component={Marketplace} />

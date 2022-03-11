@@ -34,8 +34,8 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
         setWordEntered("");
     };
 
-    useEffect(async () => {
-        if (inputFocused == false) {
+    useEffect(async () => {                             
+        if (inputFocused == false && window.location.pathname == "/verify") {
             await sleep(100);
             clearInput()
         }

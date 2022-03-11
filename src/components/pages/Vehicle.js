@@ -54,11 +54,11 @@ const Vehicle = () => {
 
 
                     <div className="cardwrapper2">
-                        <div class="phone2">
-                            <div class="content">
+                        <div className="phone2">
+                            <div className="content">
                                 <div className="boss" onClick={() => setPageToggle(!pageToggle)}>
                                     <div className={pageToggle ? "toggle-right" : "toggle-left"}></div>
-                                    <div class="options">
+                                    <div className="options">
                                         <p className={pageToggle ? "optionOff" : "optionOn"}>History</p>
                                         <p className={pageToggle ? "optionOn" : "optionOff"}>Listing</p>
                                     </div>

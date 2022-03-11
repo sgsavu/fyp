@@ -3,33 +3,38 @@ import { useDispatch, useSelector } from "react-redux";
 import Modal from "./Modal";
 import { alerts } from "../../redux/app/appActions";
 
-
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function Error() {
 
   const dispatch = useDispatch();
   const app = useSelector((state) => state.app);
 
-  const reload = () =>{
-    window.location.reload();
-  }
 
-  const dismiss = () =>{
+
+  const dismiss = () => {
     dispatch(alerts({ alert: "error" }))
   }
 
-  const errorBox = () => {
-    return (
-      <div>
-        <h1>Error</h1>
-        <p>{app.alerts.error.at(-1)}</p>
-        <button onClick={dismiss}>Dismiss</button>
-      </div>
-    );
-  }
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    dismiss();
+  };
 
   return (
-    app.alerts.error.length != 0? <Modal content={errorBox}></Modal>: null
+    app.alerts.error.length != 0 ?
+      <Snackbar open={true} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Error!
+          {app.alerts.error.at(-1)}
+        </Alert>
+      </Snackbar> : null
   );
 }
 

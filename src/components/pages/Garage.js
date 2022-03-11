@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserAccount } from '../../redux/reduxUtils';
 import { callChainFunction, callViewChainFunction } from '../utils/GatewayParser';
 import { roles } from '../utils/Roles';
-import VehicleCard from '../vehicle_sections/MiniCard';
+import MiniCard from '../vehicle_sections/MiniCard';
 
 const Garage = () => {
 
@@ -29,7 +29,7 @@ const Garage = () => {
             {data.myRole == roles.GARAGE_ROLE ? Object.values(data.allVehicles).map((vehicle, index) => {
                 if (vehicle.injected.garage)
                 return (
-                    <VehicleCard key={index} vehicle={vehicle}></VehicleCard>
+                    <MiniCard key={index} vehicle={vehicle}></MiniCard>
                 );
             }) : <div>
             <label>Approve garage: </label>

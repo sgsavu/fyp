@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "./Modal";
 import { alerts } from "../../redux/app/appActions";
-
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function CustomModal() {
 
@@ -10,25 +13,28 @@ function CustomModal() {
   const app = useSelector((state) => state.app);
 
 
-  const dismiss = () =>{
+  const dismiss = () => {
     dispatch(alerts({ alert: "other" }))
   }
 
-  const alertBox = () => {
-    return (
-      <div>
-        <h1>Alert</h1>
-        <p>{app.alerts.other.at(-1).message}</p>
-        {app.alerts.other.at(-1).url? <a href={app.alerts.other.at(-1).url} target="_blank">View 🔗</a> : null }
-        <div>
-        <button onClick={dismiss}>Dismiss</button>
-        </div>
-      </div>
-    );
-  }
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    
+    dismiss();
+  };
 
   return (
-    app.alerts.other.length != 0? <Modal content={alertBox}></Modal>: null
+    app.alerts.other.length != 0 ?
+      <Snackbar open={true} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          Transaction successful!
+          {app.alerts.other.at(-1).url? <a href={app.alerts.other.at(-1).url} target="_blank">View 🔗</a> : null }
+        </Alert>
+      </Snackbar> : null
   );
 }
 

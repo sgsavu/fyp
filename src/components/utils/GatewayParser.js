@@ -86,5 +86,5 @@ async function successAlert(tx) {
 }
 
 function failedAlert(error) {
-    return { alert: "other", message: `Transaction failed. ${error.message}` }
+    return { alert: "error", message: `Transaction failed. ${error.message}` }
 }

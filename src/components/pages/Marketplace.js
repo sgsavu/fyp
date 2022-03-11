@@ -1,10 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Component } from "react";
 import { useSelector } from "react-redux";
 import VehicleCard from "../vehicle_sections/MiniCard";
 import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterPriceRange, sortBy } from "../filters/filters";
 import SearchFilter from "../filters/Search";
 import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";
 import '../../styles/Marketplace.css';
+import Select from 'react-select'
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
+import { CardActionArea } from '@mui/material';
 
 
 const Marketplace = () => {
@@ -23,18 +33,28 @@ const Marketplace = () => {
   const [allValues, setAllValues] = useState([])
   const [filterObject, setFilterObject] = useState([])
 
-  const [minPrice, setMinPrice] = useState(50)
+  const [minPrice, setMinPrice] = useState(1)
   const [maxPrice, setMaxPrice] = useState(10000)
   const [perPage, setPerPage] = useState(10);
   const [sortType, setSortType] = useState("ascending")
   const [filterByProperty, setFilterByProperty] = useState("id")
+
+
+
+
+  const [newSelect, setNewSelect] = useState(null)
+
 
   function newCopy(list) {
     const copy = list.filter(() => true);
     return copy
   }
 
-
+  const options = [
+    { value: 'chocolate', label: 'Chocolate', type: "boss" },
+    { value: 'strawberry', label: 'Strawberry', type: "boss2" },
+    { value: 'vanilla', label: 'Vanilla', type: "boss3" }
+  ]
 
 
   function getAttributesCollection(listOfVehicles) {
@@ -63,6 +83,19 @@ const Marketplace = () => {
   }
 
 
+  function createNewObj(allAttributes) {
+
+    var boss = []
+    for (var key of Object.keys(allAttributes)) {
+      for (var element of allAttributes[key]) {
+        boss.push({ value: element, label: element, type: key })
+      }
+    }
+    return boss
+  }
+
+
+
   useEffect(() => {
     if (vehicleList != undefined) {
       setPool(Object.values(vehicleList))
@@ -70,6 +103,7 @@ const Marketplace = () => {
 
       var allAttributes = getAttributesCollection(Object.values(vehicleList))
       setAllAttributes(allAttributes)
+      setNewSelect(createNewObj(allAttributes))
       setAllValues(grabAllValuesFromObject(allAttributes))
 
     }
@@ -93,52 +127,107 @@ const Marketplace = () => {
   }, [pool, sortType, filterObject, minPrice, maxPrice, perPage, filterByProperty])
 
 
-
   function loadFilterObject(list) {
     var mf = {}
-    for (var i = 0; i < list.length; i++)
-      mf[Object.keys(list[i])[0]] = Object.values(list[i])[0]
+    for (var object of list) {
+      mf[object.type] = object.value
+    }
     setFilterObject(mf)
   }
 
 
-  function getSelectValues(select) {
-    var result = [];
-    var options = select && select.options;
-    var opt;
-    for (var i = 0, iLen = options.length; i < iLen; i++) {
-      opt = options[i];
-      if (opt.selected) {
-        result.push(JSON.parse(opt.value));
-      }
-    }
-    return result;
+  function togglePageType() {
+    if (pageType == "instant")
+      setPageType("auctions")
+    else if (pageType == "auctions")
+      setPageType("instant")
   }
+
+
+
+  function valuetext(value) {
+    return `${value}`;
+  }
+
+  const [value1, setValue1] = React.useState([0, 10000]);
+
+  var minDistance = 1000
+
+  const handleChange1 = (event, newValue, activeThumb) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (activeThumb === 0) {
+      setValue1([Math.min(newValue[0], value1[1] - minDistance), value1[1]]);
+      setMinPrice(Math.min(newValue[0], value1[1] - minDistance))
+    } else {
+      setValue1([value1[0], Math.max(newValue[1], value1[0] + minDistance)]);
+      setMaxPrice(Math.max(newValue[1], value1[0] + minDistance))
+    }
+  };
+
+  const marks = [
+    {
+      value: 0,
+      label: '0',
+    },
+
+    {
+      value: 10000,
+      label: '10000',
+    },
+  ];
 
   return (
 
     <div className="marketplace-main">
       <div>
 
-        <div className="center">
-          <button onClick={() => {
-            setPageType("instant")
-          }}>INSTANT BUY</button>
-          <button onClick={() => {
-            setPageType("auctions")
-          }}>AUCTIONS</button>
+
+
+        <div className="cardwrapper2">
+          <div class="phone2">
+            <div class="content">
+              <div className="boss" onClick={() => { togglePageType() }}>
+                <div className={pageType == "auctions" ? "toggle-right" : "toggle-left"}></div>
+                <div class="options">
+                  <p className={pageType == "auctions" ? "optionOff" : "optionOn"}>Instant</p>
+                  <p className={pageType == "auctions" ? "optionOn" : "optionOff"}>Auctions</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
+
+        
+
+
+
+        <Box sx={{ width: 200 }}>
+          <Slider
+            min={0}
+            max={10000}
+            getAriaLabel={() => 'Temperature range'}
+            aria-label="Temperature"
+            marks={marks}
+            value={value1}
+            step={1000}
+            onChange={handleChange1}
+            valueLabelDisplay="auto"
+            getAriaValueText={valuetext}
+          />
+        </Box>
+
+
+
+
         <div className="center">
-          <select multiple onChange={(e) => { loadFilterObject(getSelectValues(e.target)) }}>
-            {allValues.map((element, index) => {
-              if (!(findKeyOfValueInObj(element, allAttributes) in filterObject) || isValueInObject(element, filterObject))
-                return <option key={index} value={"{\"" + findKeyOfValueInObj(element, allAttributes) + "\"" + ":" + "\"" + element + "\"}"}>{element}</option>
-            })}
-          </select>
+          <Box sx={{ width: 400 }}>
+            <Select onChange={loadFilterObject} isMulti={true} options={newSelect} />
+          </Box>
         </div>
-
-
 
 
         <div className="center">
@@ -173,26 +262,13 @@ const Marketplace = () => {
           </select>
         </div>
 
-        <div>
-          <label>Min Price: {minPrice}</label>
-        </div>
-
-        <div>
-          <input onInput={(e) => setMinPrice(e.target.value)} type="range" min="1" max="10000" value={minPrice} ></input>
-        </div>
-
-        <div>
-          <label>Max Price: {maxPrice}</label>
-        </div>
-
-        <div>
-          <input onInput={(e) => setMaxPrice(e.target.value)} type="range" min="1" max="10000" value={maxPrice}></input>
-        </div>
 
 
-        <div className="center">
-          <SearchFilter pool={pool} modifier={setPool} reset={backupPool} />
-        </div>
+
+
+
+
+
 
 
         <div className="cards">
@@ -203,16 +279,9 @@ const Marketplace = () => {
           }) : <p className="center">No vehicles available.</p>}
         </div>
 
-        <div className="paging">
-          <button disabled={pageNr != 0 ? false : true} onClick={() => setPageNr(pageNr - 1)}>🡠</button>
-          {pages.map((page, index) => {
-            return (
-              <button disabled={pageNr == index ? true : false} key={index}>
-                {index + 1}
-              </button>
-            );
-          })}
-          <button disabled={pageNr != pages.length - 1 ? false : true} onClick={() => setPageNr(pageNr + 1)}>🡢</button>
+
+        <div className="center">
+          <Pagination showFirstButton showLastButton count={pages.length} />
         </div>
 
 
