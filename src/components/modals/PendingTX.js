@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
+import { Alert, Snackbar } from "@mui/material";
 
 
 function PendingTX() {
@@ -10,15 +11,21 @@ function PendingTX() {
     const [pendingList, setPendingList] = useState([])
 
     useEffect(() => {
-        if(blockchain.pendingTx)
+        if (blockchain.pendingTx)
             setPendingList(blockchain.pendingTx)
-      }, [blockchain.pendingTx])
+    }, [blockchain.pendingTx])
 
 
     return (
-        <div className="pending">
-            {pendingList.length!=0?  pendingList.length + " pending..." : null }
-        </div>
+
+        pendingList.length != 0 ? 
+        <Snackbar open={true} >
+            <Alert severity="info" sx={{ width: '100%' }}>
+                {pendingList.length} transaction(s) pending...
+            </Alert>
+        </Snackbar> : null
+
+
     );
 }
 

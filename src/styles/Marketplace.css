@@ -1,3 +1,10 @@
+.market-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .center {
   display: flex;
   justify-content: center;

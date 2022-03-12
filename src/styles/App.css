@@ -24,3 +24,9 @@
   color: white;
   font-size: 10px;
 }
+
+
+.testing {
+  display: flex;
+  justify-content: space-between;
+}

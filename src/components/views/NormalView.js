@@ -1,7 +1,7 @@
 import React from "react";
 import '../../styles/App.css';
 import Navbar from '../navigation/Navbar';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
 import MyVehicles from '../pages/MyVehicles';
 import Marketplace from '../pages/Marketplace';
 import Verify from '../pages/Verify';
@@ -18,26 +18,64 @@ import Garage from "../pages/Garage";
 import Edit from "../pages/Edit";
 import TemporaryDrawer from "../navigation/Drawer";
 import AccountStatus from "../navigation/AccountStatus";
-import PendingTX from "../navigation/PendingTX";
+import PendingTX from "../modals/PendingTX";
 import SelectNetwork from "../navigation/SelectNetwork";
 
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import * as FiIcons from "react-icons/fi";
+import More from "../navigation/More";
+import Chip from '@mui/material/Chip';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { useDispatch, useSelector } from "react-redux";
+import { getSidebarFor } from "../utils/Roles";
 
 function NormalView() {
 
+ 
+    const data = useSelector((state) => state.data);
+  
+
+    
+    
+
     return (
         <div>
-        
-
-            <AccountStatus></AccountStatus>
-            <PendingTX></PendingTX>
-            <SelectNetwork></SelectNetwork>
-
-            <Error></Error>
-            <CustomModal></CustomModal>
-            <Loading></Loading>
-            
             <Router>
-            <TemporaryDrawer></TemporaryDrawer>
+
+                <Stack direction="row" justifyContent="space-between" >
+
+                    
+                        <TemporaryDrawer></TemporaryDrawer>
+                    
+                    
+                    <Stack direction="row" spacing={1} alignItems="center">
+                        <SelectNetwork></SelectNetwork>
+                        <AccountStatus></AccountStatus>
+                        <More></More>
+                    </Stack>
+                </Stack>
+
+
+
+
+                <PendingTX></PendingTX>
+
+
+                <Error></Error>
+                <CustomModal></CustomModal>
+                <Loading></Loading>
+
                 <Switch>
                     <ControlledRoute path='/myvehicles' component={MyVehicles} />
                     <ControlledRoute path='/' exact component={Marketplace} />

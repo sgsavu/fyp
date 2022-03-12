@@ -31,7 +31,7 @@ function Error() {
     app.alerts.error.length != 0 ?
       <Snackbar open={true} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          Error!
+          {app.alerts.error.length}. Error!
           {app.alerts.error.at(-1)}
         </Alert>
       </Snackbar> : null

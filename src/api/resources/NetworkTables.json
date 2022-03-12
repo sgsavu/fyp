@@ -3,6 +3,7 @@
     "networks": {
         "0x4": {
             "chainName": "Rinkeby Testnet",
+            "image": "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png",
             "nativeCurrency": {
                 "name": "Ether",
                 "symbol": "ETH",
@@ -17,6 +18,7 @@
         },
         "0xfa2": {
             "chainName": "Fantom Testnet",
+            "image": "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
             "nativeCurrency": {
                 "name": "Fantom",
                 "symbol": "FTM",
@@ -31,6 +33,7 @@
         },
         "0xa869": {
             "chainName": "Avalanche Testnet",
+            "image": "https://cryptologos.cc/logos/avalanche-avax-logo.png?v=022",
             "nativeCurrency": {
                 "name": "Avalanche",
                 "symbol": "AVAX",

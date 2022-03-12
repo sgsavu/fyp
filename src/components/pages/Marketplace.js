@@ -14,7 +14,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { CardActionArea } from '@mui/material';
+import { CardActionArea, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 
 const Marketplace = () => {
@@ -179,113 +179,108 @@ const Marketplace = () => {
     },
   ];
 
+  const [alignment, setAlignment] = React.useState('web');
+
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
+
   return (
 
-    <div className="marketplace-main">
-      <div>
+    <div className="market-main">
 
 
 
-        <div className="cardwrapper2">
-          <div class="phone2">
-            <div class="content">
-              <div className="boss" onClick={() => { togglePageType() }}>
-                <div className={pageType == "auctions" ? "toggle-right" : "toggle-left"}></div>
-                <div class="options">
-                  <p className={pageType == "auctions" ? "optionOff" : "optionOn"}>Instant</p>
-                  <p className={pageType == "auctions" ? "optionOn" : "optionOff"}>Auctions</p>
-                </div>
-              </div>
+
+      <div className="cardwrapper2">
+        <div className="phone3"  onClick={() => { togglePageType() }}>
+            <div className={pageType == "auctions" ? "toggle-right" : "toggle-left"}></div>
+            <div className="options">
+              <p className={pageType == "auctions" ? "optionOff" : "optionOn"}>Instant</p>
+              <p className={pageType == "auctions" ? "optionOn" : "optionOff"}>Auctions</p>
             </div>
-          </div>
         </div>
-
-
-        
-
-
-
-        <Box sx={{ width: 200 }}>
-          <Slider
-            min={0}
-            max={10000}
-            getAriaLabel={() => 'Temperature range'}
-            aria-label="Temperature"
-            marks={marks}
-            value={value1}
-            step={1000}
-            onChange={handleChange1}
-            valueLabelDisplay="auto"
-            getAriaValueText={valuetext}
-          />
-        </Box>
-
-
-
-
-        <div className="center">
-          <Box sx={{ width: 400 }}>
-            <Select onChange={loadFilterObject} isMulti={true} options={newSelect} />
-          </Box>
-        </div>
-
-
-        <div className="center">
-          <label>Show:</label>
-          <select onChange={(e) => setFilterByProperty(e.target.value)}>
-            <option selected value="id">
-              Default
-            </option>
-            {pageType == "auctions" ? <option value="bid">
-              My Bids
-            </option> : null}
-            <option selected value="mine">
-              My Listings
-            </option>
-          </select>
-          <label>Sort:</label>
-          <select onChange={(e) => setSortType(e.target.value)}>
-            <option value="ascending">Ascending</option>
-            <option value="descending">Descending</option>
-          </select>
-          <label>Per page:</label>
-          <select onChange={(e) => setPerPage(e.target.value)}>
-            <option value={5}>
-              5
-            </option>
-            <option value={15}>
-              15
-            </option>
-            <option value={25}>
-              25
-            </option>
-          </select>
-        </div>
-
-
-
-
-
-
-
-
-
-
-        <div className="cards">
-          {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
-            return (
-              <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
-            );
-          }) : <p className="center">No vehicles available.</p>}
-        </div>
-
-
-        <div className="center">
-          <Pagination showFirstButton showLastButton count={pages.length} />
-        </div>
-
-
       </div>
+
+
+
+
+
+
+      <Box sx={{ width: 400 }}>
+        <Select placeholder="Search, select or filter..." onChange={loadFilterObject} isMulti={true} options={newSelect} />
+      </Box>
+
+
+
+      <div >
+        <label>Show:</label>
+        <select onChange={(e) => setFilterByProperty(e.target.value)}>
+          <option selected value="id">
+            Default
+          </option>
+          {pageType == "auctions" ? <option value="bid">
+            My Bids
+          </option> : null}
+          <option selected value="mine">
+            My Listings
+          </option>
+        </select>
+        <label>Sort:</label>
+        <select onChange={(e) => setSortType(e.target.value)}>
+          <option value="ascending">Ascending</option>
+          <option value="descending">Descending</option>
+        </select>
+        <label>Per page:</label>
+        <select onChange={(e) => setPerPage(e.target.value)}>
+          <option value={5}>
+            5
+          </option>
+          <option value={15}>
+            15
+          </option>
+          <option value={25}>
+            25
+          </option>
+        </select>
+      </div>
+
+
+
+
+      <Stack width="50%" display="flex" align-items="center" justify-content="center" backgroud-color="black" >
+        <Slider
+          min={0}
+          max={10000}
+
+          marks={marks}
+          value={value1}
+          step={1000}
+          onChange={handleChange1}
+          valueLabelDisplay="auto"
+        />
+      </Stack>
+
+
+
+
+
+      <div className="cards">
+        {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
+          return (
+            <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
+          );
+        }) : <p className="center">No vehicles available.</p>}
+      </div>
+
+
+      <div className="center">
+        <Pagination showFirstButton showLastButton count={pages.length} />
+      </div>
+
+
+
     </div>
   );
 

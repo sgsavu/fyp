@@ -5,12 +5,11 @@ import * as IoIcons from 'react-icons/io';
 
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import '../../styles/Navbar.css';
 import { IconContext } from 'react-icons';
 import { getSidebarFor } from '../utils/Roles';
 import SelectNetwork from './SelectNetwork';
 import AccountStatus from './AccountStatus';
-import PendingTX from './PendingTX';
+import PendingTX from '../modals/PendingTX';
 
 function Navbar() {
   const dispatch = useDispatch();

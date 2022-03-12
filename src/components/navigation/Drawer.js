@@ -9,9 +9,13 @@ import ListItemText from '@mui/material/ListItemText';
 import * as FaIcons from 'react-icons/fa';
 import { getSidebarFor } from '../utils/Roles';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { IconButton, Stack } from '@mui/material';
 
 export default function TemporaryDrawer() {
+
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -32,6 +36,17 @@ export default function TemporaryDrawer() {
     const blockchain = useSelector((state) => state.blockchain);
     var sidebar = getSidebarFor(data.myRole)
 
+    const history = useHistory();
+
+    function handleChange(event, newValue) {
+
+        history.push(sidebar[newValue].path)
+        setValue(newValue)
+
+    };
+
+    const [value, setValue] = React.useState(0)
+
     const list = (anchor) => (
         <Box
             sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
@@ -41,13 +56,11 @@ export default function TemporaryDrawer() {
         >
             <List>
                 {sidebar.map((item, index) => (
-                    <ListItem button key={item.title}>
+                    <ListItem button onClick={() => { history.push(item.path); }} key={item.title}>
                         <ListItemIcon>
                         </ListItemIcon>
-                        <Link to={item.path}>
-                          
-                        </Link>
-                        <ListItemText to={item.path} primary={item.title} />
+
+                        <ListItemText primary={item.title} />
                     </ListItem>
                 ))}
             </List>
@@ -55,23 +68,14 @@ export default function TemporaryDrawer() {
     );
 
 
-    
+
     return (
-        <div>
 
-            {sidebar.map((item, index) => {
-                return (
-                    <li key={index} className={item.cName}>
-                        <Link to={item.path}>
-                            {item.icon}
-                            <span>{item.title}</span>
-                        </Link>
-                    </li>
-                );
-            })}
-
+        <Stack direction="row">
             <React.Fragment key={'left'}>
-                <FaIcons.FaBars onClick={toggleDrawer('left', true)} />
+                <IconButton onClick={toggleDrawer('left', true)}>
+                    <FaIcons.FaBars />
+                </IconButton>
                 <Drawer
                     anchor={'left'}
                     open={state['left']}
@@ -80,7 +84,20 @@ export default function TemporaryDrawer() {
                     {list('left')}
                 </Drawer>
             </React.Fragment>
+            <Box sx={{ maxWidth: { xs: 320, sm: 480 }, bgcolor: 'background.paper' }}>
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label="scrollable auto tabs example"
+                >
+                    {sidebar.map((item, index) => (
+                        <Tab key={index} label={item.title} />
+                    ))}
 
-        </div>
+                </Tabs>
+            </Box>
+        </Stack>
     );
 }

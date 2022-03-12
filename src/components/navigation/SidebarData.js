@@ -6,7 +6,7 @@ import * as IoIcons from 'react-icons/io';
 
 const ViewerSidebar = [
     {
-        title: 'Marketplace',
+        title: 'Market',
         path: '/',
         icon: <FaIcons.FaShoppingBag />,
         cName: 'nav-text'
@@ -18,6 +18,7 @@ const ViewerSidebar = [
         cName: 'nav-text'
     },
 ]
+
 
 const UserSidebar = [
     ...ViewerSidebar,
@@ -33,38 +34,35 @@ const UserSidebar = [
         icon: <FaIcons.FaTools />,
         cName: 'nav-text'
     },
-    {
-        title: 'Support',
-        path: '/support',
-        icon: <IoIcons.IoMdHelpCircle />,
-        cName: 'nav-text'
-    }
 ];
 
 const AuthoritySidebar = [
     ...UserSidebar,
     {
-        title: 'Verify Ownership',
+        title: 'Verify',
         path: '/verify',
         icon: <FaIcons.FaCheck />,
         cName: 'nav-text'
     }
 ];
 
+const AdminSidebar =
+{
+    title: 'Admin',
+    path: '/admin',
+    icon: <AiIcons.AiFillWarning />,
+    cName: 'nav-text'
+}
+
 const AuthorityAdminSidebar = [
     ...AuthoritySidebar,
-    {
-        title: 'Admin',
-        path: '/admin',
-        icon: <AiIcons.AiFillWarning />,
-        cName: 'nav-text'
-    }
+    AdminSidebar
 ];
 
 const MinterSidebar = [
     ...UserSidebar,
     {
-        title: 'Mint Vehicle',
+        title: 'Mint',
         path: '/mint',
         icon: <FaIcons.FaPlusCircle />,
         cName: 'nav-text'
@@ -73,34 +71,24 @@ const MinterSidebar = [
 
 const MinterAdminSidebar = [
     ...MinterSidebar,
-    {
-        title: 'Admin',
-        path: '/admin',
-        icon: <AiIcons.AiFillWarning />,
-        cName: 'nav-text'
-    }
+    AdminSidebar
 ];
 
 const DefaultAdminSidebar = [
     ...UserSidebar,
     {
-        title: 'Verify Ownership',
+        title: 'Verify',
         path: '/verify',
         icon: <FaIcons.FaCheck />,
         cName: 'nav-text'
     },
     {
-        title: 'Mint Vehicle',
+        title: 'Mint',
         path: '/mint',
         icon: <FaIcons.FaPlusCircle />,
         cName: 'nav-text'
     },
-    {
-        title: 'Admin',
-        path: '/admin',
-        icon: <AiIcons.AiFillWarning />,
-        cName: 'nav-text'
-    }
+    AdminSidebar
 ];
 
 
