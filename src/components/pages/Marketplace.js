@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Component } from "react";
 import { useSelector } from "react-redux";
-import VehicleCard from "../vehicle_sections/MiniCard";
-import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterPriceRange, sortBy } from "../filters/filters";
+import MiniCard from "../vehicle_sections/MiniCard";
+import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterByPropertyValue, filterPriceRange, sortBy, specialSort } from "../filters/filters";
 import SearchFilter from "../filters/Search";
 import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";
 import '../../styles/Marketplace.css';
@@ -10,11 +10,9 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import { CardActionArea, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import * as MDIcons from "react-icons/md";
+
+import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControlLabel, Grid, Switch, Typography } from '@mui/material';
 
 
 const Marketplace = () => {
@@ -36,11 +34,10 @@ const Marketplace = () => {
   const [minPrice, setMinPrice] = useState(1)
   const [maxPrice, setMaxPrice] = useState(10000)
   const [perPage, setPerPage] = useState(10);
-  const [sortType, setSortType] = useState("ascending")
-  const [filterByProperty, setFilterByProperty] = useState("id")
+  const [filterByProperty, setFilterByProperty] = useState("default")
 
 
-
+  const [proMode, setProMode] = useState(false)
 
   const [newSelect, setNewSelect] = useState(null)
 
@@ -83,19 +80,36 @@ const Marketplace = () => {
   }
 
 
-  function createNewObj(allAttributes) {
-
-    var boss = []
+  function assembleAllKeywords(allAttributes) {
+    var temp = []
     for (var key of Object.keys(allAttributes)) {
       for (var element of allAttributes[key]) {
-        boss.push({ value: element, label: element, type: key })
+        temp.push({ group: "keywords", value: element, label: element, type: key })
       }
     }
-    return boss
+    return temp
+  }
+
+  function assembleAllPriceSorts() {
+    var temp = []
+    var options = ["ascending", "descending"]
+    for (var option of options) {
+      temp.push({ group: "price", value: option, label: option.charAt(0).toUpperCase() + option.slice(1) })
+    }
+    return temp
   }
 
 
+  function assembleSearcher(allAttributes) {
+    var newSelect = []
+    newSelect.push({ label: "Price", options: assembleAllPriceSorts() })
+    newSelect.push({ label: "Keywords", options: assembleAllKeywords(allAttributes) })
 
+    console.log("abuga", newSelect)
+    setNewSelect(newSelect)
+  }
+
+  console.log("fasif", filterObject)
   useEffect(() => {
     if (vehicleList != undefined) {
       setPool(Object.values(vehicleList))
@@ -103,9 +117,10 @@ const Marketplace = () => {
 
       var allAttributes = getAttributesCollection(Object.values(vehicleList))
       setAllAttributes(allAttributes)
-      setNewSelect(createNewObj(allAttributes))
-      setAllValues(grabAllValuesFromObject(allAttributes))
 
+      assembleSearcher(allAttributes)
+
+      setAllValues(grabAllValuesFromObject(allAttributes))
     }
   }, [vehicleList, data.saleVehicles])
 
@@ -114,24 +129,35 @@ const Marketplace = () => {
   function applyFilters(list) {
 
     var listOfVehicles = newCopy(list)
-    listOfVehicles = filterByPropertyExistence(listOfVehicles, filterByProperty)
+    if (proMode) {
+      listOfVehicles = filterByPropertyValue(listOfVehicles, filterByProperty, true)
+    }
+    if (!proMode)
+      listOfVehicles = specialSort(listOfVehicles)
+
     listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
     listOfVehicles = filterPriceRange(listOfVehicles, minPrice, maxPrice)
-    listOfVehicles = sortBy(listOfVehicles, sortType)
     listOfVehicles = listToNSublists(listOfVehicles, perPage)
     return listOfVehicles
   }
 
   useEffect(() => {
     setPages(applyFilters(pool))
-  }, [pool, sortType, filterObject, minPrice, maxPrice, perPage, filterByProperty])
+  }, [pool, filterObject, minPrice, maxPrice, perPage, filterByProperty, proMode])
 
 
   function loadFilterObject(list) {
+
     var mf = {}
     for (var object of list) {
-      mf[object.type] = object.value
+      mf[object.group] = {}
+      if (object.group == "price")
+        mf[object.group] = object.value
+      else
+        mf[object.group][object.type] = object.value
     }
+
+    console.log('da filter object', mf)
     setFilterObject(mf)
   }
 
@@ -141,13 +167,10 @@ const Marketplace = () => {
       setPageType("auctions")
     else if (pageType == "auctions")
       setPageType("instant")
+
+    setFilterByProperty("default")
   }
 
-
-
-  function valuetext(value) {
-    return `${value}`;
-  }
 
   const [value1, setValue1] = React.useState([0, 10000]);
 
@@ -179,11 +202,27 @@ const Marketplace = () => {
     },
   ];
 
-  const [alignment, setAlignment] = React.useState('web');
 
-  const handleChange = (event, newAlignment) => {
-    setAlignment(newAlignment);
-  };
+  console.log(newSelect)
+
+
+  function toggleProMode() {
+    setFilterByProperty("default")
+    setProMode(!proMode)
+  }
+
+
+  const formatGroupLabel = data => (
+    <Stack justifyContent="space-between" display="flex" flexDirection="row"  >
+      <Box>
+        {data.label}
+      </Box>
+      <Box>
+        ({data.options.length})
+      </Box>
+    </Stack>
+
+  );
 
 
   return (
@@ -192,14 +231,13 @@ const Marketplace = () => {
 
 
 
-
       <div className="cardwrapper2">
-        <div className="phone3"  onClick={() => { togglePageType() }}>
-            <div className={pageType == "auctions" ? "toggle-right" : "toggle-left"}></div>
-            <div className="options">
-              <p className={pageType == "auctions" ? "optionOff" : "optionOn"}>Instant</p>
-              <p className={pageType == "auctions" ? "optionOn" : "optionOff"}>Auctions</p>
-            </div>
+        <div className="phone3" onClick={togglePageType}>
+          <div className={pageType == "auctions" ? "toggle-right" : "toggle-left"}></div>
+          <div className="options">
+            <p className={pageType == "auctions" ? "optionOff" : "optionOn"}>Instant</p>
+            <p className={pageType == "auctions" ? "optionOn" : "optionOff"}>Auctions</p>
+          </div>
         </div>
       </div>
 
@@ -209,29 +247,32 @@ const Marketplace = () => {
 
 
       <Box sx={{ width: 400 }}>
-        <Select placeholder="Search, select or filter..." onChange={loadFilterObject} isMulti={true} options={newSelect} />
+        <Select isOptionDisabled={(e) => {
+          if (e.group == "price" && filterObject.hasOwnProperty("price"))
+            return true
+          else
+            return false
+        }} formatGroupLabel={formatGroupLabel} placeholder="Search, select or sort..." onChange={loadFilterObject} isMulti={true} options={newSelect} />
       </Box>
 
 
-
       <div >
-        <label>Show:</label>
-        <select onChange={(e) => setFilterByProperty(e.target.value)}>
-          <option selected value="id">
-            Default
-          </option>
-          {pageType == "auctions" ? <option value="bid">
-            My Bids
-          </option> : null}
-          <option selected value="mine">
-            My Listings
-          </option>
-        </select>
-        <label>Sort:</label>
-        <select onChange={(e) => setSortType(e.target.value)}>
-          <option value="ascending">Ascending</option>
-          <option value="descending">Descending</option>
-        </select>
+        {proMode ? <div>
+          <label>Show:</label>
+          <select onChange={(e) => setFilterByProperty(e.target.value)}>
+            <option value="default">
+              Default
+            </option>
+            {pageType == "auctions" ? <option value="bid">
+              My Bids
+            </option> : null}
+            <option value="mine">
+              My Listings
+            </option>
+          </select>
+        </div> : null}
+
+     
         <label>Per page:</label>
         <select onChange={(e) => setPerPage(e.target.value)}>
           <option value={5}>
@@ -246,6 +287,14 @@ const Marketplace = () => {
         </select>
       </div>
 
+
+
+      <FormControlLabel
+        control={
+          <Switch checked={proMode} onChange={toggleProMode} color="warning" />
+        }
+        label="Pro Mode"
+      />
 
 
 
@@ -264,15 +313,15 @@ const Marketplace = () => {
 
 
 
-
-
-      <div className="cards">
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
           return (
-            <VehicleCard key={key} vehicle={vehicle}></VehicleCard>
+            <Grid item xs={2} sm={4} md={4} key={key}>
+              <MiniCard key={key} vehicle={vehicle}></MiniCard>
+            </Grid>
           );
         }) : <p className="center">No vehicles available.</p>}
-      </div>
+      </Grid>
 
 
       <div className="center">

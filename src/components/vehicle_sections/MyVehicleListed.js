@@ -44,6 +44,14 @@ function MyVehicleListed({ vehicle }) {
             dispatch(callChainFunction("delistInstant", [vehicle.injected.id]))
     }
 
+
+    function formatAccountAddress(address) {
+        if (address) {
+            var length = address.length
+            return address.slice(0, 6) + "..." + address.slice(length - 4, length)
+        }
+    }
+
     return (
 
 
@@ -65,7 +73,7 @@ function MyVehicleListed({ vehicle }) {
                     <p>
                         {isAuction ? topBidder != "0x0000000000000000000000000000000000000000" ? "Highest Bid: " : "Starting Price: " : "Price: "}
                         {displayPrice} {data.displayCurrency}</p>
-                    {topBidder != "0x0000000000000000000000000000000000000000" ? <p>Top Bidder: {topBidder}</p> : null}
+                    {topBidder != "0x0000000000000000000000000000000000000000" ? <p>Top Bidder: {formatAccountAddress(topBidder)}</p> : null}
                 </div>
 
 
@@ -98,6 +106,7 @@ function MyVehicleListed({ vehicle }) {
                             onClick={() => {
                                 dispatch(callChainFunction("concludeAuction", [vehicle.injected.id]))
                             }} >
+                              <RiIcons.RiAuctionFill />
                         </div>
                         :
                         null

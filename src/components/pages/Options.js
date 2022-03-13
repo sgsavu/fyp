@@ -10,13 +10,16 @@ const Options = () => {
     const myCurrency = data.displayCurrency
     const availableCurrencies = ["GBP", "USD", "EUR", "ETH", "BTC"]
 
+
+    function changeAppCurrency(e) {
+        dispatch(updatePrefferedCurrency(e.target.value))
+        dispatch(refreshDisplayPrices(e))
+    }
+
     return (
         <div>
-            Preffered Currency:
-            <select defaultValue={myCurrency} onChange={(e) => {
-                dispatch(updatePrefferedCurrency(e.target.value))
-                dispatch(refreshDisplayPrices(e))
-            }}> 
+            Currency: 
+            <select defaultValue={myCurrency} onChange={changeAppCurrency}>
                 {availableCurrencies.map((currency) => {
                     return (
                         <option key={currency} value={currency}>{currency}</option>

@@ -10,28 +10,64 @@ export function sortBy(list, sortType) {
     return list
 }
 
-export function filterPriceRange(list,minPrice,maxPrice) {
+export function specialSort(list) {
+    list.sort((a, b) => { return (a.injected.bid === b.injected.bid) ? 0 : a.injected.bid ? -1 : 1; })
+    list.sort((a, b) => { return (a.injected.mine === b.injected.mine) ? 0 : a.injected.mine ? -1 : 1; })
+    return list
+}
+
+export function filterPriceRange(list, minPrice, maxPrice) {
     return list.filter((element) => {
-        if  (element.injected.display_price>minPrice && element.injected.display_price<maxPrice )
+        if (element.injected.display_price > minPrice && element.injected.display_price < maxPrice)
             return true
         else
             return false
     })
 }
 
-export function filterByPropertyExistence(list,property) {
+export function filterByPropertyExistence(list, property) {
     return list.filter((element) => {
         return element.injected.hasOwnProperty(property);
     });
 }
 
+export function filterByPropertyValue(list, property, value) {
+    if (property != "default") {
+        return list.filter((element) => {
+            return element.injected[property] == value;
+        });
+    }
+    else return list
+}
+
+
 export function filterByFilterObject(obj, list) {
-    return list.filter((element) => {
-        for (var elz of Object.keys(obj))
-        {
-            if (obj[elz]!=element.attributes[elz])
-                return false
+
+    console.log("owoa", obj)
+
+    if (Object.keys(obj).length != 0) {
+
+        var temp = list
+        if (obj.hasOwnProperty("keywords")) {
+            temp = list.filter((element) => {
+                for (var elz of Object.keys(obj.keywords)) {
+                    if (obj.keywords[elz] != element.attributes[elz])
+                        return false
+                }
+                return true
+            })
         }
-        return true
-    })
+
+        if (obj.hasOwnProperty("price")) {
+            sortBy(temp, obj.price)
+        }
+
+        return temp
+
+    } else {
+
+        return list
+    }
+
+
 }

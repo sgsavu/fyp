@@ -18,6 +18,9 @@ export async function injectPrice(vehicle) {
 export async function injectIfTopBidder(vehicle) {
   if (await callViewChainFunction("getTopBidder",[vehicle.injected.id]) == await getUserAccount())
     vehicle.injected.bid = true
+  else
+    vehicle.injected.bid = false
+
 }
 
 export async function injectIfApprovedGarage(vehicle) {

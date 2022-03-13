@@ -1,6 +1,5 @@
 import React from "react";
 import '../../styles/App.css';
-import Navbar from '../navigation/Navbar';
 import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
 import MyVehicles from '../pages/MyVehicles';
 import Marketplace from '../pages/Marketplace';

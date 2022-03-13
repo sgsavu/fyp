@@ -10,13 +10,7 @@ const ViewerSidebar = [
         path: '/',
         icon: <FaIcons.FaShoppingBag />,
         cName: 'nav-text'
-    },
-    {
-        title: 'Options',
-        path: '/options',
-        icon: <IoIcons.IoMdOptions />,
-        cName: 'nav-text'
-    },
+    }
 ]
 
 

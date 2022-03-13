@@ -21,7 +21,7 @@ function NotMyVehicleListed({ vehicle }) {
     const data = useSelector((state) => state.data);
 
     const [desiredPrice, setDesiredPrice] = useState(0)
-    const [displayPrice, setDisplayPrice] = useState(0)
+    const [displayPrice, setDisplayPrice] = useState(9999)
     const [topBidder, setTopBidder] = useState("0x0")
     const [isForSale, setIsForSale] = useState(false)
     const [isAuction, setIsAuction] = useState(false)
@@ -33,9 +33,6 @@ function NotMyVehicleListed({ vehicle }) {
 
         var isForSale = await callViewChainFunction("isForSale", [vehicle.injected.id])
         var isAuction = await callViewChainFunction("isAuction", [vehicle.injected.id])
-        var myBalanceRaw = await blockchain.web3.eth.getBalance(await getUserAccount())
-
-        setMyBalance(await weiToMyCurrency(myBalanceRaw))
         setIsAuction(isAuction)
 
         if (isForSale) {
@@ -47,8 +44,13 @@ function NotMyVehicleListed({ vehicle }) {
             }
         }
 
-        if (parseInt(myBalanceRaw) > parseInt(vehiclePriceRaw)) {
-            setCanBuy(true)
+        if (blockchain.account) {
+            var myBalanceRaw = await blockchain.web3.eth.getBalance(await getUserAccount())
+            setMyBalance(await weiToMyCurrency(myBalanceRaw))
+
+            if (parseInt(myBalanceRaw) > parseInt(vehiclePriceRaw)) {
+                setCanBuy(true)
+            }
         }
 
         setDesiredPrice(0)
@@ -75,19 +77,40 @@ function NotMyVehicleListed({ vehicle }) {
             }
     }
 
+    function buttonOnOrOff () {
+        if (canBuy){
+            if (isAuction){
+                if (desiredPrice > displayPrice)
+                {
+                    return "panel-button"
+                }
+                else {
+                    return "panel-button-disabled"
+                }
+            }
+            else {
+                return "panel-button"
+            }
+        }
+        else {
+            return "panel-button-disabled"
+        }
+    }
+
+
     return (
 
 
 
-        <div class="phone">
-            <div class="content">
+        <div className="phone">
+            <div className="content">
                 <div className={blockchain.pendingTx.length != 0 ? "circle-loading" : "circle"}>
                     <div className='circle-status'>
                         {blockchain.pendingTx.length != 0 ? <BsIcons.BsThreeDots /> : <AiIcons.AiFillCar />}
                     </div>
                 </div>
 
-                <p class="panel-heading">{isAuction ? "Bid Vehicle" : "Purchase Vehicle"}</p>
+                <p className="panel-heading">{isAuction ? "Bid Vehicle" : "Purchase Vehicle"}</p>
 
                 <p>
                     My Balance: {myBalance} {data.displayCurrency}
@@ -125,9 +148,8 @@ function NotMyVehicleListed({ vehicle }) {
             </div>
             <div className="panel-bottom-1">
                 <div
-                    className={canBuy && desiredPrice> displayPrice ? "panel-button" : "panel-button-disabled"}
+                    className={buttonOnOrOff}
                     onClick={async () => {
-
                         await buyOrBid()
                     }} >
                     <FaIcons.FaCheck />
