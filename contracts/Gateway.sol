@@ -7,7 +7,7 @@ import "./Vehicle.sol";
 contract Gateway is Marketplace {
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
-    event SaleStatus(uint256 indexed tokenId, bool status, bool isAuction);
+    event SaleStatus(uint256 indexed tokenId, bool status);
     uint256 tax = 100000000000000 wei;
     Vehicle vhc;
     
@@ -110,7 +110,7 @@ contract Gateway is Marketplace {
         onlyIfPriceNonNull(price)
     {
         _listAuction(tokenId, price);
-        emit SaleStatus(tokenId, true, true);
+        emit SaleStatus(tokenId, true);
     }
 
     function listInstant(uint256 tokenId, uint256 price)
@@ -121,7 +121,7 @@ contract Gateway is Marketplace {
         onlyIfPriceNonNull(price)
     {
         _listInstant(tokenId, price);
-        emit SaleStatus(tokenId, true, false);
+        emit SaleStatus(tokenId, true);
     }
 
     function delistAuction(uint256 tokenId)
@@ -132,7 +132,7 @@ contract Gateway is Marketplace {
     {
         _refundCurentTopBidder(tokenId);
         _delistAuction(tokenId);
-        emit SaleStatus(tokenId, false, true);
+        emit SaleStatus(tokenId, false);
     }
 
     function delistInstant(uint256 tokenId)
@@ -143,7 +143,7 @@ contract Gateway is Marketplace {
         onlyIfNotAuction(tokenId)
     {
         _delistInstant(tokenId);
-        emit SaleStatus(tokenId, false, false);
+        emit SaleStatus(tokenId, false);
     }
 
     // SETTERS
@@ -177,7 +177,7 @@ contract Gateway is Marketplace {
         require(vhc.ownerOf(tokenId) == msg.sender, "E13");
         _delistInstant(tokenId);
 
-        emit SaleStatus(tokenId, false, false);
+        emit SaleStatus(tokenId, false);
     }
 
     function bid(uint256 tokenId)
@@ -217,7 +217,7 @@ contract Gateway is Marketplace {
         _setTopBidder(tokenId, address(0));
         _delistInstant(tokenId);
 
-        emit SaleStatus(tokenId, false, false);
+        emit SaleStatus(tokenId, false);
     }
 
     // MONEY HANDLING

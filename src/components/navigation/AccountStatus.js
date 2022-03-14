@@ -18,6 +18,7 @@ import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
 import * as FaIcons from "react-icons/fa";
 import Link from '@mui/material/Link';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 
 
 function SimpleDialog(props) {
@@ -82,7 +83,7 @@ function SimpleDialog2(props) {
                     </Stack>
                     <ListItemText primary={formatAccountAddress(blockchain.account)} />
                     <Link
-                       
+
                         variant="body2"
                         rel="noopener"
                         href={explorerUrl}
@@ -135,7 +136,10 @@ function AccountStatus() {
         <div>
 
             <Chip
-                avatar={blockchain.account ? <Avatar alt="Natacha" src="/static/images/avatar/1.jpg" /> : null}
+                avatar={blockchain.account ?
+                    <Avatar>
+                        <Jazzicon seed={jsNumberForAddress(blockchain.account)} />
+                    </Avatar> : null}
                 label={blockchain.account ? formatAccountAddress(blockchain.account) : "Connect Wallet"}
                 variant="outlined"
                 onClick={openDialog}

@@ -2,13 +2,15 @@ import React from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
+import * as GameIcons from 'react-icons/gi';
+import * as BiIcons from "react-icons/bi";
 
 
 const ViewerSidebar = [
     {
         title: 'Market',
         path: '/',
-        icon: <FaIcons.FaShoppingBag />,
+        icon: <BiIcons.BiStore />,
         cName: 'nav-text'
     }
 ]
@@ -25,7 +27,7 @@ const UserSidebar = [
     {
         title: 'Garage',
         path: '/garage',
-        icon: <FaIcons.FaTools />,
+        icon: <GameIcons.GiMechanicGarage />,
         cName: 'nav-text'
     },
 ];
@@ -35,7 +37,7 @@ const AuthoritySidebar = [
     {
         title: 'Verify',
         path: '/verify',
-        icon: <FaIcons.FaCheck />,
+        icon: <AiIcons.AiOutlineFileSearch />,
         cName: 'nav-text'
     }
 ];
@@ -71,15 +73,15 @@ const MinterAdminSidebar = [
 const DefaultAdminSidebar = [
     ...UserSidebar,
     {
-        title: 'Verify',
-        path: '/verify',
-        icon: <FaIcons.FaCheck />,
-        cName: 'nav-text'
-    },
-    {
         title: 'Mint',
         path: '/mint',
         icon: <FaIcons.FaPlusCircle />,
+        cName: 'nav-text'
+    },
+    {
+        title: 'Verify',
+        path: '/verify',
+        icon: <AiIcons.AiOutlineFileSearch />,
         cName: 'nav-text'
     },
     AdminSidebar

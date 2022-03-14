@@ -51,6 +51,16 @@ export function filterByFilterObject(obj, list) {
             temp = filterByPropertyValue(temp, obj.show, true)
         }
 
+        if (obj.hasOwnProperty("type")) {
+            if (obj.type == "instant")
+            {
+                temp = filterByPropertyValue(temp, "auction", false)
+            }
+            else if (obj.type == "auction") {
+                temp = filterByPropertyValue(temp, "auction", true)
+            }
+        }
+
         temp = temp.filter((element) => {
             for (var elz of Object.keys(obj)) {
                 if (element.attributes.hasOwnProperty(elz) && obj[elz] != element.attributes[elz])

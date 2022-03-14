@@ -14,7 +14,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { IconButton, Stack } from '@mui/material';
 
-export default function TemporaryDrawer() {
+export default function MainMenu() {
 
     const [state, setState] = React.useState({
         top: false,
@@ -44,19 +44,19 @@ export default function TemporaryDrawer() {
 
     };
 
-    const list = (anchor) => (
+    const drawer = (anchor) => (
         <Box
-            sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+            sx={{ width: 250 }}
             role="presentation"
             onClick={toggleDrawer(anchor, false)}
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <List>
                 {sidebar.map((item, index) => (
-                    <ListItem button onClick={() => { history.push(item.path); }} key={item.title}>
+                    <ListItem button onClick={() => { history.push(item.path); }} key={index}>
                         <ListItemIcon>
+                            {item.icon}
                         </ListItemIcon>
-
                         <ListItemText primary={item.title} />
                     </ListItem>
                 ))}
@@ -68,19 +68,21 @@ export default function TemporaryDrawer() {
 
     return (
 
+
         <Stack direction="row">
+
             <React.Fragment key={'left'}>
                 <IconButton onClick={toggleDrawer('left', true)}>
                     <FaIcons.FaBars />
                 </IconButton>
-                <Drawer
-                    anchor={'left'}
-                    open={state['left']}
-                    onClose={toggleDrawer('left', false)}
-                >
-                    {list('left')}
-                </Drawer>
             </React.Fragment>
+            <Drawer
+                anchor={'left'}
+                open={state['left']}
+                onClose={toggleDrawer('left', false)}
+            >
+                {drawer('left')}
+            </Drawer>
             <Box sx={{ maxWidth: { xs: 320, sm: 480 }, bgcolor: 'background.paper' }}>
                 <Tabs
                     value={value}

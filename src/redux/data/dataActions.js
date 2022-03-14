@@ -10,13 +10,17 @@ function injectTokenId(vehicle, tokenId) {
   vehicle.injected.id = tokenId
 }
 
+export async function injectOwner(vehicle) {
+  vehicle.injected.owner = await callViewChainFunction("ownerOf", [vehicle.injected.id])
+}
+
 export async function injectPrice(vehicle) {
-  vehicle.injected.price = await callViewChainFunction("getVehiclePrice",[vehicle.injected.id])
+  vehicle.injected.price = await callViewChainFunction("getVehiclePrice", [vehicle.injected.id])
   vehicle.injected.display_price = await weiToMyCurrency(vehicle.injected.price)
 }
 
 export async function injectIfTopBidder(vehicle) {
-  if (await callViewChainFunction("getTopBidder",[vehicle.injected.id]) == await getUserAccount())
+  if (await callViewChainFunction("getTopBidder", [vehicle.injected.id]) == await getUserAccount())
     vehicle.injected.bid = true
   else
     vehicle.injected.bid = false
@@ -37,41 +41,45 @@ export async function injectIfMine(vehicle) {
     vehicle.injected.mine = false
 }
 
+
 export async function getVehicleInfo(vehicleID) {
-  let vehicleURI = await callViewChainFunction("tokenURI",[vehicleID])
+  let vehicleURI = await callViewChainFunction("tokenURI", [vehicleID])
   let vehicleMetadata = await (await fetch(vehicleURI)).json()
+
   injectTokenId(vehicleMetadata, vehicleID)
   await injectIfMine(vehicleMetadata)
   await injectIfApprovedGarage(vehicleMetadata)
-  if (await callViewChainFunction("isForSale",[vehicleID])) {
+  if (await callViewChainFunction("isForSale", [vehicleID])) {
+    await injectOwner(vehicleMetadata)
     await injectPrice(vehicleMetadata)
-    if (await callViewChainFunction("isAuction",[vehicleID])) {
+    if (await callViewChainFunction("isAuction", [vehicleID])) {
       vehicleMetadata.injected.auction = true
       await injectIfTopBidder(vehicleMetadata)
+    }
+    else {
+      vehicleMetadata.injected.auction = false
+
     }
   }
   return vehicleMetadata
 }
 
 async function getAllVehicles() {
-  let totalNrOfVehicles = await callViewChainFunction("totalSupply",[])
+  let totalNrOfVehicles = await callViewChainFunction("totalSupply", [])
   let allVehicles = {}
   for (var i = 0; i < totalNrOfVehicles; i++) {
-    let vehicleID = await callViewChainFunction("tokenByIndex",[i])
+    let vehicleID = await callViewChainFunction("tokenByIndex", [i])
     allVehicles[vehicleID] = await getVehicleInfo(vehicleID)
   }
   return allVehicles
 }
 
 function getSaleVehicles(allVehicles) {
-  let saleVehicles = { instant: {}, auctions: {} }
+  let saleVehicles = {}
 
   for (const [tokenId, metadata] of Object.entries(allVehicles)) {
     if (metadata.injected.hasOwnProperty('price')) {
-      if (metadata.injected.hasOwnProperty('auction'))
-        saleVehicles.auctions[tokenId] = metadata
-      else
-        saleVehicles.instant[tokenId] = metadata
+      saleVehicles[tokenId] = metadata
     }
   }
 
@@ -79,10 +87,10 @@ function getSaleVehicles(allVehicles) {
 }
 
 async function getVehiclesForAccount(account) {
-  let accountBalance = await callViewChainFunction("balanceOf",[account])
+  let accountBalance = await callViewChainFunction("balanceOf", [account])
   let myVehicles = {}
   for (var i = 0; i < accountBalance; i++) {
-    let vehicleID = await callViewChainFunction("tokenOfOwnerByIndex",[account, i])
+    let vehicleID = await callViewChainFunction("tokenOfOwnerByIndex", [account, i])
     myVehicles[vehicleID] = await getVehicleInfo(vehicleID)
   }
   return myVehicles
@@ -143,11 +151,9 @@ export const refreshDisplayPrices = () => {
     try {
 
       let forsale = await store.getState().data.saleVehicles
-      for (const element in forsale.auctions) {
-        forsale.auctions[element].injected.display_price = await weiToMyCurrency(forsale.auctions[element].injected.price)
-      }
-      for (const element in forsale.instant) {
-        forsale.instant[element].injected.display_price = await weiToMyCurrency(forsale.instant[element].injected.price)
+
+      for (var key of Object.keys(forsale)) {
+        forsale[key].injected.display_price = await weiToMyCurrency(forsale[key].injected.price)
       }
 
       dispatch(updateDataState({ field: "saleVehicles", value: forsale }));

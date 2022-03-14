@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Modal from "./Modal";
 import { alerts } from "../../redux/app/appActions";
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -17,13 +16,11 @@ function CustomModal() {
     dispatch(alerts({ alert: "other" }))
   }
 
-
-
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    
+
     dismiss();
   };
 
@@ -31,8 +28,8 @@ function CustomModal() {
     app.alerts.other.length != 0 ?
       <Snackbar open={true} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          Transaction successful!
-          {app.alerts.other.at(-1).url? <a href={app.alerts.other.at(-1).url} target="_blank">View 🔗</a> : null }
+          {app.alerts.other.at(-1).message} 
+          {app.alerts.other.at(-1).url ? <a href={app.alerts.other.at(-1).url} target="_blank">View 🔗</a> : null}
         </Alert>
       </Snackbar> : null
   );

@@ -7,24 +7,20 @@ import { getContractFor } from "../../components/utils/GatewayParser";
 
 export function subscribeToSaleStatus() {
     return async (dispatch) => {
-        const smartContract = (await getContractFor("events","SaleStatus"))
+        const smartContract = (await getContractFor("events", "SaleStatus"))
         smartContract.events.SaleStatus({
         }, function (error, event) {
             console.log("SaleStatus", event)
-            if (!error)
-            {
+            if (!error) {
                 if (event.returnValues.status == true) {
-                    if (event.returnValues.isAuction == true)
-                        dispatch(addToSale("auctions", event.returnValues.tokenId))
-                    else if (event.returnValues.isAuction == false)
-                        dispatch(addToSale("instant", event.returnValues.tokenId))
+                    dispatch(addToSale(event.returnValues.tokenId))
                 }
                 else if (event.returnValues.status == false) {
                     dispatch(removeFromSale(event.returnValues.tokenId))
                 }
                 dispatch(addToMyVehicles(event.returnValues.tokenId))
             }
-            
+
         })
     }
 }
@@ -32,7 +28,7 @@ export function subscribeToSaleStatus() {
 
 export function subscribeToTransfers() {
     return async (dispatch) => {
-        const smartContract = (await getContractFor("events","Transfer"))
+        const smartContract = (await getContractFor("events", "Transfer"))
         const thisAccount = await getUserAccount()
         smartContract.events.Transfer({
         }, function (error, event) {
@@ -53,7 +49,7 @@ export function subscribeToTransfers() {
 
 export function subscribeToNewPrice() {
     return async (dispatch) => {
-        const smartContract = (await getContractFor("events","NewPrice"))
+        const smartContract = (await getContractFor("events", "NewPrice"))
         smartContract.events.NewPrice({
         }, function (error, event) {
             console.log("NewPrice", event)
@@ -66,9 +62,9 @@ export function subscribeToNewPrice() {
 
 export function subscribeToNewTopBidder() {
     return async (dispatch) => {
-        const smartContract = (await getContractFor("events","NewTopBidder"))
+        const smartContract = (await getContractFor("events", "NewTopBidder"))
         smartContract.events.NewTopBidder({
-        },  function (error, event) {
+        }, function (error, event) {
             console.log("NewTopBidder", event)
             if (!error)
                 dispatch(updateTopBidder(event.returnValues.tokenId))
@@ -78,9 +74,9 @@ export function subscribeToNewTopBidder() {
 
 export function subscribeToNewGarageApproval() {
     return async (dispatch) => {
-        const smartContract = (await getContractFor("events","NewGarageApproval"))
+        const smartContract = (await getContractFor("events", "NewGarageApproval"))
         smartContract.events.NewGarageApproval({
-        },  function (error, event) {
+        }, function (error, event) {
             console.log("NewGarageApproval", event)
             if (!error)
                 dispatch(updateGarage(event.returnValues.tokenId))
@@ -90,15 +86,13 @@ export function subscribeToNewGarageApproval() {
 
 export function subscribeToApproval() {
     return async (dispatch) => {
-        const smartContract = (await getContractFor("events","Approval"))
+        const smartContract = (await getContractFor("events", "Approval"))
         const thisAccount = await getUserAccount()
         smartContract.events.Approval({
-        },  function (error, event) {
+        }, function (error, event) {
             console.log("NewApproval", event)
-            if (!error)
-            {
-                if (event.returnValues.owner = thisAccount)
-                {
+            if (!error) {
+                if (event.returnValues.owner = thisAccount) {
                     dispatch(updateApproval(event.returnValues.tokenId))
                 }
             }
@@ -108,12 +102,11 @@ export function subscribeToApproval() {
 
 function updatePrice(tokenId) {
     return async (dispatch) => {
+
         var saleVehicles = await store.getState().data.saleVehicles
 
-        if (tokenId in saleVehicles.instant)
-            await injectPrice(saleVehicles.instant[tokenId])
-        if (tokenId in saleVehicles.auctions)
-            await injectPrice(saleVehicles.auctions[tokenId])
+        if (tokenId in saleVehicles)
+            await injectPrice(saleVehicles[tokenId])
 
         dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
     }
@@ -121,10 +114,11 @@ function updatePrice(tokenId) {
 
 function updateTopBidder(tokenId) {
     return async (dispatch) => {
+
         var saleVehicles = await store.getState().data.saleVehicles
 
-        if (tokenId in saleVehicles.auctions)
-            await injectIfTopBidder(saleVehicles.auctions[tokenId])
+        if (tokenId in saleVehicles)
+            await injectIfTopBidder(saleVehicles[tokenId])
 
         dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
     }
@@ -148,9 +142,9 @@ function updateApproval(tokenId) {
 
 
 
-function addToSale(type, token) {
+function addToSale(token) {
     return async (dispatch) => {
-        dispatch(entryDataState({ field: "saleVehicles", subfield: type, key: token, value: await getVehicleInfo(token) }))
+        dispatch(entryDataState({ field: "saleVehicles", key: token, value: await getVehicleInfo(token) }))
     }
 }
 
@@ -169,12 +163,13 @@ function addToAll(token) {
 
 function removeFromSale(token) {
     return async (dispatch) => {
+
         var saleVehicles = await store.getState().data.saleVehicles
-        if (token in saleVehicles.instant) {
-            delete saleVehicles.instant[token]
-        } else if (token in saleVehicles.auctions) {
-            delete saleVehicles.auctions[token]
+
+        if (token in saleVehicles) {
+            delete saleVehicles[token]
         }
+
         dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
     }
 }

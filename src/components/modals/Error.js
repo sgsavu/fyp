@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Modal from "./Modal";
 import { alerts } from "../../redux/app/appActions";
 
 import Stack from '@mui/material/Stack';
@@ -12,7 +11,6 @@ function Error() {
 
   const dispatch = useDispatch();
   const app = useSelector((state) => state.app);
-
 
 
   const dismiss = () => {
@@ -31,8 +29,7 @@ function Error() {
     app.alerts.error.length != 0 ?
       <Snackbar open={true} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {app.alerts.error.length}. Error!
-          {app.alerts.error.at(-1)}
+          {app.alerts.error.length}. Error! {app.alerts.error.at(-1)}
         </Alert>
       </Snackbar> : null
   );

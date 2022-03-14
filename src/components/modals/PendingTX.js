@@ -18,10 +18,10 @@ function PendingTX() {
 
     return (
 
-        pendingList.length != 0 ? 
+        blockchain.pendingTx.length != 0 ? 
         <Snackbar open={true} >
             <Alert severity="info" sx={{ width: '100%' }}>
-                {pendingList.length} transaction(s) pending...
+                {blockchain.pendingTx.length} transaction(s) pending...
             </Alert>
         </Snackbar> : null
 

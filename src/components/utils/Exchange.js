@@ -44,7 +44,7 @@ export const weiToMyCurrency = async (price) => {
         .data.displayCurrency
 
     let priceInETH = WeiToEth(price)
-        
+
     if (myPrefferedCurrency == "ETH")
         return parseFloat(priceInETH)
 
@@ -56,9 +56,6 @@ export const weiToMyCurrency = async (price) => {
     }
 
     let priceInUserCurrency = await currencyToCurrency(priceInETH, "ETH", myPrefferedCurrency)
-
-    if (myPrefferedCurrency == "BTC")
-        return roundToNDigits(5,priceInUserCurrency)
 
     return roundToNDigits(2,priceInUserCurrency)
 }

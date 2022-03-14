@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import MiniCard from "../vehicle_sections/MiniCard";
 import { filterByFilterObject, filterPriceRange, specialSort } from "../filters/filters";
-import SearchFilter from "../filters/Search";
 import { listToNSublists } from "../utils/Other";
 import '../../styles/Marketplace.css';
 import Select from 'react-select'
@@ -18,14 +17,14 @@ import { DeleteOutlined } from "@mui/icons-material";
 import * as GameIcons from "react-icons/gi";
 import * as MDIcons from "react-icons/md";
 import * as FeatherIcons from "react-icons/fi";
+import * as RiIcons from 'react-icons/ri';
 
 
 
 const Marketplace = () => {
 
   const data = useSelector((state) => state.data);
-  const [pageType, setPageType] = useState("instant");
-  let vehicleList = data.saleVehicles[pageType];
+  let vehicleList = data.saleVehicles;
 
   const [pageNr, setPageNr] = useState(0)
   const [pages, setPages] = useState([]);
@@ -81,6 +80,8 @@ const Marketplace = () => {
     return temp3
   }
 
+
+
   function assemblePrice() {
     return [
       { group: "price", value: "ascending", label: "Ascending" },
@@ -95,16 +96,24 @@ const Marketplace = () => {
     ]
   }
 
+  function assembleType() {
+    return [
+      { group: "type", value: "instant", label: "Instant" },
+      { group: "type", value: "auction", label: "Auction" }
+    ]
+  }
+
   function assembleSearcher(allAttributes) {
     var newSelect = []
     newSelect.push({ label: "Show", options: assembleShow() })
+    newSelect.push({ label: "Type", options: assembleType() })
     newSelect.push({ label: "Price", options: assemblePrice() })
     newSelect = newSelect.concat(assembleAllKeywords(allAttributes))
     setNewSelect(newSelect)
   }
 
   async function createLowBoundary(vehicles) {
-    var lowBoundary = 9999999999999999999999999999999999999999
+    var lowBoundary = 99999999999999999
     for (var vehicle of vehicles) {
       var parsedPrice = parseInt(vehicle.injected.price)
       if (parsedPrice < lowBoundary) {
@@ -151,6 +160,7 @@ const Marketplace = () => {
 
 
   function applyFilters(list) {
+    setPageNr(0)
     var listOfVehicles = newCopy(list)
     listOfVehicles = specialSort(listOfVehicles)
     listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
@@ -174,16 +184,6 @@ const Marketplace = () => {
     }
     setFilterObject(mf)
   }
-
-
-  function togglePageType() {
-    if (pageType == "instant")
-      setPageType("auctions")
-    else if (pageType == "auctions")
-      setPageType("instant")
-  }
-
-
 
   const [value1, setValue1] = React.useState([0, 10000]);
   const marks = [
@@ -245,13 +245,19 @@ const Marketplace = () => {
   function tooltip() {
     return (
       <React.Fragment>
-        <Typography color="inherit">Market Icon Legend</Typography>
+        <Typography color="inherit">The Market</Typography>
         <Stack display="flex" align-items="center" justify-content="center" flexDirection="column">
           <Box >
             <GameIcons.GiHomeGarage></GameIcons.GiHomeGarage> {"- Vehicle I have listed."}
           </Box>
           <Box>
-            <MDIcons.MdPriceCheck></MDIcons.MdPriceCheck> {"- Vehichle I have bided on."}
+            <MDIcons.MdPriceCheck></MDIcons.MdPriceCheck> {"- Vehicle for which I am top bidder."}
+          </Box>
+          <Box>
+            <RiIcons.RiAuctionFill></RiIcons.RiAuctionFill> {"- Vehicle is listed as an auction."}
+          </Box>
+          <Box>
+            {"Listings are instant by default. Only auctions have a designated icon."}
           </Box>
         </Stack>
 
@@ -264,15 +270,7 @@ const Marketplace = () => {
 
     <div className="market-main">
 
-      <div className="cardwrapper2">
-        <div className="phone3" onClick={togglePageType}>
-          <div className={pageType == "auctions" ? "toggle-right" : "toggle-left"}></div>
-          <div className="options">
-            <p className={pageType == "auctions" ? "optionOff" : "optionOn"}>Instant</p>
-            <p className={pageType == "auctions" ? "optionOn" : "optionOff"}>Auctions</p>
-          </div>
-        </div>
-      </div>
+
 
 
       <Tooltip title={tooltip()}>
@@ -305,10 +303,10 @@ const Marketplace = () => {
         />
       </Stack>
 
-      
+
 
       {pages.length != 0 ?
-        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Grid container padding={5} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
           {pages[pageNr].map((vehicle, key) => {
             return (
               <Grid item xs={2} sm={4} md={4} key={key}>
@@ -324,7 +322,7 @@ const Marketplace = () => {
 
 
       <Stack display="flex" align-items="center" justify-content="center" flexDirection="column" >
-        <Pagination onChange={(a, b) => { setPageNr(b - 1) }} showFirstButton showLastButton count={pages.length} />
+        <Pagination page={pageNr + 1} onChange={(a, b) => { setPageNr(b - 1) }} showFirstButton showLastButton count={pages.length} />
       </Stack>
 
       <Stack>
