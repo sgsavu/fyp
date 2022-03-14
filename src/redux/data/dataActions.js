@@ -88,15 +88,6 @@ async function getVehiclesForAccount(account) {
   return myVehicles
 }
 
-function getMyBids(allVehicles) {
-  let myBids = {}
-  for (const [tokenId, metadata] of Object.entries(allVehicles)) {
-    if (metadata.injected.hasOwnProperty('bid')) {
-      myBids[tokenId] = metadata
-    }
-  }
-  return myBids
-}
 
 
 export function getDefaultVehicles() {
@@ -113,17 +104,14 @@ export function getDefaultVehicles() {
 export function getAuthenticatedVehicles() {
   return async (dispatch) => {
     let myVehicles = await getVehiclesForAccount(await getUserAccount())
-    let myBids = getMyBids(await store.getState().data.allVehicles)
-
+    console.log(myVehicles)
     dispatch(updateDataState({ field: "myVehicles", value: myVehicles }));
-    dispatch(updateDataState({ field: "myBids", value: myBids }));
   }
 }
 
 export const clearMyData = () => {
   return async (dispatch) => {
     dispatch(updateDataState({ field: "myVehicles", value: [] }));
-    dispatch(updateDataState({ field: "myBids", value: [] }));
     dispatch(updateDataState({ field: "myRole", value: roles.VIEWER_ROLE }));
   }
 }
@@ -153,6 +141,7 @@ export const refreshDisplayPrices = () => {
   return async (dispatch) => {
     dispatch(alerts({ alert: "loading", message: "Refreshing display prices." }))
     try {
+
       let forsale = await store.getState().data.saleVehicles
       for (const element in forsale.auctions) {
         forsale.auctions[element].injected.display_price = await weiToMyCurrency(forsale.auctions[element].injected.price)
@@ -160,7 +149,9 @@ export const refreshDisplayPrices = () => {
       for (const element in forsale.instant) {
         forsale.instant[element].injected.display_price = await weiToMyCurrency(forsale.instant[element].injected.price)
       }
+
       dispatch(updateDataState({ field: "saleVehicles", value: forsale }));
+
     } catch (err) {
       dispatch(alerts({ alert: "error", message: err.message }))
     }

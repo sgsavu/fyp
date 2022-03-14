@@ -1,18 +1,24 @@
-import React, { useEffect, useState, Component } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import MiniCard from "../vehicle_sections/MiniCard";
-import { filterByFilterObject, filterByInjectedValue, filterByPropertyExistence, filterByPropertyValue, filterPriceRange, sortBy, specialSort } from "../filters/filters";
+import { filterByFilterObject, filterPriceRange, specialSort } from "../filters/filters";
 import SearchFilter from "../filters/Search";
-import { findKeyOfValueInObj, grabAllValuesFromObject, isValueInObject, listToNSublists } from "../utils/Other";
+import { listToNSublists } from "../utils/Other";
 import '../../styles/Marketplace.css';
 import Select from 'react-select'
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-import * as MDIcons from "react-icons/md";
+import { default as Select2 } from "@mui/material/Select";
 
-import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControlLabel, Grid, Switch, Typography } from '@mui/material';
+import { FormControl, Grid, IconButton, InputLabel, MenuItem, Tooltip, Typography } from '@mui/material';
+import { fetchRate2, roundToNDigits, weiToMyCurrency } from "../utils/Exchange";
+import { DeleteOutlined } from "@mui/icons-material";
+import * as GameIcons from "react-icons/gi";
+import * as MDIcons from "react-icons/md";
+import * as FeatherIcons from "react-icons/fi";
+
 
 
 const Marketplace = () => {
@@ -25,52 +31,28 @@ const Marketplace = () => {
   const [pages, setPages] = useState([]);
 
   const [pool, setPool] = useState([])
-  const [backupPool, setBackupPool] = useState([])
-
-  const [allAttributes, setAllAttributes] = useState([])
-  const [allValues, setAllValues] = useState([])
   const [filterObject, setFilterObject] = useState([])
 
-  const [minPrice, setMinPrice] = useState(1)
+  const [minPrice, setMinPrice] = useState(0)
   const [maxPrice, setMaxPrice] = useState(10000)
-  const [perPage, setPerPage] = useState(10);
-  const [filterByProperty, setFilterByProperty] = useState("default")
+  const [lowBound, setLowBound] = useState(0)
+  const [highBound, setHighBound] = useState(10000)
 
-
-  const [proMode, setProMode] = useState(false)
-
+  const [perPage, setPerPage] = useState(5);
   const [newSelect, setNewSelect] = useState(null)
 
 
   function newCopy(list) {
-    const copy = list.filter(() => true);
-    return copy
+    return list.filter(() => true);
   }
 
-  const options = [
-    { value: 'chocolate', label: 'Chocolate', type: "boss" },
-    { value: 'strawberry', label: 'Strawberry', type: "boss2" },
-    { value: 'vanilla', label: 'Vanilla', type: "boss3" }
-  ]
-
-
   function getAttributesCollection(listOfVehicles) {
-    var collection = {
-      "company": [],
-      "model": [],
-      "vhcid": [],
-      "year": [],
-      "color": [],
-      "body": [],
-      "transmission": [],
-      "fuel": [],
-      "engine": [],
-      "doors": [],
-      "seats": [],
-      "driver_side": []
-    }
+    var collection = {}
     for (var vehicle of listOfVehicles) {
       for (const [key, value] of Object.entries(vehicle.attributes)) {
+        if (!collection.hasOwnProperty(key)) {
+          collection[key] = []
+        }
         if (!collection[key].includes(value)) {
           collection[key].push(value)
         }
@@ -81,60 +63,96 @@ const Marketplace = () => {
 
 
   function assembleAllKeywords(allAttributes) {
-    var temp = []
+    var temp = {}
     for (var key of Object.keys(allAttributes)) {
       for (var element of allAttributes[key]) {
-        temp.push({ group: "keywords", value: element, label: element, type: key })
+        if (!temp.hasOwnProperty(key))
+          temp[key] = []
+        temp[key].push({ group: key, value: element, label: element, type: key })
       }
     }
-    return temp
-  }
-
-  function assembleAllPriceSorts() {
-    var temp = []
-    var options = ["ascending", "descending"]
-    for (var option of options) {
-      temp.push({ group: "price", value: option, label: option.charAt(0).toUpperCase() + option.slice(1) })
+    var temp3 = []
+    for (var key of Object.keys(temp)) {
+      var temp2 = {}
+      temp2.label = key
+      temp2.options = temp[key]
+      temp3.push(temp2)
     }
-    return temp
+    return temp3
   }
 
+  function assemblePrice() {
+    return [
+      { group: "price", value: "ascending", label: "Ascending" },
+      { group: "price", value: "descending", label: "Descending" }
+    ]
+  }
+
+  function assembleShow() {
+    return [
+      { group: "show", value: "mine", label: "My Listings" },
+      { group: "show", value: "bid", label: "My Bids" }
+    ]
+  }
 
   function assembleSearcher(allAttributes) {
     var newSelect = []
-    newSelect.push({ label: "Price", options: assembleAllPriceSorts() })
-    newSelect.push({ label: "Keywords", options: assembleAllKeywords(allAttributes) })
-
-    console.log("abuga", newSelect)
+    newSelect.push({ label: "Show", options: assembleShow() })
+    newSelect.push({ label: "Price", options: assemblePrice() })
+    newSelect = newSelect.concat(assembleAllKeywords(allAttributes))
     setNewSelect(newSelect)
   }
 
-  console.log("fasif", filterObject)
-  useEffect(() => {
+  async function createLowBoundary(vehicles) {
+    var lowBoundary = 9999999999999999999999999999999999999999
+    for (var vehicle of vehicles) {
+      var parsedPrice = parseInt(vehicle.injected.price)
+      if (parsedPrice < lowBoundary) {
+        lowBoundary = parsedPrice
+      }
+    }
+    var final = await weiToMyCurrency(lowBoundary) - 10
+    final = final < 0 ? 0 : final
+    setLowBound(roundToNDigits(2, final))
+  }
+
+  async function createHighBoundary(vehicles) {
+    var highBoundary = 0
+    for (var vehicle of vehicles) {
+      var parsed = parseInt(vehicle.injected.price)
+      if (parsed > highBoundary) {
+        highBoundary = parsed
+      }
+    }
+    var final = await weiToMyCurrency(highBoundary) + 10
+    setHighBound(roundToNDigits(2, final))
+  }
+
+
+  useEffect(async () => {
     if (vehicleList != undefined) {
       setPool(Object.values(vehicleList))
-      setBackupPool(newCopy(Object.values(vehicleList)))
 
       var allAttributes = getAttributesCollection(Object.values(vehicleList))
-      setAllAttributes(allAttributes)
 
       assembleSearcher(allAttributes)
-
-      setAllValues(grabAllValuesFromObject(allAttributes))
     }
   }, [vehicleList, data.saleVehicles])
 
 
+  useEffect(async () => {
+    if (vehicleList != undefined) {
+      createLowBoundary(Object.values(vehicleList))
+      createHighBoundary(Object.values(vehicleList))
+    }
+
+  }, [data.displayCurrency, data.saleVehicles])
+
+
 
   function applyFilters(list) {
-
     var listOfVehicles = newCopy(list)
-    if (proMode) {
-      listOfVehicles = filterByPropertyValue(listOfVehicles, filterByProperty, true)
-    }
-    if (!proMode)
-      listOfVehicles = specialSort(listOfVehicles)
-
+    listOfVehicles = specialSort(listOfVehicles)
     listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
     listOfVehicles = filterPriceRange(listOfVehicles, minPrice, maxPrice)
     listOfVehicles = listToNSublists(listOfVehicles, perPage)
@@ -143,21 +161,17 @@ const Marketplace = () => {
 
   useEffect(() => {
     setPages(applyFilters(pool))
-  }, [pool, filterObject, minPrice, maxPrice, perPage, filterByProperty, proMode])
+  }, [pool, filterObject, minPrice, maxPrice, perPage])
+
+
 
 
   function loadFilterObject(list) {
-
     var mf = {}
     for (var object of list) {
       mf[object.group] = {}
-      if (object.group == "price")
-        mf[object.group] = object.value
-      else
-        mf[object.group][object.type] = object.value
+      mf[object.group] = object.value
     }
-
-    console.log('da filter object', mf)
     setFilterObject(mf)
   }
 
@@ -167,16 +181,24 @@ const Marketplace = () => {
       setPageType("auctions")
     else if (pageType == "auctions")
       setPageType("instant")
-
-    setFilterByProperty("default")
   }
 
 
+
   const [value1, setValue1] = React.useState([0, 10000]);
-
-  var minDistance = 1000
-
+  const marks = [
+    {
+      value: lowBound,
+      label: `${lowBound} ${data.displayCurrency}`,
+    },
+    {
+      value: highBound,
+      label: `${highBound} ${data.displayCurrency}`,
+    },
+  ];
   const handleChange1 = (event, newValue, activeThumb) => {
+    var minDistance = highBound / 1000
+
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -190,25 +212,10 @@ const Marketplace = () => {
     }
   };
 
-  const marks = [
-    {
-      value: 0,
-      label: '0',
-    },
-
-    {
-      value: 10000,
-      label: '10000',
-    },
-  ];
 
 
-  console.log(newSelect)
-
-
-  function toggleProMode() {
-    setFilterByProperty("default")
-    setProMode(!proMode)
+  function valueLabelFormat(value) {
+    return `${value} ${data.displayCurrency}`;
   }
 
 
@@ -221,15 +228,41 @@ const Marketplace = () => {
         ({data.options.length})
       </Box>
     </Stack>
-
   );
+
+  function onlyIfGroupNotSelected(selected) {
+    if (filterObject.hasOwnProperty(selected.group))
+      return true
+    else
+      return false
+  }
+
+
+  function handlePerPage(e) {
+    setPerPage(e.target.value)
+  }
+
+  function tooltip() {
+    return (
+      <React.Fragment>
+        <Typography color="inherit">Market Icon Legend</Typography>
+        <Stack display="flex" align-items="center" justify-content="center" flexDirection="column">
+          <Box >
+            <GameIcons.GiHomeGarage></GameIcons.GiHomeGarage> {"- Vehicle I have listed."}
+          </Box>
+          <Box>
+            <MDIcons.MdPriceCheck></MDIcons.MdPriceCheck> {"- Vehichle I have bided on."}
+          </Box>
+        </Stack>
+
+      </React.Fragment>
+    );
+  }
 
 
   return (
 
     <div className="market-main">
-
-
 
       <div className="cardwrapper2">
         <div className="phone3" onClick={togglePageType}>
@@ -242,93 +275,73 @@ const Marketplace = () => {
       </div>
 
 
+      <Tooltip title={tooltip()}>
+        <IconButton>
+          <FeatherIcons.FiHelpCircle />
+        </IconButton>
+      </Tooltip>
 
-
-
-
-      <Box sx={{ width: 400 }}>
-        <Select isOptionDisabled={(e) => {
-          if (e.group == "price" && filterObject.hasOwnProperty("price"))
-            return true
-          else
-            return false
-        }} formatGroupLabel={formatGroupLabel} placeholder="Search, select or sort..." onChange={loadFilterObject} isMulti={true} options={newSelect} />
+      <Box sx={{ width: "30%" }}>
+        <Select
+          isOptionDisabled={onlyIfGroupNotSelected}
+          formatGroupLabel={formatGroupLabel}
+          placeholder="Search, select or sort..."
+          onChange={loadFilterObject}
+          isMulti={true}
+          options={newSelect} />
       </Box>
 
 
-      <div >
-        {proMode ? <div>
-          <label>Show:</label>
-          <select onChange={(e) => setFilterByProperty(e.target.value)}>
-            <option value="default">
-              Default
-            </option>
-            {pageType == "auctions" ? <option value="bid">
-              My Bids
-            </option> : null}
-            <option value="mine">
-              My Listings
-            </option>
-          </select>
-        </div> : null}
-
-     
-        <label>Per page:</label>
-        <select onChange={(e) => setPerPage(e.target.value)}>
-          <option value={5}>
-            5
-          </option>
-          <option value={15}>
-            15
-          </option>
-          <option value={25}>
-            25
-          </option>
-        </select>
-      </div>
-
-
-
-      <FormControlLabel
-        control={
-          <Switch checked={proMode} onChange={toggleProMode} color="warning" />
-        }
-        label="Pro Mode"
-      />
-
-
-
-      <Stack width="50%" display="flex" align-items="center" justify-content="center" backgroud-color="black" >
+      <Stack width="30%" display="flex" align-items="center" justify-content="center" >
         <Slider
-          min={0}
-          max={10000}
-
+          min={lowBound}
+          max={highBound}
           marks={marks}
           value={value1}
-          step={1000}
+          step={highBound / 100}
           onChange={handleChange1}
           valueLabelDisplay="auto"
+          valueLabelFormat={valueLabelFormat}
         />
       </Stack>
 
+      
+
+      {pages.length != 0 ?
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+          {pages[pageNr].map((vehicle, key) => {
+            return (
+              <Grid item xs={2} sm={4} md={4} key={key}>
+                <MiniCard key={key} vehicle={vehicle}></MiniCard>
+              </Grid>
+            );
+          })}
+        </Grid>
+        :
+        <Stack display="flex" align-items="center" justify-content="center">
+          No vehicles available.
+        </Stack>}
 
 
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {pages.length != 0 ? pages[pageNr].map((vehicle, key) => {
-          return (
-            <Grid item xs={2} sm={4} md={4} key={key}>
-              <MiniCard key={key} vehicle={vehicle}></MiniCard>
-            </Grid>
-          );
-        }) : <p className="center">No vehicles available.</p>}
-      </Grid>
+      <Stack display="flex" align-items="center" justify-content="center" flexDirection="column" >
+        <Pagination onChange={(a, b) => { setPageNr(b - 1) }} showFirstButton showLastButton count={pages.length} />
+      </Stack>
 
-
-      <div className="center">
-        <Pagination showFirstButton showLastButton count={pages.length} />
-      </div>
-
-
+      <Stack>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 50 }}>
+          <InputLabel>Per page</InputLabel>
+          <Select2
+            size="x"
+            value={perPage}
+            label="Per Page"
+            onChange={handlePerPage}
+          >
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={15}>15</MenuItem>
+            <MenuItem value={25}>25</MenuItem>
+          </Select2>
+        </FormControl>
+      </Stack>
 
     </div>
   );

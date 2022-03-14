@@ -41,23 +41,19 @@ import { getSidebarFor } from "../utils/Roles";
 
 function NormalView() {
 
- 
-    const data = useSelector((state) => state.data);
-  
 
-    
-    
+    const data = useSelector((state) => state.data);
+
+
+
+
 
     return (
         <div>
             <Router>
 
                 <Stack direction="row" justifyContent="space-between" >
-
-                    
-                        <TemporaryDrawer></TemporaryDrawer>
-                    
-                    
+                    <TemporaryDrawer></TemporaryDrawer>
                     <Stack direction="row" spacing={1} alignItems="center">
                         <SelectNetwork></SelectNetwork>
                         <AccountStatus></AccountStatus>

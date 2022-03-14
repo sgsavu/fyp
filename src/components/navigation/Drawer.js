@@ -35,17 +35,14 @@ export default function TemporaryDrawer() {
     const data = useSelector((state) => state.data);
     const blockchain = useSelector((state) => state.blockchain);
     var sidebar = getSidebarFor(data.myRole)
-
+    const [value, setValue] = React.useState(0)
     const history = useHistory();
 
     function handleChange(event, newValue) {
-
         history.push(sidebar[newValue].path)
         setValue(newValue)
 
     };
-
-    const [value, setValue] = React.useState(0)
 
     const list = (anchor) => (
         <Box

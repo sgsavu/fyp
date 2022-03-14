@@ -42,13 +42,7 @@ function More() {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem>
-                    <FormControlLabel
-                        control={
-                            <Switch color="warning" />
-                        }
-                        label="Pro Mode"
-                    /></MenuItem>
+              <MenuItem >About</MenuItem>
                 <MenuItem >
                     <Options>
                     </Options>

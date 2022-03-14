@@ -5,25 +5,36 @@ export const WeiToEth = (amount) => {
     return web3.utils.fromWei(String(amount), 'ether')
 }
 
+
+export const fetchAllCurrencies = async () => {
+    const request = new URL("https://api.coinbase.com/v2/currencies");
+    const response = await (await fetch(request)).json();
+    return response.data
+}
+
 export const EthToWei = (amount) => {
     return web3.utils.toWei(String(amount), 'ether')
 }
 
-export const fetchRate = async (toCurrency, fromCurrency) => {
-    const CONSTRUCTED_LINK = new URL("https://min-api.cryptocompare.com/data/price");
-    CONSTRUCTED_LINK.searchParams.append("fsym", toCurrency);
-    CONSTRUCTED_LINK.searchParams.append("tsyms", fromCurrency);
-    const price = await (await fetch(CONSTRUCTED_LINK)).json();
-    return price[fromCurrency]
+export function roundToNDigits(digits,num) {
+    return +(Math.round(num + `e+${digits}`) + `e-${digits}`);
 }
 
-export const currencyToCurrency = async (amount, fromCurrency, toCurrency) => {
-    const rate = await fetchRate(toCurrency, fromCurrency)
-    return amount / rate
+
+export const fetchRate = async (from, to) => {
+    var request = new URL("https://api.coinbase.com/v2/prices/" + from + "-" + to + "/spot");
+    var response = await (await fetch(request)).json();
+    if (response.hasOwnProperty("errors")) {
+        request = new URL("https://api.coinbase.com/v2/prices/" + to + "-" + from + "/spot");
+        response = await (await fetch(request)).json();
+        return 1/parseFloat(response.data.amount)
+    }
+    return parseFloat(response.data.amount)
 }
 
-function roundToTwo(num) {
-    return +(Math.round(num + "e+2") + "e-2");
+export const currencyToCurrency = async (amount, from, to) => {
+    const rate = await fetchRate(from, to)
+    return amount * rate
 }
 
 export const weiToMyCurrency = async (price) => {
@@ -32,10 +43,24 @@ export const weiToMyCurrency = async (price) => {
         .getState()
         .data.displayCurrency
 
-    let princeInEth = WeiToEth(price)
-    let priceInUserCurrency = await currencyToCurrency(princeInEth, "ETH", myPrefferedCurrency)
+    let priceInETH = WeiToEth(price)
+        
+    if (myPrefferedCurrency == "ETH")
+        return parseFloat(priceInETH)
 
-    return roundToTwo(priceInUserCurrency)
+    if (myPrefferedCurrency == "BTC")
+    {
+        var price1 = await currencyToCurrency(priceInETH, "ETH", "USD")
+        var price2 = await currencyToCurrency(price1, "USD", "BTC")
+        return roundToNDigits(5,price2)
+    }
+
+    let priceInUserCurrency = await currencyToCurrency(priceInETH, "ETH", myPrefferedCurrency)
+
+    if (myPrefferedCurrency == "BTC")
+        return roundToNDigits(5,priceInUserCurrency)
+
+    return roundToNDigits(2,priceInUserCurrency)
 }
 
 export const myCurrencyToWei = async (price) => {
@@ -45,6 +70,6 @@ export const myCurrencyToWei = async (price) => {
         .data.displayCurrency
 
     const priceInETH = await currencyToCurrency(price, myPrefferedCurrency, "ETH")
-    const priceInWei = EthToWei(roundToTwo(priceInETH))
+    const priceInWei = EthToWei(priceInETH)
     return priceInWei
 }

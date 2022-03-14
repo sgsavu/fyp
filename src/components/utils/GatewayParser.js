@@ -1,6 +1,5 @@
 import { roles } from "./Roles";
 import store from "../../redux/store";
-import { myCurrencyToWei } from './Exchange'
 import { alerts, TX } from "../../redux/app/appActions";
 import { getUserAccount } from "../../redux/reduxUtils";
 

@@ -32,12 +32,10 @@ export function filterByPropertyExistence(list, property) {
 }
 
 export function filterByPropertyValue(list, property, value) {
-    if (property != "default") {
+
         return list.filter((element) => {
             return element.injected[property] == value;
         });
-    }
-    else return list
 }
 
 
@@ -48,19 +46,23 @@ export function filterByFilterObject(obj, list) {
     if (Object.keys(obj).length != 0) {
 
         var temp = list
-        if (obj.hasOwnProperty("keywords")) {
-            temp = list.filter((element) => {
-                for (var elz of Object.keys(obj.keywords)) {
-                    if (obj.keywords[elz] != element.attributes[elz])
-                        return false
-                }
-                return true
-            })
+        
+        if (obj.hasOwnProperty("show")) {
+            temp = filterByPropertyValue(temp, obj.show, true)
         }
+
+        temp = temp.filter((element) => {
+            for (var elz of Object.keys(obj)) {
+                if (element.attributes.hasOwnProperty(elz) && obj[elz] != element.attributes[elz])
+                    return false
+            }
+            return true
+        })
 
         if (obj.hasOwnProperty("price")) {
             sortBy(temp, obj.price)
         }
+
 
         return temp
 

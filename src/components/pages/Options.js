@@ -1,28 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { refreshMyVehicles, refreshDisplayPrices, updatePrefferedCurrency } from '../../redux/data/dataActions';
+import { fetchAllCurrencies } from '../utils/Exchange';
 
 const Options = () => {
 
     const dispatch = useDispatch();
     const data = useSelector((state) => state.data);
-    const myCurrency = data.displayCurrency
-    const availableCurrencies = ["GBP", "USD", "EUR", "ETH", "BTC"]
+    const cryptoCurrencies = [{id:"ETH"},{id:"BTC"}]
+    const [availableCurrencies, setAvailableCurrencies] = useState([])
 
+    useEffect(async () => {
+    
+        setAvailableCurrencies(cryptoCurrencies.concat(await fetchAllCurrencies()))
+    }, [])
 
-    function changeAppCurrency(e) {
+    async function changeAppCurrency(e) {
         dispatch(updatePrefferedCurrency(e.target.value))
-        dispatch(refreshDisplayPrices(e))
+        dispatch(refreshDisplayPrices())
     }
 
     return (
         <div>
-            Currency: 
-            <select defaultValue={myCurrency} onChange={changeAppCurrency}>
+            Currency:
+            <select value={data.displayCurrency} onChange={changeAppCurrency}>
                 {availableCurrencies.map((currency) => {
                     return (
-                        <option key={currency} value={currency}>{currency}</option>
+                        <option key={currency.id} value={currency.id}>{currency.id}</option>
                     );
                 })}
             </select>

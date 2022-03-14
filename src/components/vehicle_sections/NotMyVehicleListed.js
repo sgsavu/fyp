@@ -148,7 +148,7 @@ function NotMyVehicleListed({ vehicle }) {
             </div>
             <div className="panel-bottom-1">
                 <div
-                    className={buttonOnOrOff}
+                    className={buttonOnOrOff()}
                     onClick={async () => {
                         await buyOrBid()
                     }} >

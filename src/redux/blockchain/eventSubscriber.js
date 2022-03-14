@@ -12,6 +12,7 @@ export function subscribeToSaleStatus() {
         }, function (error, event) {
             console.log("SaleStatus", event)
             if (!error)
+            {
                 if (event.returnValues.status == true) {
                     if (event.returnValues.isAuction == true)
                         dispatch(addToSale("auctions", event.returnValues.tokenId))
@@ -21,7 +22,9 @@ export function subscribeToSaleStatus() {
                 else if (event.returnValues.status == false) {
                     dispatch(removeFromSale(event.returnValues.tokenId))
                 }
-
+                dispatch(addToMyVehicles(event.returnValues.tokenId))
+            }
+            
         })
     }
 }
