@@ -9,7 +9,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
-import { clearMyData } from "../data/dataActions";
+import { clearMyData, getAuthenticatedData } from "../data/dataActions";
 import { subscribeToApproval, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
 import { getNetworkRpcUrl } from "../../components/utils/GatewayParser";
@@ -122,7 +122,11 @@ export const login = () => {
       await dispatch(updateWeb3(provider))
       await dispatch(updateAppAccount(account));
       if (network == await getCurrentNetwork())
-        await dispatch(loadSmartContracts())
+      {
+        await dispatch(getAuthenticatedData())
+        //await dispatch(loadSmartContracts())
+        await dispatch(subscribeToChainEvents())
+      }
       else
         await dispatch(updateAppNetwork(network))
     } catch (err) {

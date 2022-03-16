@@ -16,21 +16,6 @@
                 "https://rinkeby.etherscan.io/"
             ]
         },
-        "0xfa2": {
-            "chainName": "Fantom Testnet",
-            "image": "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
-            "nativeCurrency": {
-                "name": "Fantom",
-                "symbol": "FTM",
-                "decimals": 18
-            },
-            "rpcUrls": [
-                "https://rpc.testnet.fantom.network/"
-            ],
-            "blockExplorerUrls": [
-                "https://testnet.ftmscan.com/"
-            ]
-        },
         "0xa869": {
             "chainName": "Avalanche Testnet",
             "image": "https://cryptologos.cc/logos/avalanche-avax-logo.png?v=022",
@@ -44,6 +29,21 @@
             ],
             "blockExplorerUrls": [
                 "https://testnet.snowtrace.io/"
+            ]
+        },
+        "0xfa2": {
+            "chainName": "Fantom Testnet",
+            "image": "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
+            "nativeCurrency": {
+                "name": "Fantom",
+                "symbol": "FTM",
+                "decimals": 18
+            },
+            "rpcUrls": [
+                "https://rpc.testnet.fantom.network/"
+            ],
+            "blockExplorerUrls": [
+                "https://testnet.ftmscan.com/"
             ]
         }
     }

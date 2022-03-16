@@ -1,8 +1,6 @@
 import { actions, roles } from "../../components/utils/Roles";
 
 const initialState = {
-  myVehicles: {},
-  saleVehicles: {},
   allVehicles: {},
   displayCurrency: "GBP",
   myRole: roles.VIEWER_ROLE,

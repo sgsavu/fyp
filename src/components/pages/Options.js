@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { refreshMyVehicles, refreshDisplayPrices, updatePrefferedCurrency } from '../../redux/data/dataActions';
+import { refreshDisplayPrices, updatePrefferedCurrency } from '../../redux/data/dataActions';
 import { fetchAllCurrencies } from '../utils/Exchange';
 
 const Options = () => {

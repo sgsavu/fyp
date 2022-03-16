@@ -35,7 +35,7 @@ function App() {
     if (first!="")
     {
       dispatch(updateAppAccount(first));
-    dispatch(fetchMyData());
+      dispatch(fetchMyData());
     }
   }, [first])
   

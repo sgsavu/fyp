@@ -46,10 +46,10 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {   
-    "chain":"0x4",
-    "operation":"listInstant",
+    "chain":"0xa869",
+    "operation":"listAuction",
     "data": {
-        "tokenId": 0,
+        "tokenId": 1,
         "price":"358107188643704830"
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
@@ -63,7 +63,7 @@ GET https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"tokenURI",
     "data": {
         "tokenId": "0"

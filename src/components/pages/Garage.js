@@ -10,7 +10,6 @@ const Garage = () => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
-    const [myVehicles, setMyVehicles] = useState([])
     const [address,setAddress] = useState("")
     const [vehicle,setVehicle] = useState("")
 
@@ -27,15 +26,15 @@ const Garage = () => {
     return (
         <div>
             {data.myRole == roles.GARAGE_ROLE ? Object.values(data.allVehicles).map((vehicle, index) => {
-                if (vehicle.injected.garage)
+                if (vehicle.injected.garage == blockchain.account)
                 return (
                     <MiniCard key={index} vehicle={vehicle}></MiniCard>
                 );
             }) : <div>
             <label>Approve garage: </label>
             <select onChange={(e) => setVehicle(e.target.value)}>
-                {Object.keys(data.myVehicles).map((value,index)=> {
-                   
+                {Object.keys(data.allVehicles).map((value,index)=> {
+                   if (data.allVehicles[value].injected.owner == blockchain.account)
                     return <option key={index} value={value}>{value}</option>
                 })}
             </select>

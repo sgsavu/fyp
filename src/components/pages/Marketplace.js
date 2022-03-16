@@ -18,13 +18,14 @@ import * as GameIcons from "react-icons/gi";
 import * as MDIcons from "react-icons/md";
 import * as FeatherIcons from "react-icons/fi";
 import * as RiIcons from 'react-icons/ri';
+import { getSaleVehicles } from "../../redux/data/dataActions";
 
 
 
 const Marketplace = () => {
 
   const data = useSelector((state) => state.data);
-  let vehicleList = data.saleVehicles;
+  const blockchain = useSelector((state) => state.blockchain);
 
   const [pageNr, setPageNr] = useState(0)
   const [pages, setPages] = useState([]);
@@ -91,8 +92,8 @@ const Marketplace = () => {
 
   function assembleShow() {
     return [
-      { group: "show", value: "mine", label: "My Listings" },
-      { group: "show", value: "bid", label: "My Bids" }
+      { group: "show", value: "owner", label: "My Listings" },
+      { group: "show", value: "topBidder", label: "My Bids" }
     ]
   }
 
@@ -138,24 +139,25 @@ const Marketplace = () => {
   }
 
 
-  useEffect(async () => {
-    if (vehicleList != undefined) {
-      setPool(Object.values(vehicleList))
 
-      var allAttributes = getAttributesCollection(Object.values(vehicleList))
+  useEffect(() => {
 
-      assembleSearcher(allAttributes)
-    }
-  }, [vehicleList, data.saleVehicles])
+    var saleVehicles = getSaleVehicles(data.allVehicles)
+    setPool(Object.values(saleVehicles))
+    var allAttributes = getAttributesCollection(Object.values(saleVehicles))
+    assembleSearcher(allAttributes)
+
+  }, [data.allVehicles])
 
 
-  useEffect(async () => {
-    if (vehicleList != undefined) {
-      createLowBoundary(Object.values(vehicleList))
-      createHighBoundary(Object.values(vehicleList))
-    }
+  useEffect( () => {
 
-  }, [data.displayCurrency, data.saleVehicles])
+    var saleVehicles = getSaleVehicles(data.allVehicles)
+    createLowBoundary(Object.values(saleVehicles))
+    createHighBoundary(Object.values(saleVehicles))
+
+
+  }, [data.displayCurrency, data.allVehicles])
 
 
 
@@ -163,7 +165,7 @@ const Marketplace = () => {
     setPageNr(0)
     var listOfVehicles = newCopy(list)
     listOfVehicles = specialSort(listOfVehicles)
-    listOfVehicles = filterByFilterObject(filterObject, listOfVehicles)
+    listOfVehicles = filterByFilterObject(filterObject, listOfVehicles, blockchain.account)
     listOfVehicles = filterPriceRange(listOfVehicles, minPrice, maxPrice)
     listOfVehicles = listToNSublists(listOfVehicles, perPage)
     return listOfVehicles

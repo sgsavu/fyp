@@ -5,80 +5,87 @@ import { getRole, callViewChainFunction } from "../../components/utils/GatewayPa
 import { alerts, updateDataState } from "../app/appActions";
 import { getUserAccount } from "../reduxUtils";
 
-function injectTokenId(vehicle, tokenId) {
-  vehicle.injected = {}
-  vehicle.injected.id = tokenId
-}
 
-export async function injectOwner(vehicle) {
-  vehicle.injected.owner = await callViewChainFunction("ownerOf", [vehicle.injected.id])
-}
 
-export async function injectPrice(vehicle) {
-  vehicle.injected.price = await callViewChainFunction("getVehiclePrice", [vehicle.injected.id])
-  vehicle.injected.display_price = await weiToMyCurrency(vehicle.injected.price)
-}
 
-export async function injectIfTopBidder(vehicle) {
-  if (await callViewChainFunction("getTopBidder", [vehicle.injected.id]) == await getUserAccount())
-    vehicle.injected.bid = true
-  else
-    vehicle.injected.bid = false
+async function refreshOne(tokenId) {
+  const unos = await callViewChainFunction("refreshOne", [tokenId])
+
+  console.log('daone', unos)
+
+  var id = unos.id
+  var URI = unos.uri
+  var owner = unos.owner
+  var garage = unos.garage
+
+  var isForSale = unos.sale
+  var price = unos.price
+  var isAuction = unos.auction
+  var topBidder = unos.bidder
 
 }
 
-export async function injectIfApprovedGarage(vehicle) {
-  if (await getUserAccount() == await callViewChainFunction("getApprovedGarage", [vehicle.injected.id]))
-    vehicle.injected.garage = true
-  else
-    vehicle.injected.garage = false
-}
 
-export async function injectIfMine(vehicle) {
-  if (await getUserAccount() == await callViewChainFunction("ownerOf", [vehicle.injected.id]))
-    vehicle.injected.mine = true
-  else
-    vehicle.injected.mine = false
-}
+async function getEverything() {
+  var startTime = performance.now()
 
+  refreshOne(0)
+  let allVehicles = {}
 
-export async function getVehicleInfo(vehicleID) {
-  let vehicleURI = await callViewChainFunction("tokenURI", [vehicleID])
-  let vehicleMetadata = await (await fetch(vehicleURI)).json()
+  var a = performance.now()
+  const unos = await callViewChainFunction("getEverything", [])
+  var b = performance.now()
 
-  injectTokenId(vehicleMetadata, vehicleID)
-  await injectIfMine(vehicleMetadata)
-  await injectIfApprovedGarage(vehicleMetadata)
-  if (await callViewChainFunction("isForSale", [vehicleID])) {
-    await injectOwner(vehicleMetadata)
-    await injectPrice(vehicleMetadata)
-    if (await callViewChainFunction("isAuction", [vehicleID])) {
-      vehicleMetadata.injected.auction = true
-      await injectIfTopBidder(vehicleMetadata)
+  for (var i = 0; i < unos.ids.length; i++) {
+    var id = unos.ids[i]
+    var URI = unos.uris[i]
+    var owner = unos.owners[i]
+    var garage = unos.garages[i]
+
+    var isForSale = unos.sales[i]
+    var price = unos.prices[i]
+    var isAuction = unos.auctions[i]
+    var topBidder = unos.bidders[i]
+
+    allVehicles[id] = {}
+
+    let vehicleMetadata = await (await fetch(URI)).json()
+
+    vehicleMetadata.injected = {}
+    vehicleMetadata.injected.id = id
+    vehicleMetadata.injected.owner = owner
+    vehicleMetadata.injected.garage = garage
+
+    if (isForSale) {
+      vehicleMetadata.injected.sale = true
+      vehicleMetadata.injected.price = price
+      vehicleMetadata.injected.display_price = await weiToMyCurrency(price)
+      if (isAuction) {
+        vehicleMetadata.injected.auction = true
+        vehicleMetadata.injected.topBidder = topBidder
+      }
+      else {
+        vehicleMetadata.injected.auction = false
+      }
     }
     else {
-      vehicleMetadata.injected.auction = false
-
+      vehicleMetadata.injected.sale = false
     }
+    allVehicles[id] = vehicleMetadata;
   }
-  return vehicleMetadata
-}
 
-async function getAllVehicles() {
-  let totalNrOfVehicles = await callViewChainFunction("totalSupply", [])
-  let allVehicles = {}
-  for (var i = 0; i < totalNrOfVehicles; i++) {
-    let vehicleID = await callViewChainFunction("tokenByIndex", [i])
-    allVehicles[vehicleID] = await getVehicleInfo(vehicleID)
-  }
+  var endTime = performance.now()
+  console.log("performance for ALL", endTime - startTime)
+  console.log("performance for a", b - a)
   return allVehicles
 }
 
-function getSaleVehicles(allVehicles) {
+
+export function getSaleVehicles(allVehicles) {
   let saleVehicles = {}
 
   for (const [tokenId, metadata] of Object.entries(allVehicles)) {
-    if (metadata.injected.hasOwnProperty('price')) {
+    if (metadata.injected.sale == true) {
       saleVehicles[tokenId] = metadata
     }
   }
@@ -86,41 +93,27 @@ function getSaleVehicles(allVehicles) {
   return saleVehicles
 }
 
-async function getVehiclesForAccount(account) {
-  let accountBalance = await callViewChainFunction("balanceOf", [account])
-  let myVehicles = {}
-  for (var i = 0; i < accountBalance; i++) {
-    let vehicleID = await callViewChainFunction("tokenOfOwnerByIndex", [account, i])
-    myVehicles[vehicleID] = await getVehicleInfo(vehicleID)
-  }
-  return myVehicles
-}
 
 
 
 export function getDefaultVehicles() {
   return async (dispatch) => {
-    let allVehicles = await getAllVehicles()
-    let saleVehicles = getSaleVehicles(allVehicles)
+    let allVehicles = await getEverything()
     console.log(allVehicles)
     dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
-    dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
-
   }
 }
 
-export function getAuthenticatedVehicles() {
-  return async (dispatch) => {
-    let myVehicles = await getVehiclesForAccount(await getUserAccount())
-    console.log(myVehicles)
-    dispatch(updateDataState({ field: "myVehicles", value: myVehicles }));
-  }
-}
 
 export const clearMyData = () => {
   return async (dispatch) => {
-    dispatch(updateDataState({ field: "myVehicles", value: [] }));
     dispatch(updateDataState({ field: "myRole", value: roles.VIEWER_ROLE }));
+  }
+}
+
+export function getAuthenticatedData() {
+  return async (dispatch) => {
+    await dispatch(updateDataState({ field: "myRole", value: await getRole(await getUserAccount()) }));
   }
 }
 
@@ -129,8 +122,7 @@ export const fetchMyData = () => {
     dispatch(alerts({ alert: "loading", message: "Fetching data..." }))
     if (await store.getState().blockchain.account || await store.getState().blockchain.walletProvider) {
       await dispatch(getDefaultVehicles())
-      await dispatch(getAuthenticatedVehicles())
-      await dispatch(updateDataState({ field: "myRole", value: await getRole(await getUserAccount()) }));
+      await dispatch(getAuthenticatedData());
     }
     else {
       await dispatch(getDefaultVehicles())
@@ -150,13 +142,14 @@ export const refreshDisplayPrices = () => {
     dispatch(alerts({ alert: "loading", message: "Refreshing display prices." }))
     try {
 
-      let forsale = await store.getState().data.saleVehicles
+      let forsale = await store.getState().data.allVehicles
 
       for (var key of Object.keys(forsale)) {
-        forsale[key].injected.display_price = await weiToMyCurrency(forsale[key].injected.price)
+        if (forsale[key].injected.sale)
+          forsale[key].injected.display_price = await weiToMyCurrency(forsale[key].injected.price)
       }
 
-      dispatch(updateDataState({ field: "saleVehicles", value: forsale }));
+      dispatch(updateDataState({ field: "allVehicles", value: forsale }));
 
     } catch (err) {
       dispatch(alerts({ alert: "error", message: err.message }))

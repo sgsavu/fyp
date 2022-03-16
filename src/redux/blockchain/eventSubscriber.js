@@ -1,6 +1,5 @@
 import { deleteFieldKey, entryDataState, updateDataState } from "../app/appActions";
 import store from "../store";
-import { getVehicleInfo, injectIfApprovedGarage, injectIfTopBidder, injectPrice } from "../data/dataActions";
 import { getUserAccount } from "../reduxUtils";
 import { getContractFor } from "../../components/utils/GatewayParser";
 
@@ -18,7 +17,7 @@ export function subscribeToSaleStatus() {
                 else if (event.returnValues.status == false) {
                     dispatch(removeFromSale(event.returnValues.tokenId))
                 }
-                dispatch(addToMyVehicles(event.returnValues.tokenId))
+                //dispatch(addToMyVehicles(event.returnValues.tokenId))
             }
 
         })
@@ -39,9 +38,17 @@ export function subscribeToTransfers() {
                 if (event.returnValues.from == "0x0000000000000000000000000000000000000000")
                     dispatch(addToAll(event.returnValues.tokenId))
                 if (event.returnValues.from == thisAccount)
-                    dispatch(removeFromMyVehicles(event.returnValues.tokenId))
+                {
+
+                }
+                    //dispatch(removeFromMyVehicles(event.returnValues.tokenId))
+                    
                 if (event.returnValues.to == thisAccount)
-                    dispatch(addToMyVehicles(event.returnValues.tokenId))
+                {
+
+                }
+                    //dispatch(addToMyVehicles(event.returnValues.tokenId))
+                    
             }
         })
     }
@@ -54,7 +61,8 @@ export function subscribeToNewPrice() {
         }, function (error, event) {
             console.log("NewPrice", event)
             if (!error)
-                dispatch(updatePrice(event.returnValues.tokenId))
+            {}
+                //dispatch(updatePrice(event.returnValues.tokenId))
         })
     }
 }
@@ -67,7 +75,8 @@ export function subscribeToNewTopBidder() {
         }, function (error, event) {
             console.log("NewTopBidder", event)
             if (!error)
-                dispatch(updateTopBidder(event.returnValues.tokenId))
+            {}
+                //dispatch(updateTopBidder(event.returnValues.tokenId))
         })
     }
 }
@@ -79,7 +88,8 @@ export function subscribeToNewGarageApproval() {
         }, function (error, event) {
             console.log("NewGarageApproval", event)
             if (!error)
-                dispatch(updateGarage(event.returnValues.tokenId))
+            {}
+                //dispatch(updateGarage(event.returnValues.tokenId))
         })
     }
 }
@@ -93,7 +103,7 @@ export function subscribeToApproval() {
             console.log("NewApproval", event)
             if (!error) {
                 if (event.returnValues.owner = thisAccount) {
-                    dispatch(updateApproval(event.returnValues.tokenId))
+                    //dispatch(updateApproval(event.returnValues.tokenId))
                 }
             }
         })
@@ -106,7 +116,8 @@ function updatePrice(tokenId) {
         var saleVehicles = await store.getState().data.saleVehicles
 
         if (tokenId in saleVehicles)
-            await injectPrice(saleVehicles[tokenId])
+        {}
+            //await injectPrice(saleVehicles[tokenId])
 
         dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
     }
@@ -118,7 +129,8 @@ function updateTopBidder(tokenId) {
         var saleVehicles = await store.getState().data.saleVehicles
 
         if (tokenId in saleVehicles)
-            await injectIfTopBidder(saleVehicles[tokenId])
+        {}
+            //await injectIfTopBidder(saleVehicles[tokenId])
 
         dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
     }
@@ -128,7 +140,7 @@ function updateGarage(tokenId) {
     return async (dispatch) => {
         var allVehicles = await store.getState().data.allVehicles
 
-        await injectIfApprovedGarage(allVehicles[tokenId])
+        //await injectIfApprovedGarage(allVehicles[tokenId])
 
         dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
     }
@@ -144,19 +156,15 @@ function updateApproval(tokenId) {
 
 function addToSale(token) {
     return async (dispatch) => {
-        dispatch(entryDataState({ field: "saleVehicles", key: token, value: await getVehicleInfo(token) }))
+        //dispatch(entryDataState({ field: "saleVehicles", key: token, value: await getVehicleInfo(token) }))
     }
 }
 
-function addToMyVehicles(token) {
-    return async (dispatch) => {
-        dispatch(entryDataState({ field: "myVehicles", key: token, value: await getVehicleInfo(token) }))
-    }
-}
+
 
 function addToAll(token) {
     return async (dispatch) => {
-        dispatch(entryDataState({ field: "allVehicles", key: token, value: await getVehicleInfo(token) }))
+        //dispatch(entryDataState({ field: "allVehicles", key: token, value: await getVehicleInfo(token) }))
     }
 }
 
@@ -174,11 +182,6 @@ function removeFromSale(token) {
     }
 }
 
-function removeFromMyVehicles(token) {
-    return async (dispatch) => {
-        dispatch(deleteFieldKey({ field: "myVehicles", key: token }));
-    }
-}
 
 
 function removeFromAll(token) {

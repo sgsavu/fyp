@@ -10,14 +10,155 @@ contract Gateway is Marketplace {
     event SaleStatus(uint256 indexed tokenId, bool status);
     uint256 tax = 100000000000000 wei;
     Vehicle vhc;
-    
+
     receive() external payable {}
 
-    constructor (address addr) {
+    struct getObjectOne {
+        uint256 id;
+        string uri;
+        address owner;
+        address garage;
+        bool sale;
+        uint256 price;
+        bool auction;
+        address bidder;
+    }
+
+    struct getObject {
+        uint256[] ids;
+        string[] uris;
+        address[] owners;
+        address[] garages;
+        bool[] sales;
+        uint256[] prices;
+        bool[] auctions;
+        address[] bidders;
+    }
+
+    function refreshOne(uint256 tokenId)
+        public
+        view
+        returns (getObjectOne memory)
+    {
+        getObjectOne memory getObject1;
+
+        getObject1.id = tokenId;
+        getObject1.uri = vhc.tokenURI(tokenId);
+        getObject1.owner = vhc.ownerOf(tokenId);
+        getObject1.garage = vhc.getApprovedGarage(tokenId);
+
+        bool isForSale = _isForSale(tokenId);
+        getObject1.sale = isForSale;
+
+
+        if (isForSale) {
+            getObject1.price = _getVehiclePrice(tokenId);
+            bool isAuction = _isAuction(tokenId);
+            
+            getObject1.auction = isAuction;
+
+            if (isAuction) {
+                getObject1.bidder = _getTopBidder(tokenId);
+            }
+        }
+
+        return getObject1;
+    }
+
+    function getEverything() public view returns (getObject memory) {
+        getObject memory getObject1;
+
+        uint256 totalSupply = vhc.totalSupply();
+
+        uint256[] memory ids = new uint256[](totalSupply);
+        string[] memory uris = new string[](totalSupply);
+        address[] memory owners = new address[](totalSupply);
+        address[] memory garages = new address[](totalSupply);
+        bool[] memory sales = new bool[](totalSupply);
+        uint256[] memory prices = new uint256[](totalSupply);
+        bool[] memory auctions = new bool[](totalSupply);
+        address[] memory bidders = new address[](totalSupply);
+
+        for (uint256 i = 0; i < totalSupply; i++) {
+            uint256 index = vhc.tokenByIndex(i);
+
+            ids[i] = index;
+            uris[i] = vhc.tokenURI(index);
+            owners[i] = vhc.ownerOf(index);
+            garages[i] = vhc.getApprovedGarage(index);
+
+            bool isForSale = _isForSale(index);
+            sales[i] = isForSale;
+
+            if (isForSale) {
+                uint256 price = _getVehiclePrice(index);
+                prices[i] = price;
+
+                bool isAuction = _isAuction(index);
+                auctions[i] = isAuction;
+
+                if (isAuction) {
+                    address topBidder = _getTopBidder(index);
+                    bidders[i] = topBidder;
+                }
+            }
+        }
+
+        getObject1.ids = ids;
+        getObject1.uris = uris;
+        getObject1.owners = owners;
+        getObject1.garages = garages;
+        getObject1.sales = sales;
+        getObject1.prices = prices;
+        getObject1.auctions = auctions;
+        getObject1.bidders = bidders;
+
+        return getObject1;
+    }
+
+    function getMarketVehicles() public view returns (getObject memory) {
+        getObject memory getObject1;
+
+        uint256 totalSupply = vhc.totalSupply();
+
+        bool[] memory sales = new bool[](totalSupply);
+        uint256[] memory prices = new uint256[](totalSupply);
+        bool[] memory auctions = new bool[](totalSupply);
+        address[] memory bidders = new address[](totalSupply);
+
+        for (uint256 i = 0; i < totalSupply; i++) {
+            uint256 index = vhc.tokenByIndex(i);
+
+            bool isForSale = _isForSale(index);
+            sales[i] = isForSale;
+
+            if (isForSale) {
+                uint256 price = _getVehiclePrice(index);
+                prices[i] = price;
+
+                bool isAuction = _isAuction(index);
+                auctions[i] = isAuction;
+
+                if (isAuction) {
+                    address topBidder = _getTopBidder(index);
+                    bidders[i] = topBidder;
+                }
+            }
+        }
+
+        getObject1.sales = sales;
+        getObject1.prices = prices;
+        getObject1.auctions = auctions;
+        getObject1.bidders = bidders;
+
+        return getObject1;
+    }
+
+    constructor(address addr) {
         vhc = Vehicle(addr);
     }
 
-    function balanceOfSC () public view returns (uint256) {
+    function balanceOfSC() public view returns (uint256) {
         return address(this).balance;
     }
 
@@ -208,7 +349,10 @@ contract Gateway is Marketplace {
         address topBidder = _getTopBidder(tokenId);
         require(topBidder != address(0));
 
-        _secureMoneyTransfer(vhc.ownerOf(tokenId), _getVehiclePrice(tokenId) - tax);
+        _secureMoneyTransfer(
+            vhc.ownerOf(tokenId),
+            _getVehiclePrice(tokenId) - tax
+        );
 
         vhc.transferFrom(vhc.ownerOf(tokenId), topBidder, tokenId);
         require(vhc.ownerOf(tokenId) == topBidder, "E13");

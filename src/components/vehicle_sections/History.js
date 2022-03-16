@@ -39,7 +39,7 @@ const History = ({ vehicle }) => {
 
         setOdometerValue(await callViewChainFunction("getOdometerValue", [vehicle.injected.id]))
 
-    }, [data.myVehicles, data.allVehicles, data.saleVehicles])
+    }, [ data.allVehicles])
 
 
     function getDate(timestamp) {

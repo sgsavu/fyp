@@ -13,6 +13,13 @@ contract Vehicle is ERC721Enumerable {
 
     Roles roles;
 
+    struct getObject {
+        uint[] ids;
+        string[] uris;
+        address[] owners;
+        address[] garages;
+    }
+
     event NewGarageApproval(uint256 indexed tokenId);
 
     mapping(uint256 => string) internal _tokenURIs;
@@ -22,7 +29,40 @@ contract Vehicle is ERC721Enumerable {
     constructor(address addr) ERC721("Vehicle", "VHC") {
         roles = Roles(addr);
     }
-  
+
+    function getAllVehicles () 
+    public
+    view
+    returns (getObject memory)
+    {   
+
+        getObject memory getObject1;
+
+
+        uint256 totalSupply = totalSupply();
+        uint256[] memory ids = new uint256[](totalSupply);
+        string[] memory uris = new string[](totalSupply);
+        address[] memory owners = new address[](totalSupply);
+        address[] memory garages = new address[](totalSupply);
+        
+        for (uint256 i=0 ; i< totalSupply; i++) {
+            uint256 index = tokenByIndex(i);
+
+            ids[i] = index;
+            uris[i] = tokenURI(index);
+            owners[i] = ownerOf(index);
+            garages[i] = _approvedGarage[index];
+        }
+
+        getObject1.ids = ids;
+        getObject1.uris = uris;
+        getObject1.owners = owners;
+        getObject1.garages = garages;
+
+        return getObject1;
+    }
+
+
     function tokenURI(uint256 tokenId)
         public
         view

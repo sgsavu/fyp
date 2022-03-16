@@ -1,3 +1,5 @@
+import { getUserAccount } from "../../redux/reduxUtils";
+
 export function sortBy(list, sortType) {
     switch (sortType) {
         case "ascending":
@@ -11,8 +13,17 @@ export function sortBy(list, sortType) {
 }
 
 export function specialSort(list) {
-    list.sort((a, b) => { return (a.injected.bid === b.injected.bid) ? 0 : a.injected.bid ? -1 : 1; })
-    list.sort((a, b) => { return (a.injected.mine === b.injected.mine) ? 0 : a.injected.mine ? -1 : 1; })
+
+    list.sort(async (a, b) => { 
+        var valueA = (a.injected.topBidder == await getUserAccount())? true : false
+        var valueB = (b.injected.topBidder == await getUserAccount())? true : false
+        return (valueA === valueB) ? 0 : valueA ? -1 : 1; 
+    })
+    list.sort(async (a, b) => { 
+        var valueA = (a.injected.owner == await getUserAccount())? true : false
+        var valueB = (b.injected.owner == await getUserAccount())? true : false
+        return (valueA === valueB) ? 0 : valueA ? -1 : 1; 
+    })
     return list
 }
 
@@ -39,7 +50,7 @@ export function filterByPropertyValue(list, property, value) {
 }
 
 
-export function filterByFilterObject(obj, list) {
+export function filterByFilterObject(obj, list, acc) {
 
     console.log("owoa", obj)
 
@@ -48,7 +59,7 @@ export function filterByFilterObject(obj, list) {
         var temp = list
         
         if (obj.hasOwnProperty("show")) {
-            temp = filterByPropertyValue(temp, obj.show, true)
+            temp = filterByPropertyValue(temp, obj.show, acc)
         }
 
         if (obj.hasOwnProperty("type")) {

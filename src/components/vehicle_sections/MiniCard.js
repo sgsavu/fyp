@@ -15,7 +15,9 @@ import { callViewChainFunction } from "../utils/GatewayParser";
 const MiniCard = ({ vehicle }) => {
 
     const data = useSelector((state) => state.data);
-  
+    const blockchain = useSelector((state) => state.blockchain);
+
+
     return (
 
         <Link className="minicard" to={window.location.pathname == "/garage" ? {
@@ -41,12 +43,12 @@ const MiniCard = ({ vehicle }) => {
                     <Stack spacing={2} display="flex" align-items="center" justify-content="center" direction="row">
 
 
-                        {vehicle.injected.display_price && vehicle.injected.mine ?
+                        {vehicle.injected.display_price && (vehicle.injected.owner == blockchain.account) ?
 
                             <GameIcons.GiHomeGarage></GameIcons.GiHomeGarage>
                             : null}
 
-                        {vehicle.injected.bid ?
+                        {(vehicle.injected.topBidder == blockchain.account) ?
 
                             <MDIcons.MdPriceCheck></MDIcons.MdPriceCheck>
                             : null}
