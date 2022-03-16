@@ -13,6 +13,7 @@ function MyVehicleNotListed({ vehicle }) {
 
     const dispatch = useDispatch();
  
+    const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
     const [desiredPrice, setDesiredPrice] = useState(0)
@@ -23,7 +24,7 @@ function MyVehicleNotListed({ vehicle }) {
         if (await callViewChainFunction("getApproved", [vehicle.injected.id]) == (await getContractFor("methods", "buy"))._address) {
             setApproved(true)
         }
-    }, [data])
+    }, [data.approval])
 
 
     async function listVehicle() {
@@ -47,18 +48,18 @@ function MyVehicleNotListed({ vehicle }) {
     return (
 
 
-        <div class="phone">
-            <div class="content">
+        <div className="phone">
+            <div className="content">
                 <div className={blockchain.pendingTx.length != 0 ? "circle-loading" : "circle"}>
                     <div className='circle-status'>
                         {blockchain.pendingTx.length != 0 ? <BsIcons.BsThreeDots /> : typeToggle ? <RiIcons.RiAuctionFill /> : <IoIcons.IoIosCash />}
                     </div>
                 </div>
-                <p class="panel-heading">List your vehicle</p>
+                <p className="panel-heading">List your vehicle</p>
                 <p>Simply select the type of listing and set a price.</p>
                 <div className="boss" onClick={() => setTypeToggle(!typeToggle)}>
                     <div className={typeToggle ? "toggle-right" : "toggle-left"}></div>
-                    <div class="options">
+                    <div className="options">
                         <p className={typeToggle ? "optionOff" : "optionOn"}>Instant</p>
                         <p className={typeToggle ? "optionOn" : "optionOff"}>Auction</p>
                     </div>
@@ -77,7 +78,7 @@ function MyVehicleNotListed({ vehicle }) {
                     <div className={approved? 'mark-on' : 'mark-off' }>
                         1. Approve
                     </div>
-                    <div class="mark"></div>
+                    <div className="mark"></div>
                     <div className='mark-off'>
                         2. ListVHC
                     </div>

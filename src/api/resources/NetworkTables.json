@@ -1,6 +1,21 @@
 {
     "contractName": "NetworkTables",
     "networks": {
+        "0xfa2": {
+            "chainName": "Fantom Testnet",
+            "image": "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
+            "nativeCurrency": {
+                "name": "Fantom",
+                "symbol": "FTM",
+                "decimals": 18
+            },
+            "rpcUrls": [
+                "https://rpc.testnet.fantom.network/"
+            ],
+            "blockExplorerUrls": [
+                "https://testnet.ftmscan.com/"
+            ]
+        },
         "0x4": {
             "chainName": "Rinkeby Testnet",
             "image": "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png",
@@ -29,21 +44,6 @@
             ],
             "blockExplorerUrls": [
                 "https://testnet.snowtrace.io/"
-            ]
-        },
-        "0xfa2": {
-            "chainName": "Fantom Testnet",
-            "image": "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
-            "nativeCurrency": {
-                "name": "Fantom",
-                "symbol": "FTM",
-                "decimals": 18
-            },
-            "rpcUrls": [
-                "https://rpc.testnet.fantom.network/"
-            ],
-            "blockExplorerUrls": [
-                "https://testnet.ftmscan.com/"
             ]
         }
     }

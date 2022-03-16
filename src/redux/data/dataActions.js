@@ -5,49 +5,22 @@ import { getRole, callViewChainFunction } from "../../components/utils/GatewayPa
 import { alerts, updateDataState } from "../app/appActions";
 import { getUserAccount } from "../reduxUtils";
 
+async function assembleVehicleObjects(response) {
 
+  let assembled = {}
+  
+  for (var i = 0; i < response.ids.length; i++) {
+    var id = response.ids[i]
+    var URI = response.uris[i]
+    var owner = response.owners[i]
+    var garage = response.garages[i]
 
+    var isForSale = response.sales[i]
+    var price = response.prices[i]
+    var isAuction = response.auctions[i]
+    var topBidder = response.bidders[i]
 
-async function refreshOne(tokenId) {
-  const unos = await callViewChainFunction("refreshOne", [tokenId])
-
-  console.log('daone', unos)
-
-  var id = unos.id
-  var URI = unos.uri
-  var owner = unos.owner
-  var garage = unos.garage
-
-  var isForSale = unos.sale
-  var price = unos.price
-  var isAuction = unos.auction
-  var topBidder = unos.bidder
-
-}
-
-
-async function getEverything() {
-  var startTime = performance.now()
-
-  refreshOne(0)
-  let allVehicles = {}
-
-  var a = performance.now()
-  const unos = await callViewChainFunction("getEverything", [])
-  var b = performance.now()
-
-  for (var i = 0; i < unos.ids.length; i++) {
-    var id = unos.ids[i]
-    var URI = unos.uris[i]
-    var owner = unos.owners[i]
-    var garage = unos.garages[i]
-
-    var isForSale = unos.sales[i]
-    var price = unos.prices[i]
-    var isAuction = unos.auctions[i]
-    var topBidder = unos.bidders[i]
-
-    allVehicles[id] = {}
+    assembled[id] = {}
 
     let vehicleMetadata = await (await fetch(URI)).json()
 
@@ -71,13 +44,30 @@ async function getEverything() {
     else {
       vehicleMetadata.injected.sale = false
     }
-    allVehicles[id] = vehicleMetadata;
+    assembled[id] = vehicleMetadata;
   }
+
+  return assembled;
+}
+
+export async function refreshVehicle(tokenId) {
+  const response = await callViewChainFunction("refreshOne", [tokenId])
+  return await assembleVehicleObjects(response)
+}
+
+async function getEverything() {
+
+  var startTime = performance.now()
+
+  var a = performance.now()
+  const response = await callViewChainFunction("getEverything", [])
+  var b = performance.now()
+  const assembled = await assembleVehicleObjects(response)
 
   var endTime = performance.now()
   console.log("performance for ALL", endTime - startTime)
   console.log("performance for a", b - a)
-  return allVehicles
+  return assembled
 }
 
 
@@ -98,9 +88,9 @@ export function getSaleVehicles(allVehicles) {
 
 export function getDefaultVehicles() {
   return async (dispatch) => {
-    let allVehicles = await getEverything()
-    console.log(allVehicles)
-    dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
+    var all = await getEverything()
+    console.log(all)
+    dispatch(updateDataState({ field: "allVehicles", value: all }));
   }
 }
 

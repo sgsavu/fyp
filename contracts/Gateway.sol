@@ -13,17 +13,6 @@ contract Gateway is Marketplace {
 
     receive() external payable {}
 
-    struct getObjectOne {
-        uint256 id;
-        string uri;
-        address owner;
-        address garage;
-        bool sale;
-        uint256 price;
-        bool auction;
-        address bidder;
-    }
-
     struct getObject {
         uint256[] ids;
         string[] uris;
@@ -38,34 +27,53 @@ contract Gateway is Marketplace {
     function refreshOne(uint256 tokenId)
         public
         view
-        returns (getObjectOne memory)
+        returns (getObject memory)
     {
-        getObjectOne memory getObject1;
+        getObject memory getObject1;
 
-        getObject1.id = tokenId;
-        getObject1.uri = vhc.tokenURI(tokenId);
-        getObject1.owner = vhc.ownerOf(tokenId);
-        getObject1.garage = vhc.getApprovedGarage(tokenId);
+        uint256[] memory ids = new uint256[](1);
+        string[] memory uris = new string[](1);
+        address[] memory owners = new address[](1);
+        address[] memory garages = new address[](1);
+        bool[] memory sales = new bool[](1);
+        uint256[] memory prices = new uint256[](1);
+        bool[] memory auctions = new bool[](1);
+        address[] memory bidders = new address[](1);
+
+        ids[0] = tokenId;
+        uris[0] = vhc.tokenURI(tokenId);
+        owners[0] = vhc.ownerOf(tokenId);
+        garages[0] = vhc.getApprovedGarage(tokenId);
 
         bool isForSale = _isForSale(tokenId);
-        getObject1.sale = isForSale;
+        sales[0] = isForSale;
 
 
         if (isForSale) {
-            getObject1.price = _getVehiclePrice(tokenId);
+            prices[0] = _getVehiclePrice(tokenId);
             bool isAuction = _isAuction(tokenId);
             
-            getObject1.auction = isAuction;
+            auctions[0] = isAuction;
 
             if (isAuction) {
-                getObject1.bidder = _getTopBidder(tokenId);
+                bidders[0] = _getTopBidder(tokenId);
             }
         }
+        
+        getObject1.ids = ids;
+        getObject1.uris = uris;
+        getObject1.owners = owners;
+        getObject1.garages = garages;
+        getObject1.sales = sales;
+        getObject1.prices = prices;
+        getObject1.auctions = auctions;
+        getObject1.bidders = bidders;
 
         return getObject1;
     }
 
     function getEverything() public view returns (getObject memory) {
+
         getObject memory getObject1;
 
         uint256 totalSupply = vhc.totalSupply();

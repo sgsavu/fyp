@@ -63,14 +63,14 @@ const History = ({ vehicle }) => {
     return (
         <div>
             <p>Total distance traveled: {odometerValue} km</p>
-            <div class="timeline">
+            <div className="timeline">
                 {Object.keys(vehicleHistory).map((time, index) => {
                     return (
 
-                        <div key={index} class="timeline-event">
-                            <label class="timeline-event-icon"></label>
-                            <div class="timeline-event-info">
-                                <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} class="timeline-event-date">{getDate(time)}</p>
+                        <div key={index} className="timeline-event">
+                            <label className="timeline-event-icon"></label>
+                            <div className="timeline-event-info">
+                                <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} className="timeline-event-date">{getDate(time)}</p>
                                 <h4 onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
                                 <h6>Proprietor</h6>
                             </div>

@@ -2,6 +2,7 @@ import { deleteFieldKey, entryDataState, updateDataState } from "../app/appActio
 import store from "../store";
 import { getUserAccount } from "../reduxUtils";
 import { getContractFor } from "../../components/utils/GatewayParser";
+import { refreshVehicle } from "../data/dataActions";
 
 
 export function subscribeToSaleStatus() {
@@ -11,13 +12,7 @@ export function subscribeToSaleStatus() {
         }, function (error, event) {
             console.log("SaleStatus", event)
             if (!error) {
-                if (event.returnValues.status == true) {
-                    dispatch(addToSale(event.returnValues.tokenId))
-                }
-                else if (event.returnValues.status == false) {
-                    dispatch(removeFromSale(event.returnValues.tokenId))
-                }
-                //dispatch(addToMyVehicles(event.returnValues.tokenId))
+                dispatch(refreshVehicleData(event.returnValues.tokenId))
             }
 
         })
@@ -34,21 +29,12 @@ export function subscribeToTransfers() {
             console.log("Transfer", event)
             if (!error) {
                 if (event.returnValues.to == "0x0000000000000000000000000000000000000000")
+                {
                     dispatch(removeFromAll(event.returnValues.tokenId))
-                if (event.returnValues.from == "0x0000000000000000000000000000000000000000")
-                    dispatch(addToAll(event.returnValues.tokenId))
-                if (event.returnValues.from == thisAccount)
-                {
-
                 }
-                    //dispatch(removeFromMyVehicles(event.returnValues.tokenId))
-                    
-                if (event.returnValues.to == thisAccount)
-                {
-
-                }
-                    //dispatch(addToMyVehicles(event.returnValues.tokenId))
-                    
+                else {
+                    dispatch(refreshVehicleData(event.returnValues.tokenId))
+                }                    
             }
         })
     }
@@ -60,9 +46,9 @@ export function subscribeToNewPrice() {
         smartContract.events.NewPrice({
         }, function (error, event) {
             console.log("NewPrice", event)
-            if (!error)
-            {}
-                //dispatch(updatePrice(event.returnValues.tokenId))
+            if (!error){
+                dispatch(refreshVehicleData(event.returnValues.tokenId))
+            }
         })
     }
 }
@@ -74,9 +60,9 @@ export function subscribeToNewTopBidder() {
         smartContract.events.NewTopBidder({
         }, function (error, event) {
             console.log("NewTopBidder", event)
-            if (!error)
-            {}
-                //dispatch(updateTopBidder(event.returnValues.tokenId))
+            if (!error){
+                dispatch(refreshVehicleData(event.returnValues.tokenId))
+            }
         })
     }
 }
@@ -87,9 +73,9 @@ export function subscribeToNewGarageApproval() {
         smartContract.events.NewGarageApproval({
         }, function (error, event) {
             console.log("NewGarageApproval", event)
-            if (!error)
-            {}
-                //dispatch(updateGarage(event.returnValues.tokenId))
+            if (!error){
+                dispatch(refreshVehicleData(event.returnValues.tokenId))
+            }
         })
     }
 }
@@ -103,82 +89,19 @@ export function subscribeToApproval() {
             console.log("NewApproval", event)
             if (!error) {
                 if (event.returnValues.owner = thisAccount) {
-                    //dispatch(updateApproval(event.returnValues.tokenId))
+                    dispatch(updateDataState({ field: "approval", value: event.returnValues.tokenId }));
                 }
             }
         })
     }
 }
 
-function updatePrice(tokenId) {
-    return async (dispatch) => {
 
-        var saleVehicles = await store.getState().data.saleVehicles
-
-        if (tokenId in saleVehicles)
-        {}
-            //await injectPrice(saleVehicles[tokenId])
-
-        dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
-    }
-}
-
-function updateTopBidder(tokenId) {
-    return async (dispatch) => {
-
-        var saleVehicles = await store.getState().data.saleVehicles
-
-        if (tokenId in saleVehicles)
-        {}
-            //await injectIfTopBidder(saleVehicles[tokenId])
-
-        dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
-    }
-}
-
-function updateGarage(tokenId) {
+function refreshVehicleData (tokenId) {
     return async (dispatch) => {
         var allVehicles = await store.getState().data.allVehicles
-
-        //await injectIfApprovedGarage(allVehicles[tokenId])
-
+        allVehicles[tokenId] = (await refreshVehicle(tokenId))[tokenId]
         dispatch(updateDataState({ field: "allVehicles", value: allVehicles }));
-    }
-}
-
-function updateApproval(tokenId) {
-    return async (dispatch) => {
-        dispatch(updateDataState({ field: "approval", value: tokenId }));
-    }
-}
-
-
-
-function addToSale(token) {
-    return async (dispatch) => {
-        //dispatch(entryDataState({ field: "saleVehicles", key: token, value: await getVehicleInfo(token) }))
-    }
-}
-
-
-
-function addToAll(token) {
-    return async (dispatch) => {
-        //dispatch(entryDataState({ field: "allVehicles", key: token, value: await getVehicleInfo(token) }))
-    }
-}
-
-
-function removeFromSale(token) {
-    return async (dispatch) => {
-
-        var saleVehicles = await store.getState().data.saleVehicles
-
-        if (token in saleVehicles) {
-            delete saleVehicles[token]
-        }
-
-        dispatch(updateDataState({ field: "saleVehicles", value: saleVehicles }));
     }
 }
 

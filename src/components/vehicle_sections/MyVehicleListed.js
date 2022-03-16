@@ -55,8 +55,8 @@ function MyVehicleListed({ vehicle }) {
     return (
 
 
-        <div class="phone">
-            <div class="content">
+        <div className="phone">
+            <div className="content">
 
                 <div className={blockchain.pendingTx.length != 0 ? "circle-loading" : "circle"}>
                     <div className='circle-status'>
@@ -65,7 +65,7 @@ function MyVehicleListed({ vehicle }) {
                 </div>
 
                 <div>
-                    <p class="panel-heading">Vehicle Listed</p>
+                    <p className="panel-heading">Vehicle Listed</p>
                 </div>
 
                 <div >

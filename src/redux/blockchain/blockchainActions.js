@@ -10,11 +10,12 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
 import { clearMyData, getAuthenticatedData } from "../data/dataActions";
-import { subscribeToApproval, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
+import {  subscribeToApproval, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
 import { getNetworkRpcUrl } from "../../components/utils/GatewayParser";
 
 const CONTRACT_LIST = [Gateway, Vehicle, Roles, Odometer, Management]
+
 const fetchWalletProvider = async () => {
   const provider = await detectEthereumProvider({ timeout: 5 })
   if (!provider) {
@@ -123,12 +124,14 @@ export const login = () => {
       await dispatch(updateAppAccount(account));
       if (network == await getCurrentNetwork())
       {
-        await dispatch(getAuthenticatedData())
-        //await dispatch(loadSmartContracts())
-        await dispatch(subscribeToChainEvents())
+        //await dispatch(getAuthenticatedData())
+        await dispatch(loadSmartContracts())
+        //await dispatch(subscribeToChainEvents())
       }
       else
+      {
         await dispatch(updateAppNetwork(network))
+      }
     } catch (err) {
       dispatch(alerts({ alert: "error", message: err.message }))
     }

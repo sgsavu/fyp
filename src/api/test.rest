@@ -4,7 +4,7 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {   
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"mint",
     "data": {
         "image": "https://cdn.pocket-lint.com/r/s/970x/assets/images/144304-cars-review-tesla-model-x-review-lead-image1-vdycmknzck-jpg.webp",

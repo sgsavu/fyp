@@ -8,13 +8,6 @@ function PendingTX() {
 
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const [pendingList, setPendingList] = useState([])
-
-    useEffect(() => {
-        if (blockchain.pendingTx)
-            setPendingList(blockchain.pendingTx)
-    }, [blockchain.pendingTx])
-
 
     return (
 

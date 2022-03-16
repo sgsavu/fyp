@@ -38,7 +38,7 @@ const Marketplace = () => {
   const [lowBound, setLowBound] = useState(0)
   const [highBound, setHighBound] = useState(10000)
 
-  const [perPage, setPerPage] = useState(5);
+  const [perPage, setPerPage] = useState(6);
   const [newSelect, setNewSelect] = useState(null)
 
 
@@ -336,9 +336,9 @@ const Marketplace = () => {
             label="Per Page"
             onChange={handlePerPage}
           >
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={15}>15</MenuItem>
-            <MenuItem value={25}>25</MenuItem>
+            <MenuItem value={6}>6</MenuItem>
+            <MenuItem value={18}>18</MenuItem>
+            <MenuItem value={60}>60</MenuItem>
           </Select2>
         </FormControl>
       </Stack>
