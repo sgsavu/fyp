@@ -18,6 +18,8 @@ import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
 import * as FaIcons from "react-icons/fa";
 import Link from '@mui/material/Link';
+import { useMediaQuery } from "@mui/material";
+import { Box } from "@mui/system";
 
 
 
@@ -38,6 +40,7 @@ function SimpleDialog(props) {
     const handleClose = () => {
         onClose();
     };
+
 
     const handleListItemClick = (value) => {
         onClose(value);
@@ -89,12 +92,14 @@ function SelectNetwork() {
         }
     };
 
+
+
     return (
         <div>
 
             <Chip
                 avatar={<Avatar src={blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].image : null} />}
-                label={blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].chainName : null}
+                label={<Box display={{xs: "none", sm: "block"}} >{blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].chainName : "null"}</Box>   }
                 variant="outlined"
                 onClick={handleClickOpen}
             />

@@ -71,18 +71,6 @@ async function getEverything() {
 }
 
 
-export function getSaleVehicles(allVehicles) {
-  let saleVehicles = {}
-
-  for (const [tokenId, metadata] of Object.entries(allVehicles)) {
-    if (metadata.injected.sale == true) {
-      saleVehicles[tokenId] = metadata
-    }
-  }
-
-  return saleVehicles
-}
-
 
 
 

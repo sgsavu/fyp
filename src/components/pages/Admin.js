@@ -53,7 +53,7 @@ const Admin = () => {
         <input onChange={(e) => { setVehicleToBurn(e.target.value) }} value={vehicleToBurn} placeholder="Vehicle To Burn"></input>
         <button onClick={() => {
           if (vehicleToBurn != "")
-            dispatch(callChainFunction("destroyVehicle", [vehicleToBurn]))
+            dispatch(callChainFunction("burn", [vehicleToBurn]))
           else
             dispatch(alerts({ alert: "error", message: "Required fields not filled or address format incorrect." }))
         }}>Burn</button>

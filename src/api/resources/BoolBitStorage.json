@@ -23,8 +23,7 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
@@ -53,8 +52,7 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
@@ -78,8 +76,7 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function",
-      "constant": true
+      "type": "function"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_packedBools\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_boolNumber\",\"type\":\"uint256\"}],\"name\":\"_getBoolean\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_packedBools\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_boolNumber\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_value\",\"type\":\"bool\"}],\"name\":\"_setBoolean\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"_tokenIdToBoolBit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/BoolBitStorage.sol\":\"BoolBitStorage\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/BoolBitStorage.sol\":{\"keccak256\":\"0x5d31eb5d3ea0abf0cad0aeea3c5317ba5e6c792292190f9dd805c316c4ad3409\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63fb6bd5aa3a8b0c06a427e70f86f1c10ef9597edc523ccc88c68a35267c7333\",\"dweb:/ipfs/QmYrVGYHzNHxZY36uB4a6VQyXzBYuSHkwWnvYbgCe2ZdcZ\"]}},\"version\":1}",
@@ -5267,8 +5264,8 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x9D07d86E0EdBaF68656A17491754471C45BC9Eb8",
-      "transactionHash": "0x76bd860473827a72279febb1c7ca036aee2ceec752382c76ee24dea91d669d92"
+      "address": "0x45c162C9489d17429c592F90d73c793EA3F43D94",
+      "transactionHash": "0x94e8cb5bfdf66a323dea2fa0bfa57db1e869ab55dab57ea807373c0028a9d6f9"
     },
     "4002": {
       "events": {},
@@ -5278,8 +5275,7 @@
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-03-16T14:31:00.858Z",
-  "networkType": "ethereum",
+  "updatedAt": "2022-03-16T19:26:32.956Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

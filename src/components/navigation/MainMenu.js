@@ -14,6 +14,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { IconButton, Stack } from '@mui/material';
 
+import { useMediaQuery } from 'react-responsive';
+
+
 export default function MainMenu() {
 
     const [state, setState] = React.useState({
@@ -38,11 +41,24 @@ export default function MainMenu() {
     const [value, setValue] = React.useState(0)
     const history = useHistory();
 
-    function handleChange(event, newValue) {
-        history.push(sidebar[newValue].path)
-        setValue(newValue)
-
+    function handleChange(e) {
+        var index = [...e.target.parentElement.children].indexOf(e.target)
+        if (window.location.pathname != sidebar[index].path) {
+            history.push(sidebar[index].path)
+            setValue(index)
+        }
     };
+
+
+    React.useEffect(() => {
+
+        for (var element of sidebar) {
+            if (window.location.pathname == element.path) {
+                setValue(sidebar.indexOf(element))
+            }
+        }
+    }, [sidebar])
+
 
     const drawer = (anchor) => (
         <Box
@@ -64,18 +80,15 @@ export default function MainMenu() {
         </Box>
     );
 
+    const greaterThan700 = useMediaQuery({ minWidth: 700 })
 
 
     return (
 
 
-        <Stack direction="row">
+        <Stack direction="row" >
 
-            <React.Fragment key={'left'}>
-                <IconButton onClick={toggleDrawer('left', true)}>
-                    <FaIcons.FaBars />
-                </IconButton>
-            </React.Fragment>
+
             <Drawer
                 anchor={'left'}
                 open={state['left']}
@@ -83,20 +96,26 @@ export default function MainMenu() {
             >
                 {drawer('left')}
             </Drawer>
-            <Box sx={{ maxWidth: { xs: 320, sm: 480 }, bgcolor: 'background.paper' }}>
+
+
+            {greaterThan700 ? <Box sx={{ maxWidth: { sm: 320, md: 480, lg: 640, xl: 800 }, bgcolor: 'background.paper' }}>
                 <Tabs
                     value={value}
-                    onChange={handleChange}
                     variant="scrollable"
                     scrollButtons="auto"
                     aria-label="scrollable auto tabs example"
                 >
                     {sidebar.map((item, index) => (
-                        <Tab key={index} label={item.title} />
+                        <Tab onClick={handleChange} key={index} label={item.title} />
                     ))}
 
                 </Tabs>
-            </Box>
+            </Box> : <React.Fragment key={'left'}>
+                <IconButton onClick={toggleDrawer('left', true)}>
+                    <FaIcons.FaBars />
+                </IconButton>
+            </React.Fragment>}
+
         </Stack>
     );
 }

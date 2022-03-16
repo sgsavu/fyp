@@ -64,9 +64,9 @@ Content-Type: application/json
 
 {
     "chain":"0xfa2",
-    "operation":"tokenURI",
+    "operation":"exists",
     "data": {
-        "tokenId": "0"
+        "tokenId": "8"
     }
 }
 

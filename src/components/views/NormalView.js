@@ -9,7 +9,6 @@ import Admin from '../pages/Admin';
 import Options from '../pages/Options';
 import ControlledRoute from '../navigation/ControlledRoute';
 import Vehicle from "../pages/Vehicle";
-import Support from "../pages/Support";
 import Error from "../modals/Error";
 import Loading from "../modals/Loading";
 import CustomModal from "../modals/CustomModal";
@@ -60,12 +59,11 @@ function NormalView() {
                     <ControlledRoute path='/' exact component={Marketplace} />
                     <ControlledRoute path='/verify' component={Verify} />
                     <ControlledRoute path='/mint' component={Mint} />
-                    <Route path='/garage' component={Garage} />
                     <ControlledRoute path='/admin' component={Admin} />
                     <ControlledRoute path='/edit' component={Edit} />
                     <Route path='/vehicle' component={Vehicle} />
                     <Route path='/options' component={Options} />
-                    <Route path='/support' component={Support} />
+                    <Route path='/garage' component={Garage} />
                 </Switch>
             </Router>
         </div>

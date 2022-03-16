@@ -18,8 +18,18 @@ import * as GameIcons from "react-icons/gi";
 import * as MDIcons from "react-icons/md";
 import * as FeatherIcons from "react-icons/fi";
 import * as RiIcons from 'react-icons/ri';
-import { getSaleVehicles } from "../../redux/data/dataActions";
 
+export function getSaleVehicles(allVehicles) {
+  let saleVehicles = {}
+
+  for (const [tokenId, metadata] of Object.entries(allVehicles)) {
+    if (metadata.injected.sale == true) {
+      saleVehicles[tokenId] = metadata
+    }
+  }
+
+  return saleVehicles
+}
 
 
 const Marketplace = () => {
@@ -141,7 +151,6 @@ const Marketplace = () => {
 
 
   useEffect(() => {
-
     var saleVehicles = getSaleVehicles(data.allVehicles)
     setPool(Object.values(saleVehicles))
     var allAttributes = getAttributesCollection(Object.values(saleVehicles))
@@ -150,7 +159,7 @@ const Marketplace = () => {
   }, [data.allVehicles])
 
 
-  useEffect( () => {
+  useEffect(() => {
 
     var saleVehicles = getSaleVehicles(data.allVehicles)
     createLowBoundary(Object.values(saleVehicles))
@@ -158,6 +167,11 @@ const Marketplace = () => {
 
 
   }, [data.displayCurrency, data.allVehicles])
+
+
+  useEffect(() => {
+    setPages(applyFilters(pool))
+  }, [pool, filterObject, minPrice, maxPrice, perPage])
 
 
 
@@ -171,11 +185,6 @@ const Marketplace = () => {
     return listOfVehicles
   }
 
-  useEffect(() => {
-    setPages(applyFilters(pool))
-  }, [pool, filterObject, minPrice, maxPrice, perPage])
-
-
 
 
   function loadFilterObject(list) {
@@ -187,7 +196,7 @@ const Marketplace = () => {
     setFilterObject(mf)
   }
 
-  const [value1, setValue1] = React.useState([0, 10000]);
+  const [value1, setValue1] = React.useState([lowBound, highBound]);
   const marks = [
     {
       value: lowBound,
@@ -198,8 +207,10 @@ const Marketplace = () => {
       label: `${highBound} ${data.displayCurrency}`,
     },
   ];
-  const handleChange1 = (event, newValue, activeThumb) => {
-    var minDistance = highBound / 1000
+
+
+  const handleChange2 = (event, newValue, activeThumb) => {
+    var minDistance = highBound / 100
 
     if (!Array.isArray(newValue)) {
       return;
@@ -207,11 +218,17 @@ const Marketplace = () => {
 
     if (activeThumb === 0) {
       setValue1([Math.min(newValue[0], value1[1] - minDistance), value1[1]]);
-      setMinPrice(Math.min(newValue[0], value1[1] - minDistance))
     } else {
       setValue1([value1[0], Math.max(newValue[1], value1[0] + minDistance)]);
-      setMaxPrice(Math.max(newValue[1], value1[0] + minDistance))
     }
+  };
+
+  const handleChange1 = (event, newValue) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+    setMinPrice(newValue[0])
+    setMaxPrice(newValue[1])
   };
 
 
@@ -281,7 +298,7 @@ const Marketplace = () => {
         </IconButton>
       </Tooltip>
 
-      <Box sx={{ width: "30%" }}>
+      <Box width={{xs: "80%",sm: "50%",md:"40%", lg: "30%"}}>
         <Select
           isOptionDisabled={onlyIfGroupNotSelected}
           formatGroupLabel={formatGroupLabel}
@@ -292,14 +309,15 @@ const Marketplace = () => {
       </Box>
 
 
-      <Stack width="30%" display="flex" align-items="center" justify-content="center" >
+      <Stack width={{xs: "75%",sm: "50%",md:"40%", lg: "30%"}} display="flex" align-items="center" justify-content="center" >
         <Slider
           min={lowBound}
           max={highBound}
           marks={marks}
           value={value1}
           step={highBound / 100}
-          onChange={handleChange1}
+          onChange={handleChange2}
+          onChangeCommitted={handleChange1}
           valueLabelDisplay="auto"
           valueLabelFormat={valueLabelFormat}
         />
