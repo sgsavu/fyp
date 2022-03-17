@@ -33,9 +33,9 @@ Content-Type: application/json
 
 {   
     "chain":"0xfa2",
-    "operation":"destroyVehicle",
+    "operation":"burn",
     "data": {
-        "tokenId": 0
+        "tokenId": 12
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
 }
@@ -66,7 +66,7 @@ Content-Type: application/json
     "chain":"0xfa2",
     "operation":"exists",
     "data": {
-        "tokenId": "8"
+        "tokenId": "2"
     }
 }
 
@@ -91,11 +91,11 @@ GET https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"hasRole",
     "data": {
-        "role": "ODOMETER_ROLE",
-        "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a"
+        "role": "GARAGE_ROLE",
+        "address": "0xc1375A3812518208373474cCaB030CBb9cD9A499"
     }
 }
 
@@ -105,11 +105,11 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"grantRole",
     "data": {
-        "role": "ODOMETER_ROLE",
-        "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a"
+        "role": "GARAGE_ROLE",
+        "address": "0xc1375A3812518208373474cCaB030CBb9cD9A499"
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
     
@@ -136,7 +136,7 @@ GET https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"getApprovedGarage",
     "data": {
         "tokenId": "0"
@@ -149,11 +149,11 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"setApprovedGarage",
     "data": {
-        "tokenId": "0",
-        "addr": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a"
+        "tokenId": "1",
+        "addr": "0xc1375A3812518208373474cCaB030CBb9cD9A499"
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
 }
@@ -164,10 +164,10 @@ GET https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"getOdometerValue",
     "data": {
-        "tokenId": "0"
+        "tokenId": "1"
     }
 }
 
@@ -177,11 +177,11 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"increaseOdometer",
     "data": {
-        "tokenId": "0",
-        "value": "1"
+        "tokenId": "2",
+        "value": "10"
     },
     "private_key": "ceddfa13d00d47e636b7f36203d29197c4f9b3a0b47766ba5e8bf214ede7daff"
 }
@@ -193,10 +193,10 @@ POST https://localhost:8443/
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"setOdometerAddress",
     "data": {
-        "tokenId": "0",
+        "tokenId": "2",
         "address": "0xBD24d8ab73E92a1ebA8E0Db97A20671b9713191a"
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"

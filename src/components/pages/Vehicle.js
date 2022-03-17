@@ -9,6 +9,8 @@ import MyVehicleListed from "../vehicle_sections/MyVehicleListed";
 
 import '../../styles/Vehicle.css';
 import BigCard from "../vehicle_sections/BigCard";
+import { Card, CardActions, CardContent, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 
 
 const Vehicle = () => {
@@ -43,60 +45,64 @@ const Vehicle = () => {
 
     }, [blockchain.smartContracts, data])
 
+    const [tab, setTab] = React.useState('History');
+
+    const handleChange = (event, newAlignment) => {
+        setTab(newAlignment);
+    };
+
     return (
         <div>
             {eexists ?
-                <div>
+                <Stack display="flex" alignItems="center" justifyContent="center" >
 
-                    
-                    <BigCard vehicle={vehicle}/>
+                    <BigCard vehicle={vehicle} />
+
+                    <ToggleButtonGroup
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 300,
+                            '& .MuiButtonBase-root': {
+                                borderRadius: '200px',
+                            },
+                        }}
+                        value={tab}
+                        exclusive
+                        onChange={handleChange}
+                    >
+                        <ToggleButton value="History">History</ToggleButton>
+                        <ToggleButton value="Listing">Listing</ToggleButton>
+                        <ToggleButton value="Approve">Approve</ToggleButton>
+                    </ToggleButtonGroup>
 
 
 
-                    <div className="cardwrapper2">
-                        <div className="phone2">
-                            <div className="content">
-                                <div className="boss" onClick={() => setPageToggle(!pageToggle)}>
-                                    <div className={pageToggle ? "toggle-right" : "toggle-left"}></div>
-                                    <div className="options">
-                                        <p className={pageToggle ? "optionOff" : "optionOn"}>History</p>
-                                        <p className={pageToggle ? "optionOn" : "optionOff"}>Listing</p>
-                                    </div>
-                                </div>
-                            </div>
+
+
+                    {tab == "Listing" ?
+                        isOwner
+                            ?
+                            isForSale
+                                ?
+                                <MyVehicleListed vehicle={vehicle} />
+                                :
+                                <MyVehicleNotListed vehicle={vehicle} />
+                            : isForSale
+                                ?
+                                <NotMyVehicleListed vehicle={vehicle} />
+                                :
+                                <p>Vehicle not for sale.</p>
+                        :
+                        <div>
+                            <History vehicle={vehicle}></History>
                         </div>
-                    </div>
+                    }
 
 
-                    <div>
-                        {pageToggle ?
-                            <div className="body">
 
-                                {isOwner
-                                    ?
-                                    isForSale
-                                        ?
-                                        <MyVehicleListed vehicle={vehicle} />
-                                        :
-                                        <MyVehicleNotListed vehicle={vehicle} />
-                                    : isForSale
-                                        ?
-                                        <NotMyVehicleListed vehicle={vehicle} />
-                                        :
-                                        <p>Vehicle not for sale.</p>
-                                }
-                            </div>
-                            :
-                            <div className="cardwrapper2">
-                                <div>
-                                    <History vehicle={vehicle}></History>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-
-                </div>
+                </Stack>
 
                 : <div>
                     <p>Sorry, this vehicle no longer exists.</p>

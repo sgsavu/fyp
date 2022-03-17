@@ -48,9 +48,8 @@ export const createMetaDataAndMint = () => {
   return async (dispatch) => {
     try {
       const form = await store.getState().form
-      const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
       const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
-      const image = ipfsBaseUrl + (await ipfsClient.add(form.buffer)).path;
+      const image = (await ipfsClient.add(form.buffer)).path;
       const metaDataObj = {
         image: image,
         created: Date.now(),
@@ -59,11 +58,11 @@ export const createMetaDataAndMint = () => {
         nonce1: scramble(await getUserAccount()),
         nonce2: randomIntFromInterval(1, 1000000)
       };
-      const vehicle = ipfsBaseUrl + (await ipfsClient.add(JSON.stringify(metaDataObj))).path;
+      const vehicleHash = (await ipfsClient.add(JSON.stringify(metaDataObj))).path;
       dispatch(
         updateEntry({ name: "loading", value: true })
       );
-      await dispatch(callChainFunction("mint", [vehicle]))
+      await dispatch(callChainFunction("mint", [vehicleHash]))
       dispatch(
         updateEntry({ name: "loading", value: false })
       );
@@ -82,26 +81,50 @@ export const updateMetadata = () => {
   return async (dispatch) => {
     try {
 
+      console.log()
+
       const form = await store.getState().form
-      const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/";
       const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
+
       let vehicle = form.edit
 
+      console.log("edit",form.edit)
+
+      console.log("edit",vehicle)
+
       vehicle.attributes = form.fields
+
       var vehicleId = vehicle.injected.id
-      delete vehicle.injected
+      
       vehicle.updated = Date.now()
 
+
+      
+
       if (form.buffer.length != 0) {
-        const image = ipfsBaseUrl + (await ipfsClient.add(form.buffer)).path;
+        const image =  (await ipfsClient.add(form.buffer)).path;
         vehicle.image = image
+      } else {
+        var removeLinkFrame = vehicle.image.indexOf("/ipfs/")
+        if(removeLinkFrame!=-1){
+          vehicle.image = vehicle.image.slice(removeLinkFrame + 6, vehicle.image.length)
+        }
       }
 
-      const vehicleObj = ipfsBaseUrl + (await ipfsClient.add(JSON.stringify(vehicle))).path;
+      const newVehicle = Object.assign({}, vehicle);
+
+      console.log("new",newVehicle)
+    
+      delete newVehicle.injected
+
+
+      const vehicleHash =  (await ipfsClient.add(JSON.stringify(newVehicle))).path;
       dispatch(
         updateEntry({ name: "loading", value: true })
       );
-      await dispatch(await callChainFunction("setTokenURI", [vehicleId, vehicleObj]))
+        
+
+      await dispatch(await callChainFunction("setTokenURI", [vehicleId, vehicleHash]))
       dispatch(
         updateEntry({ name: "loading", value: false })
       );

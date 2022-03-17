@@ -21,6 +21,8 @@ const Edit = () => {
         })
 
         dispatch(uploadImage({ preview: new URL(vehicle.image), buffer: [] }))
+
+        console.log(vehicle)
         dispatch(
             updateEntry({ name: "edit", value: vehicle })
         );

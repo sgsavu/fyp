@@ -5,10 +5,13 @@ import { getRole, callViewChainFunction } from "../../components/utils/GatewayPa
 import { alerts, updateDataState } from "../app/appActions";
 import { getUserAccount } from "../reduxUtils";
 
+var ipfsGateways = ["gateway.ipfs.io","ipfs.io","dweb.link","infura-ipfs.io","via0.com",]
+
+
 async function assembleVehicleObjects(response) {
 
   let assembled = {}
-  
+
   for (var i = 0; i < response.ids.length; i++) {
     var id = response.ids[i]
     var URI = response.uris[i]
@@ -22,7 +25,24 @@ async function assembleVehicleObjects(response) {
 
     assembled[id] = {}
 
-    let vehicleMetadata = await (await fetch(URI)).json()
+    let vehicleMetadata = null
+
+    var k  = 0
+    while (k < ipfsGateways.length) {
+      var r = await fetch("https://" + ipfsGateways[k] + "/ipfs/" + URI)
+      if (r.status!=200) {
+        k++;
+        continue;
+      }
+      vehicleMetadata = await r.json()
+      break;
+    }
+
+    if (vehicleMetadata==null) {
+      throw Error("Cannot fetch URI from any Gateway.")
+    }
+
+    vehicleMetadata.image = "https://" + ipfsGateways[k] + "/ipfs/" + vehicleMetadata.image
 
     vehicleMetadata.injected = {}
     vehicleMetadata.injected.id = id

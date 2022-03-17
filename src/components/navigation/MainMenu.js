@@ -51,12 +51,13 @@ export default function MainMenu() {
 
 
     React.useEffect(() => {
-
+   
         for (var element of sidebar) {
             if (window.location.pathname == element.path) {
                 setValue(sidebar.indexOf(element))
             }
         }
+
     }, [sidebar])
 
 

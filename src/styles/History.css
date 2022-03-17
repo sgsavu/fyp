@@ -5,11 +5,11 @@
 }
 
 .timeline {
-
   position: relative;
-  max-width: 40em;
+  margin: 20px;
 }
 .timeline:before {
+  
   background-color: black;
   content: '';
   margin-left: -1px;
@@ -22,7 +22,6 @@
 
 .timeline-event {
   width: 325px;
-  overflow: hidden;
   position: relative;
 }
 .timeline-event:hover .timeline-event-icon {

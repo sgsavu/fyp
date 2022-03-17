@@ -287,16 +287,9 @@ const Marketplace = () => {
 
   return (
 
-    <div className="market-main">
+    <Stack marginTop={2} display="flex" alignItems="center" justifyContent="center">
 
 
-
-
-      <Tooltip title={tooltip()}>
-        <IconButton>
-          <FeatherIcons.FiHelpCircle />
-        </IconButton>
-      </Tooltip>
 
       <Box width={{xs: "80%",sm: "50%",md:"40%", lg: "30%"}}>
         <Select
@@ -323,13 +316,17 @@ const Marketplace = () => {
         />
       </Stack>
 
-
+      <Tooltip title={tooltip()}>
+        <IconButton>
+          <FeatherIcons.FiHelpCircle />
+        </IconButton>
+      </Tooltip>
 
       {pages.length != 0 ?
-        <Grid container padding={5} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Grid container padding={5} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 6, md: 12, xl: 18 }}>
           {pages[pageNr].map((vehicle, key) => {
             return (
-              <Grid item xs={2} sm={4} md={4} key={key}>
+              <Grid item xs={4} sm={6} md={6} xl={6} key={key}>
                 <MiniCard key={key} vehicle={vehicle}></MiniCard>
               </Grid>
             );
@@ -361,7 +358,7 @@ const Marketplace = () => {
         </FormControl>
       </Stack>
 
-    </div>
+    </Stack>
   );
 
 

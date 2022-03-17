@@ -1,7 +1,9 @@
+import { Stack, Typography } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import '../../styles/History.css';
 import { callViewChainFunction, getContractFor, getNetworkExplorer } from '../utils/GatewayParser';
+import { MdSpeed } from "react-icons/md";
 
 const History = ({ vehicle }) => {
 
@@ -61,8 +63,11 @@ const History = ({ vehicle }) => {
 
 
     return (
-        <div>
-            <p>Total distance traveled: {odometerValue} km</p>
+        <Stack margin={3} display="flex" alignItems="center" justifyContent="center">
+            <p>Total distance traveled: </p>
+            <MdSpeed></MdSpeed>
+            <p>{odometerValue} km</p>
+
             <div className="timeline">
                 {Object.keys(vehicleHistory).map((time, index) => {
                     return (
@@ -81,7 +86,7 @@ const History = ({ vehicle }) => {
 
                 })}
             </div>
-        </div>
+        </Stack>
     );
 }
 

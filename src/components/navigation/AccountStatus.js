@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import * as FaIcons from "react-icons/fa";
 import Link from '@mui/material/Link';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
+import { useHistory } from "react-router-dom";
 
 
 function SimpleDialog(props) {
@@ -55,8 +56,10 @@ function SimpleDialog2(props) {
     const { onClose, open } = props;
     const [explorerUrl, setExplorerUrl] = useState("")
 
+    const history = useHistory();
 
     function disconnect() {
+        history.push("/")
         onClose()
         dispatch(signout())
     }

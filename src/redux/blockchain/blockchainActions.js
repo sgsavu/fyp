@@ -10,7 +10,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
 import { clearMyData, getAuthenticatedData } from "../data/dataActions";
-import {  subscribeToApproval, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
+import { subscribeToApproval, subscribeToEvent, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
 import { getNetworkRpcUrl } from "../../components/utils/GatewayParser";
 
@@ -41,7 +41,6 @@ const fetchWalletChain = async (provider) => {
 }
 
 const addChain = async (newNetwork) => {
-
   (await getWalletProvider()).request({
     method: 'wallet_addEthereumChain',
     params: [NetworkTables.networks[newNetwork]]
@@ -49,7 +48,6 @@ const addChain = async (newNetwork) => {
 }
 
 const switchChain = async (newNetwork) => {
-
   (await getWalletProvider()).request({
     method: 'wallet_switchEthereumChain',
     params: [{ chainId: newNetwork }]
@@ -57,7 +55,8 @@ const switchChain = async (newNetwork) => {
 }
 
 export const addOrSwitchNetwork = async (newNetwork) => {
-  if (["0x4","0x3","0x1"].includes(newNetwork))
+  console.log("danetow",newNetwork)
+  if (["0x4", "0x3", "0x1"].includes(newNetwork))
     await switchChain(newNetwork)
   else
     await addChain(newNetwork)
@@ -122,14 +121,12 @@ export const login = () => {
       await dispatch(updateWalletProvider(provider))
       await dispatch(updateWeb3(provider))
       await dispatch(updateAppAccount(account));
-      if (network == await getCurrentNetwork())
-      {
+      if (network == await getCurrentNetwork()) {
         //await dispatch(getAuthenticatedData())
         await dispatch(loadSmartContracts())
         //await dispatch(subscribeToChainEvents())
       }
-      else
-      {
+      else {
         await dispatch(updateAppNetwork(network))
       }
     } catch (err) {
@@ -191,10 +188,10 @@ export const loadSmartContracts = () => {
 const subscribeToChainEvents = () => {
   return async (dispatch) => {
     dispatch(subscribeToTransfers())
-    dispatch(subscribeToSaleStatus())
-    dispatch(subscribeToNewPrice())
-    dispatch(subscribeToNewTopBidder())
-    dispatch(subscribeToNewGarageApproval())
+    dispatch(subscribeToEvent("SaleStatus") )
+    dispatch(subscribeToEvent("NewPrice"))
+    dispatch(subscribeToEvent("NewTopBidder"))
+    dispatch(subscribeToEvent("NewGarageApproval"))
     dispatch(subscribeToApproval())
   }
 }

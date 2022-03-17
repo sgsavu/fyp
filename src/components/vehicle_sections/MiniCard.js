@@ -36,12 +36,13 @@ const MiniCard = ({ vehicle }) => {
                     <Avatar>
                         <Jazzicon diameter={40} seed={jsNumberForAddress(vehicle.injected.owner)} />
                     </Avatar>
+                    
                     <div className="minicard-text">
                         <h3 className="minicard-title"> {vehicle.attributes.company} {vehicle.attributes.model} {vehicle.attributes.year}</h3>
                         <span className="minicard-status">{vehicle.injected.display_price ? vehicle.injected.display_price + " " + data.displayCurrency : "Not listed."}</span>
                     </div>
-                    <Stack spacing={2} display="flex" align-items="center" justify-content="center" direction="row">
 
+                    <Stack spacing={2} display="flex" align-items="center" justify-content="center" direction="row">
 
                         {vehicle.injected.display_price && (vehicle.injected.owner == blockchain.account) ?
 
@@ -57,7 +58,6 @@ const MiniCard = ({ vehicle }) => {
 
                             <RiIcons.RiAuctionFill></RiIcons.RiAuctionFill>
                             : null}
-
 
                     </Stack>
 

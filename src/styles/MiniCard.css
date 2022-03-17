@@ -18,7 +18,8 @@
   }
   
   .minicard-image {      
-    width: 40rem;
+    width: 100%;
+    height: 100%;
   }
   
   .minicard-overlay {

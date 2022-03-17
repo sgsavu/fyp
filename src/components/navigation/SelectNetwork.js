@@ -53,7 +53,7 @@ function SimpleDialog(props) {
                     <ListItem button onClick={() => handleListItemClick(kkey)} key={kkey}>
                         <ListItemAvatar>
                             <Avatar sx={{ width: 30, height: 30 }}
-                                src={blockchain.networkTables.networks[kkey].image} >
+                                src={blockchain.networkTables.images[kkey]} >
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText primary={blockchain.networkTables.networks[kkey].chainName} />
@@ -98,8 +98,8 @@ function SelectNetwork() {
         <div>
 
             <Chip
-                avatar={<Avatar src={blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].image : null} />}
-                label={<Box display={{xs: "none", sm: "block"}} >{blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].chainName : "null"}</Box>   }
+                avatar={<Avatar src={blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.images[blockchain.currentNetwork] : null} />}
+                label={<Box display={{xs: "none", sm: "none" , md: "block"}} >{blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].chainName : "null"}</Box>   }
                 variant="outlined"
                 onClick={handleClickOpen}
             />
