@@ -1,46 +1,92 @@
-import React, { useEffect } from 'react';
-import '../../styles/Form.css';
-import '../../styles/drop.css';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { uploadImage } from "../../redux/minting/formActions";
 import { useDropzone } from "react-dropzone"
+import { Stack } from '@mui/material';
+import { alerts } from '../../redux/app/appActions';
+import { gcd } from '../utils/Other';
 
 const Dropzone = () => {
 
 
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
+
+    const [goodToGo, setGoodToGo] = useState(false)
+    const [buffer, setBuffer] = useState(null)
+    const [preview, setPreview] = useState(null)
+
+
+    function checkDimensions() {
+        try { 
+            var gcxd = gcd(this.width, this.height)
+            if (this.width / gcxd - this.height / gcxd < 0)
+                throw Error("Image must not have a portrait aspect ratio.")
+            setGoodToGo(true)
+        }
+        catch (err) {
+            dispatch(alerts({ alert: "error", message: err.message }))
+        }
+    }
+
     const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
         multiple: false,
         accept: "image/*",
         onDrop: (acceptedFiles) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(acceptedFiles[0]);
-            console.log(acceptedFiles[0])
-            reader.onload = () => {
-                dispatch(uploadImage({ preview: URL.createObjectURL(acceptedFiles[0]), buffer: Buffer(reader.result.split(",")[1], "base64") }))
-            };
+            try {
+                const reader = new FileReader();
+                reader.onload = (boss) => {
+                    setPreview(URL.createObjectURL(acceptedFiles[0]))
+                    setBuffer(Buffer(reader.result.split(",")[1], "base64"))
+                };
+                reader.readAsDataURL(acceptedFiles[0]);
 
-
-            const img = new Image();
-            img.onload = function () {
-                alert(this.width + 'x' + this.height);
+                const img = new Image();
+                img.onload = checkDimensions
+                img.src = URL.createObjectURL(acceptedFiles[0]);
             }
-            img.src = URL.createObjectURL(acceptedFiles[0]);
-
-          
-
+            catch (err) {
+                dispatch(alerts({ alert: "error", message: err.message }))
+            }
         },
     })
+
+    useEffect(() => {
+        if (goodToGo) {
+            dispatch(uploadImage({ preview: preview, buffer: buffer }))
+            setGoodToGo(false)
+        }
+    }, [goodToGo])
+
+
+
     return (
-        <div>
+        <Stack
+            sx={{
+                background: "linear-gradient(90deg,rgb(39, 176, 255) 0%,rgb(0, 232, 236) 100%)"
+            }}
+            borderRadius= "10px"
+            bgcolor="red"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            padding={4}
+            spacing={2}
+            width={{ xs: "100%", sm: "100%", md: "100%", lg: "50%" }}
+        >
             <p>Vehicle Image</p>
-            <div {...getRootProps()} className={isDragActive ? "dropzone-active" : "dropzone"}>
+            <div {...getRootProps()} >
                 <input {...getInputProps()} />
-                <img src={form.preview} className="form-img" />
-                <p>Drag & drop <br></br> OR <br></br>Click to upload an image</p>
+                <img
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover"
+                    }}
+                    className='form-img' src={form.preview} />
             </div>
-        </div>
+            <p>Drag & drop or click to upload an image</p>
+        </Stack>
     );
 };
 

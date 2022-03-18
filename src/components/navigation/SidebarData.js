@@ -24,6 +24,10 @@ const UserSidebar = [
         icon: <AiIcons.AiFillCar />,
         cName: 'nav-text'
     },
+];
+
+const GarageSidebar = [
+    ...UserSidebar,
     {
         title: 'Garage',
         path: '/garage',
@@ -96,6 +100,6 @@ export const Sidebar = {
     AUTHORITY_ADMIN: AuthorityAdminSidebar,
     MINTER: MinterSidebar,
     MINTER_ADMIN: MinterAdminSidebar,
-    GARAGE: UserSidebar,
+    GARAGE: GarageSidebar,
     DEFAULT_ADMIN: DefaultAdminSidebar
 }

@@ -34,3 +34,17 @@ export function listToNSublists(list, n) {
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function gcd(a, b) {
+    if (b == 0) {
+        return a
+    }
+    return gcd(b, a % b)
+}
+
+export function formatAccountAddress(address) {
+    if (address) {
+        var length = address.length
+        return address.slice(0, 6) + "..." + address.slice(length - 4, length)
+    }
+}

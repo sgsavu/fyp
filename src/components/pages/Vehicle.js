@@ -11,6 +11,7 @@ import '../../styles/Vehicle.css';
 import BigCard from "../vehicle_sections/BigCard";
 import { Card, CardActions, CardContent, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import Approve from "../vehicle_sections/Approve";
 
 
 const Vehicle = () => {
@@ -74,31 +75,33 @@ const Vehicle = () => {
                     >
                         <ToggleButton value="History">History</ToggleButton>
                         <ToggleButton value="Listing">Listing</ToggleButton>
-                        <ToggleButton value="Approve">Approve</ToggleButton>
+                        {isOwner? <ToggleButton value="Approve">Garage</ToggleButton> : null}
                     </ToggleButtonGroup>
 
 
-
-
-
-                    {tab == "Listing" ?
-                        isOwner
-                            ?
-                            isForSale
-                                ?
-                                <MyVehicleListed vehicle={vehicle} />
-                                :
-                                <MyVehicleNotListed vehicle={vehicle} />
-                            : isForSale
-                                ?
-                                <NotMyVehicleListed vehicle={vehicle} />
-                                :
-                                <p>Vehicle not for sale.</p>
+                    {tab == "History" ?
+                        <History vehicle={vehicle}></History>
                         :
-                        <div>
-                            <History vehicle={vehicle}></History>
-                        </div>
+                        tab == "Listing" ?
+                            isOwner
+                                ?
+                                isForSale
+                                    ?
+                                    <MyVehicleListed vehicle={vehicle} />
+                                    :
+                                    <MyVehicleNotListed vehicle={vehicle} />
+                                : isForSale
+                                    ?
+                                    <NotMyVehicleListed vehicle={vehicle} />
+                                    :
+                                    <p>Vehicle not for sale.</p>
+                            :
+                            <Approve vehicle={vehicle}>
+
+                            </Approve>
                     }
+
+
 
 
 

@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import '../../styles/History.css';
+import '../../styles/Timeline.css';
 import { callViewChainFunction, getContractFor, getNetworkExplorer } from '../utils/GatewayParser';
 import { MdSpeed } from "react-icons/md";
 

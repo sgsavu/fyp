@@ -1,0 +1,27 @@
+.form-input-btn {
+  width: 30%;
+  height: 40px;
+
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgb(39, 176, 255) 0%,
+    rgb(0, 232, 236) 100%
+  );
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+
+}
+
+.form-input-btn:hover {
+  background: linear-gradient(
+    90deg,
+    rgb(39, 143, 255) 0%,
+    rgb(12, 99, 250) 100%
+  );
+}
+
+
+

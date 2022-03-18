@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import MiniCard from "../vehicle_sections/MiniCard";
 import { filterByFilterObject, filterPriceRange, specialSort } from "../filters/filters";
 import { listToNSublists } from "../utils/Other";
-import '../../styles/Marketplace.css';
 import Select from 'react-select'
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';

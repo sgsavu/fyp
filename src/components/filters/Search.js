@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/VerifyBox.css';
-import '../../styles/PulseButton.css';
 import { sleep } from '../utils/Other';
+
+import { MdOutlinePersonSearch } from "react-icons/md";
+
 
 const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
 
@@ -50,7 +52,7 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
                     onBlur={() => setIconFocused(false)}
                     onFocus={() => setIconFocused(true)}
                 >
-                    {wordEntered ? (inputFocused || iconFocused ? "✖️" : "🔍") : "🔍"}
+                    {wordEntered ? (inputFocused || iconFocused ? "✖️" : <MdOutlinePersonSearch/>) : <MdOutlinePersonSearch/>}
                 </button>
                 <input
                     className="search-input"

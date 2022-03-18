@@ -1,20 +1,35 @@
 import React from 'react';
-import '../../styles/Form.css';
-import '../../styles/drop.css';
 import Form from '../form/Form';
 import Dropzone from '../form/Dropzone';
+import { Stack } from '@mui/material';
 
 const Mint = () => {
 
     return (
-        <div className='form-container'>
-            <div className='form-content-left'>
-                <Dropzone />
-            </div>
-            <div className='form-content-right'>
-                <Form />
-            </div>
-        </div>
+        <Stack
+            mt={5}
+            
+            display="flex"
+            direction={{ xs: "column", sm: "column", md: "column", lg: "row" }}
+            justifyContent="center"
+            alignItems="center"
+        >
+            <Stack
+            borderRadius= "10px"
+                width={{ lg: "80%", xl: "60%" }}
+                sx={{
+                    background: "linear-gradient(90deg,rgb(39, 176, 255) 0%,rgb(0, 232, 236) 50%)"
+
+                }}
+                display="flex"
+                direction={{ xs: "column", sm: "column", md: "column", lg: "row" }}
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Dropzone></Dropzone>
+                <Form></Form>
+            </Stack>
+        </Stack>
     );
 };
 

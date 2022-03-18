@@ -15,8 +15,8 @@ export const roles = {
 }
 
 export const actions = {
-  GIVE: "GIVE",
-  REVOKE: "REVOKE",
+  GIVE: "grantRole",
+  REVOKE: "revokeRole",
 }
 
 const DEFAULT_ADMIN_OPTIONS = {

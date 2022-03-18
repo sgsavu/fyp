@@ -20,18 +20,17 @@ import * as FaIcons from "react-icons/fa";
 import Link from '@mui/material/Link';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { useHistory } from "react-router-dom";
+import { formatAccountAddress } from "../utils/Other";
 
 
-function SimpleDialog(props) {
+function NotConnectedDialog(props) {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-
     const { onClose, open } = props;
 
     useEffect(() => {
         onClose()
     }, [blockchain.account])
-
 
     return (
         <Dialog onClose={onClose} open={open}>
@@ -49,13 +48,11 @@ function SimpleDialog(props) {
     );
 }
 
-
-function SimpleDialog2(props) {
+function ConnectedDialog(props) {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     const { onClose, open } = props;
     const [explorerUrl, setExplorerUrl] = useState("")
-
     const history = useHistory();
 
     function disconnect() {
@@ -64,65 +61,50 @@ function SimpleDialog2(props) {
         dispatch(signout())
     }
 
-
     useEffect(async () => {
         if (blockchain.currentNetwork)
             setExplorerUrl((await getNetworkExplorer(blockchain.currentNetwork)) + "address/" + blockchain.account)
     }, [blockchain.currentNetwork, blockchain.account])
 
-
     return (
         <Dialog onClose={onClose} open={open}>
             <DialogTitle>Account</DialogTitle>
-            <List sx={{ pt: 0 }}>
-                <ListItem key={"bruh"}>
-                    <ListItemAvatar>
-                        <Avatar src="https://cdn.iconscout.com/icon/free/png-256/metamask-2728406-2261817.png" >
-                        </Avatar>
-                    </ListItemAvatar>
 
-                    <Stack direction="row" spacing={1} >
+            <Stack spacing={1} padding={5} display="flex" alignItems="center" justifyContent="center" direction="column" >
 
-                    </Stack>
-                    <ListItemText primary={formatAccountAddress(blockchain.account)} />
-                    <Link
 
-                        variant="body2"
-                        rel="noopener"
-                        href={explorerUrl}
-                        target="_blank"
-                    >
-                        <FaIcons.FaExternalLinkAlt></FaIcons.FaExternalLinkAlt> View on Explorer
-                    </Link>
-                    <Button size="small" variant="contained" onClick={disconnect}>Disconnect</Button>
+                <Avatar src="https://cdn.iconscout.com/icon/free/png-256/metamask-2728406-2261817.png" >
+                </Avatar>
 
-                </ListItem>
-            </List>
+                <ListItemText primary={formatAccountAddress(blockchain.account)} />
+                <Link
+                    variant="body2"
+                    rel="noopener"
+                    href={explorerUrl}
+                    target="_blank"
+                >
+                    <FaIcons.FaExternalLinkAlt></FaIcons.FaExternalLinkAlt> View on Explorer
+                </Link>
+
+
+
+
+
+
+            </Stack>
+            <Button size="small" variant="contained" onClick={disconnect}>Disconnect</Button>
+
         </Dialog>
     );
-}
-
-function formatAccountAddress(address) {
-    if (address) {
-        var length = address.length
-        return address.slice(0, 6) + "..." + address.slice(length - 4, length)
-    }
 }
 
 function AccountStatus() {
 
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const [explorerUrl, setExplorerUrl] = useState("")
 
     const [open1, setOpen1] = React.useState(false);
     const [open2, setOpen2] = React.useState(false);
-
-    useEffect(async () => {
-        if (blockchain.currentNetwork)
-            setExplorerUrl((await getNetworkExplorer(blockchain.currentNetwork)) + "address/" + blockchain.account)
-    }, [blockchain.currentNetwork, blockchain.account])
-
 
     function openDialog() {
         if (blockchain.account) {
@@ -132,8 +114,6 @@ function AccountStatus() {
             setOpen1(true)
         }
     }
-
-
 
     return (
         <div>
@@ -148,12 +128,12 @@ function AccountStatus() {
                 onClick={openDialog}
             />
 
-            <SimpleDialog
+            <NotConnectedDialog
                 open={open1}
                 onClose={() => setOpen1(false)}
             />
 
-            <SimpleDialog2
+            <ConnectedDialog
                 open={open2}
                 onClose={() => setOpen2(false)}
             />

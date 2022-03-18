@@ -1,7 +1,5 @@
-import { Box, Divider, Paper, Stack } from "@mui/material";
+import { Box, Card, Paper, Stack } from "@mui/material";
 import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from 'react-router-dom';
 import '../../styles/Vehicle.css';
 
 const BigCard = ({ vehicle }) => {
@@ -10,22 +8,26 @@ const BigCard = ({ vehicle }) => {
 
         <div>
 
-            <div>
+            <Card sx={{ padding: 0, margin: 4, borderRadius: 10, backgroundColor: "rgba(0, 0, 0, 0.02) "}}>
 
-                <Stack borderRadius={18} margin={3} padding={3} direction={{ xs: "column", sm: "column", md: "row" }}>
+                <Stack display="flex" alignItems={{ xs: "center", sm: "center", md: "stretch" }} borderRadius={18} margin={0} padding={0} direction={{ xs: "column", sm: "column", md: "row" }}>
 
 
-                    <Box  width={{ xs: "100%", sm: "100%", md: "50%" }} margin={2} padding={2}>
-                        <img 
-                        className="card__image"
+                    <Box width={{ xs: "100%", sm: "100%", md: "50%" }} margin={1} padding={2}>
+                        <img
+                            className="card__image"
                             src={vehicle.image}
                         />
                     </Box>
 
 
-                    <Stack width={{ xs: "100%", sm: "100%", md: "50%" }} margin={2} padding={2} justifyContent={{ md: "space-between" }} direction={{ xs: "column", sm: "column", md: "row" }}>
-                        <Stack display="flex" alignItems="left" justifyContent="center">
-                            <div className="card__date">{vehicle.attributes.vhcid}</div>
+                    <Stack width={{ xs: "100%", sm: "100%", md: "50%" }}
+                        margin={1}
+                        padding={2}
+                        justifyContent={{ md: "space-between" }}
+                        direction={{ xs: "column", sm: "column", md: "row" }}>
+                        <Stack display="flex" alignItems={{ xs: "center", sm: "center", md: "left" }} justifyContent="center">
+                            <div className="card__date">{vehicle.injected.id} - {vehicle.attributes.vhcid}</div>
                             <span className="card__title">{vehicle.attributes.company}</span>
                             <div className="card__date">Make</div>
                             <span className="card__title">{vehicle.attributes.model}</span>
@@ -33,8 +35,8 @@ const BigCard = ({ vehicle }) => {
                             <span className="card__title">{vehicle.attributes.year}</span>
                             <div className="card__date">Year</div>
                         </Stack >
-                        
-                        <Stack display="flex" alignItems="end" justifyContent="center">
+
+                        <Stack display="flex" alignItems={{ xs: "center", sm: "center", md: "end" }} justifyContent="center">
                             <span className="card__title2">{vehicle.attributes.color}</span>
                             <div className="card__date2">Color</div>
                             <span className="card__title2">{vehicle.attributes.body}</span>
@@ -47,12 +49,12 @@ const BigCard = ({ vehicle }) => {
                             <div className="card__date2">Engine</div>
                             <span className="card__title2">{vehicle.attributes.driver_side}</span>
                             <div className="card__date2">Driver Side</div>
-                            <Stack spacing={{xs:0,sm:0,md:1}} display="flex" alignItems="end" justifyContent="center" direction={{ xs: "column", sm: "column", md: "row" }}>
-                                <Stack display="flex" alignItems="end" justifyContent="center">
+                            <Stack spacing={{ xs: 0, sm: 0, md: 1 }} display="flex" alignItems={{ xs: "center", sm: "center", md: "end" }} justifyContent="center" direction={{ xs: "column", sm: "column", md: "row" }}>
+                                <Stack display="flex" alignItems="inherit" justifyContent="center">
                                     <span className="card__title2">{vehicle.attributes.doors}</span>
                                     <div className="card__date2">Doors</div>
                                 </Stack>
-                                <Stack display="flex" alignItems="end" justifyContent="center">
+                                <Stack display="flex" alignItems="inherit" justifyContent="center">
                                     <span className="card__title2">{vehicle.attributes.seats}</span>
                                     <div className="card__date2">Seats</div>
                                 </Stack>
@@ -62,7 +64,7 @@ const BigCard = ({ vehicle }) => {
                 </Stack>
 
 
-            </div>
+            </Card>
         </div>
     );
 }
