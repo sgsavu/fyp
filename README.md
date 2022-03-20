@@ -1,61 +1,69 @@
 ## Instructions
 
-**Step 0:** I recommend using a Chromium based browser (eg. Brave, Chrome). Make sure you are in the sgs020 directory.
+PREREQUISITES:
+- Chromium browser (I recommend Brave or Chrome): https://brave.com/
+- Metamask wallet extension for Chromium based browsers: https://metamask.io/
+- Node.js/NPM: https://nodejs.org/en/ 
 
-**Step 1:** Install Metamask Wallet extension for your browser (this will be used to interact/make transactions with the blockchain):
+I will deploy the smart contracts myself and then commit them in the github repo for you to test (this is the EASY mode and enables you to see the system from the point of view of a normal USER). However, if you wish you can redeploy the contracts and become owner over the ecosystem to test certain functionality and/or edge cases (this is the HARD mode). 
 
-https://metamask.io/
+The ecosystem is deployed on 2 networks (hopefully one of those will be up on the day you are testing it):
+- Fantom Testnet
+- Rinkeby Testnet
 
-**Step 2:** Install Truffle the framework for blockchain development:
-```sh
-npm install -g truffle
-```
+You will need to add some test cryptocurrency to be able to send transactions to the blockchain (simply input your public address from your metamask wallet into the following websites):
+- for the Fantom chain: https://faucet.fantom.network/
+- for the Rinkeby chain: https://rinkebyfaucet.com/
 
+Metamask comes with only the Ethereum Mainnet chain by default. My app will ask you to add the 2 networks it is deployed on to be able to function.
 
-**Step 3:** Install Ganache (a blockchain emulator/personal/local blockchain for testing):
-
-https://www.trufflesuite.com/ganache
-
-OR 
-
-```sh
-npm install -g ganache-cli
-```
-OR 
-
-```sh
-yarn global add ganache-cli
-```
-
-**Step 4:** Install all other necessary dependencies and packages from package.json (using Node.js) by running:
+Inside the sgs020 directory run the following command to install all required dependencies:
 ```sh
 npm install
 ```
 
-**Step 4:** Run Ganache (client or CLI) and make sure that the port in truffle-config.js on line 46 is the same as the port displayed in Ganache
-****
-**Step 5:** Compile the smart contracts and deploy them to the blockchain by running:
+**EASY MODE**
+
+To test the app:
 ```sh
-trufle migrate --reset
+npm run app
 ```
 
-**Step 6:** Setup MetaMask to work with our app:
-- Open MetaMask extension in your browser and change from the Ethereum Mainnet (by default) to the localhost xxxx
-- Click on the top right colorful circle and Import the first 2 ganache Accounts by copying their private keys
-    - if you are using the Ganache Client the key can be obtained by clicking the key icon next to each account entry
-    - if you are using the CLI the keys will be shown in your terminal when you run it in step 4 (additionally every time you run ganache-cli you will have to import the new keys)
-    - metamask will ask you to connect to the app once it detects it 
+To test the api:
+```sh
+npm run api
+```
+The api uses the private key to authenticate for the transactions since we cannot use a browser extension there. 
+Please refer to the API documentation which I have made available at: https://armenz-savu.gitbook.io/api-docs/
+To find your private key go to the vertical three dot menu in metamask -> Account Details -> Export Private key
 
 
-**Step 7:** Start the React app by running:
+To test the python IoT script:
+
 ```sh
-npm start
+./iot/load_python_libraries.sh
 ```
-or
+
 ```sh
-npm start run
+python3 ./iot/iot.py
 ```
-or
+
+**HARD MODE:**
+
+You will have to modify the .env file MNEMONIC variable to match your metamask wallet's mnemonic.
+You can find your metamask mnemonic by clicking on the randomly generated profile picture for your account -> Settings -> Security & Privacy -> Reveal Secret Recovery Phrase
+
+Remember that the top account in your wallet will become the master address. (remember to also have enough testing cryptocurrency for the network you are deploying to)
+
+To redeploy the contracts run the following command:
+
+NAME_OF_THE_NETWORK can either be fantom or rinkeby.
+
 ```sh
-npm run start
+truffle migrate --reset --network [NAME_OF_THE_NETWORK]
 ```
+
+Now you are the DEFAULT_ADMIN over the smart contracts and can give/revoke permissions to other addresses.
+I recommend creating a couple more new metamask accounts and testing features out going back to the instructions of easy mode. You can create new accounts by clicking on your profile icon then Create Account. Remember to adequately equip each account with testing cryptocurrency.
+
+
