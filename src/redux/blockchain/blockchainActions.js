@@ -55,7 +55,6 @@ const switchChain = async (newNetwork) => {
 }
 
 export const addOrSwitchNetwork = async (newNetwork) => {
-  console.log("danetow",newNetwork)
   if (["0x4", "0x3", "0x1"].includes(newNetwork))
     await switchChain(newNetwork)
   else

@@ -52,8 +52,6 @@ export function filterByPropertyValue(list, property, value) {
 
 export function filterByFilterObject(obj, list, acc) {
 
-    console.log("owoa", obj)
-
     if (Object.keys(obj).length != 0) {
 
         var temp = list

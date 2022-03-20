@@ -16,7 +16,6 @@ const History = ({ vehicle }) => {
 
         const getVehicleHistory = async (events) => {
             var vehicleHistory = {}
-            console.log(events)
             for (var event of events) {
                 var timestamp = (await blockchain.web3.eth.getBlock(event.blockHash)).timestamp
                 vehicleHistory[timestamp] = {}

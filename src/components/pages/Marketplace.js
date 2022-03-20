@@ -115,7 +115,9 @@ const Marketplace = () => {
 
   function assembleSearcher(allAttributes) {
     var newSelect = []
-    newSelect.push({ label: "Show", options: assembleShow() })
+    if (blockchain.account) {
+      newSelect.push({ label: "Show", options: assembleShow() })
+    }
     newSelect.push({ label: "Type", options: assembleType() })
     newSelect.push({ label: "Price", options: assemblePrice() })
     newSelect = newSelect.concat(assembleAllKeywords(allAttributes))
@@ -163,7 +165,6 @@ const Marketplace = () => {
     var saleVehicles = getSaleVehicles(data.allVehicles)
     createLowBoundary(Object.values(saleVehicles))
     createHighBoundary(Object.values(saleVehicles))
-
 
   }, [data.displayCurrency, data.allVehicles])
 

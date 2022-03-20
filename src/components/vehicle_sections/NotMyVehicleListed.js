@@ -10,6 +10,7 @@ import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
 
 import { getUserAccount } from '../../redux/reduxUtils';
+import { formatAccountAddress } from '../utils/Other';
 
 function NotMyVehicleListed({ vehicle }) {
 
@@ -66,14 +67,14 @@ function NotMyVehicleListed({ vehicle }) {
                     if (desiredPrice > displayPrice)
                         dispatch(callChainFunction("bid", [vehicle.injected.id], { value: await myCurrencyToWei(desiredPrice) }))
                     else
-                        dispatch(alerts({ alert: "other", message: "Your price needs to be higher than the current top bid." }))
+                        dispatch(alerts({ alert: "error", message: "Your price needs to be higher than the current top bid." }))
                 }
                 else {
                     dispatch(callChainFunction("buy", [vehicle.injected.id], { value: await callViewChainFunction("getVehiclePrice", [vehicle.injected.id]) }))
                 }
             }
             else {
-                dispatch(alerts({ alert: "other", message: "You need to login." }))
+                dispatch(alerts({ alert: "error", message: "You need to login." }))
             }
     }
 
@@ -122,7 +123,7 @@ function NotMyVehicleListed({ vehicle }) {
                         isTopBidder ?
                             <p>You are the top bidder.</p>
                             :
-                            <p>Top Bidder: {topBidder}</p>
+                            <p>Top Bidder: {formatAccountAddress(topBidder)}</p>
 
                         :
                         null

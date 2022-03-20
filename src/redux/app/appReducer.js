@@ -23,7 +23,6 @@ const appReducer = (state = initialState, action) => {
                 field.push(action.payload.message)
             else
                 field.pop()
-            console.log(field)
             return {
                 ...state,
                 alerts: {

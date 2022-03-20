@@ -5,7 +5,7 @@ import { roles, actions, getAdminOptionsFor } from '../utils/Roles';
 import { callChainFunction } from '../utils/GatewayParser';
 import { alerts } from '../../redux/app/appActions';
 import Web3 from "web3";
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 
 const Admin = () => {
 
@@ -35,10 +35,12 @@ const Admin = () => {
   }
 
   const handleBurn = () => {
-    if (vehicleToBurn)
+    if (vehicleToBurn){
       dispatch(callChainFunction("burn", [vehicleToBurn]))
-    else
-      dispatch(alerts({ alert: "error", message: "Required fields not filled or address format incorrect." }))
+    }
+    else{
+      dispatch(alerts({ alert: "error", message: "Required fields not filled." }))
+    }
   }
 
   const handleSetOdometer = () => {
@@ -47,15 +49,16 @@ const Admin = () => {
         dispatch(callChainFunction("setOdometerAddress", [vehicleToOdd, oddAddr]))
       }
       else {
-        dispatch(alerts({ alert: "error", message: "Required fields not filled or address format incorrect." }))
+        dispatch(alerts({ alert: "error", message: "Address format incorrect." }))
 
       }
     }
   }
 
   return (
-    <Stack>
-      <Stack direction="row" >
+    <Stack mt={5} spacing={9} display="flex" alignItems="center" justifyContent="center" >
+      <Stack >
+        <Typography>Grant/Revoke Roles</Typography>
         <TextField value={roleAddress} onChange={(e) => { setRoleAddress(e.target.value) }} label="Address" variant="outlined" />
         <FormControl fullWidth>
           <InputLabel>Role Option</InputLabel>
@@ -72,6 +75,7 @@ const Admin = () => {
           </Select>
         </FormControl>
         <FormControl fullWidth>
+          
           <InputLabel>Role</InputLabel>
           <Select
             value={roleSelected}
@@ -90,14 +94,18 @@ const Admin = () => {
 
 
       {myAdminOptions.vehicleBurning ?
-        <Stack direction="row" >
+        <Stack >
+                  <Typography>Burn Vehicles</Typography>
+
           <TextField onChange={(e) => { setVehicleToBurn(e.target.value) }} value={vehicleToBurn} label="Vehicle ID" variant="outlined" />
           <Button onClick={handleBurn} variant="contained">Burn</Button>
         </Stack>
         : null}
 
       {myAdminOptions.setOdometers ?
-        <Stack direction="row" >
+        <Stack  >
+                  <Typography>Set Odometer for Vehicles</Typography>
+
           <TextField onChange={(e) => { setVehicleToOdd(e.target.value) }} value={vehicleToOdd} label="Vehicle ID" variant="outlined" />
           <TextField onChange={(e) => { setOddAddr(e.target.value) }} value={oddAddr} label="Odometer Address" variant="outlined" />
           <Button onClick={handleSetOdometer} variant="contained">Set</Button>

@@ -49,10 +49,10 @@ const MiniCard = ({ vehicle }) => {
                             <GameIcons.GiHomeGarage></GameIcons.GiHomeGarage>
                             : null}
 
-                        {(vehicle.injected.topBidder == blockchain.account) ?
+                        {blockchain.account? vehicle.injected.topBidder == blockchain.account ?
 
                             <MDIcons.MdPriceCheck></MDIcons.MdPriceCheck>
-                            : null}
+                            : null : null}
 
                         {vehicle.injected.auction ?
 

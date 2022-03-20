@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { formUpdate, updateEntry, uploadImage } from "../../redux/minting/formActions";
 import Dropzone from '../form/Dropzone';
 import Form from "../form/Form";
+import Mint from "./Mint";
 
 const Edit = () => {
 
@@ -22,7 +23,6 @@ const Edit = () => {
 
         dispatch(uploadImage({ preview: new URL(vehicle.image), buffer: [] }))
 
-        console.log(vehicle)
         dispatch(
             updateEntry({ name: "edit", value: vehicle })
         );
@@ -30,14 +30,7 @@ const Edit = () => {
     }, [])
 
     return (
-        <div className='form-container'>
-            <div className='form-content-left'>
-                <Dropzone />
-            </div>
-            <div className='form-content-right'>
-                <Form />
-            </div>
-        </div>
+        <Mint/>
     );
 }
 

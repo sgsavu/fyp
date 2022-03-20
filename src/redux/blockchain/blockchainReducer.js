@@ -21,7 +21,6 @@ const blockchainReducer = (state = initialState, action) => {
         txState.push(action.payload.message)
       else
         txState.pop()
-      console.log(txState)
       return {
         ...state,
         pendingTx: txState

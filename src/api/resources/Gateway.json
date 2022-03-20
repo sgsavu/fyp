@@ -47101,33 +47101,25 @@
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {
-    "3": {
-      "events": {},
-      "links": {
-        "BoolBitStorage": "0xC5093da3aB831226a8162490d3BcBa79a5d08B26"
-      },
-      "address": "0x3C75c388579F58f109334790487f42Be741A65aC",
-      "transactionHash": "0xc4a383cb07c15fb3c870e07ce2a75bd2c6097d1ed5074cbd07a774544fc2e159"
-    },
     "4": {
       "events": {},
       "links": {
-        "BoolBitStorage": "0x45c162C9489d17429c592F90d73c793EA3F43D94"
+        "BoolBitStorage": "0x8634557245A893B34ffa83939032c56c1B6b0381"
       },
-      "address": "0xF40cbB2b3116ddDe3b60eBbB58480BA7b0426127",
-      "transactionHash": "0x051e4ef33ee10762bf7f707ced46704b02116139131932c5c325e37742935fba"
+      "address": "0xB333410975d5540cffbd9FCa16fB2570f3917bc1",
+      "transactionHash": "0x2cdd0fb6c27b26ce316a9079bd274c61859615f07b3192b0ef41382fb89f2c48"
     },
     "4002": {
       "events": {},
       "links": {
-        "BoolBitStorage": "0xf2a91f4013b4e0F15946752F0C6851DE14d12a91"
+        "BoolBitStorage": "0x0d60407201a9cda6Bc56E2c89604e21c578DeB9e"
       },
-      "address": "0xA14D12A7a58b3D4f257aC6dCf4bE9eE64213e4A1",
-      "transactionHash": "0xf5a265fb0d751eab9944437061cc35b98237dcaea1368ac23e16c726d05270e7"
+      "address": "0xe84D9AE010Ff3e8826420bEFDBF5F781d2863839",
+      "transactionHash": "0x84ea58e6f04cd5ab4b7cca666a9b0d53834259e7e341bd02a9f6ecee84874a53"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-03-17T15:39:56.075Z",
+  "updatedAt": "2022-03-20T14:30:10.872Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

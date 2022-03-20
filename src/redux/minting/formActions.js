@@ -81,16 +81,10 @@ export const updateMetadata = () => {
   return async (dispatch) => {
     try {
 
-      console.log()
-
       const form = await store.getState().form
       const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
 
       let vehicle = form.edit
-
-      console.log("edit",form.edit)
-
-      console.log("edit",vehicle)
 
       vehicle.attributes = form.fields
 
@@ -98,8 +92,6 @@ export const updateMetadata = () => {
       
       vehicle.updated = Date.now()
 
-
-      
 
       if (form.buffer.length != 0) {
         const image =  (await ipfsClient.add(form.buffer)).path;
@@ -112,11 +104,8 @@ export const updateMetadata = () => {
       }
 
       const newVehicle = Object.assign({}, vehicle);
-
-      console.log("new",newVehicle)
     
       delete newVehicle.injected
-
 
       const vehicleHash =  (await ipfsClient.add(JSON.stringify(newVehicle))).path;
       dispatch(

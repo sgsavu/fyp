@@ -1,9 +1,10 @@
 {
     "contractName": "NetworkTables",
     "networks": {
+        
         "0xfa2": {
             "chainName": "Fantom Testnet",
-            "image": "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
+            "chainId": "0xfa2",
             "nativeCurrency": {
                 "name": "Fantom",
                 "symbol": "FTM",
@@ -18,7 +19,7 @@
         },
         "0x4": {
             "chainName": "Rinkeby Testnet",
-            "image": "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png",
+            "chainId": "0x4",
             "nativeCurrency": {
                 "name": "Ether",
                 "symbol": "ETH",
@@ -30,21 +31,12 @@
             "blockExplorerUrls": [
                 "https://rinkeby.etherscan.io/"
             ]
-        },
-        "0xa869": {
-            "chainName": "Avalanche Testnet",
-            "image": "https://cryptologos.cc/logos/avalanche-avax-logo.png?v=022",
-            "nativeCurrency": {
-                "name": "Avalanche",
-                "symbol": "AVAX",
-                "decimals": 18
-            },
-            "rpcUrls": [
-                "https://api.avax-test.network/ext/bc/C/rpc"
-            ],
-            "blockExplorerUrls": [
-                "https://testnet.snowtrace.io/"
-            ]
         }
+    },
+    "images": {
+        "0xfa2" : "https://cryptologos.cc/logos/fantom-ftm-logo.png?v=022",
+        "0x4" : "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png",
+        "0x3" : "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png",
+        "0xa869" : "https://cryptologos.cc/logos/avalanche-avax-logo.png?v=022"
     }
 }
