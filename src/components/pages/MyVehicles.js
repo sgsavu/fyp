@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import MiniCard from "../vehicle_sections/MiniCard";
 
+/**
+  * Component for the My Vehicles page.
+  * It displays only those vehicles which are owned by the user.
+  */
 function MyVehicles() {
 
   const data = useSelector((state) => state.data);

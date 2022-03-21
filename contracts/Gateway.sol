@@ -4,6 +4,12 @@ pragma solidity >=0.6.0 <0.9.0;
 import "./Marketplace.sol";
 import "./Vehicle.sol";
 
+/*
+This contract is a superset of Marketplace and acts as a gateway between
+the users and the marketplace. It places a significant number of restrictions on
+the basic functionalities of the market. It also keeps a profit from each transaction
+and acts as a treasury.
+*/
 contract Gateway is Marketplace {
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
@@ -48,18 +54,17 @@ contract Gateway is Marketplace {
         bool isForSale = _isForSale(tokenId);
         sales[0] = isForSale;
 
-
         if (isForSale) {
             prices[0] = _getVehiclePrice(tokenId);
             bool isAuction = _isAuction(tokenId);
-            
+
             auctions[0] = isAuction;
 
             if (isAuction) {
                 bidders[0] = _getTopBidder(tokenId);
             }
         }
-        
+
         getObject1.ids = ids;
         getObject1.uris = uris;
         getObject1.owners = owners;
@@ -73,7 +78,6 @@ contract Gateway is Marketplace {
     }
 
     function getEverything() public view returns (getObject memory) {
-
         getObject memory getObject1;
 
         uint256 totalSupply = vhc.totalSupply();

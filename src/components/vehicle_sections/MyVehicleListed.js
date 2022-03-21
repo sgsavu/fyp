@@ -9,6 +9,11 @@ import * as IoIcons from 'react-icons/io';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
 
+/**
+ * Component used for the view of the vehicle management tab when the vehicle
+ * you are seeing is yours and also listed.
+ * @param vehicle the vehicle in question
+ */
 function MyVehicleListed({ vehicle }) {
 
     const dispatch = useDispatch();

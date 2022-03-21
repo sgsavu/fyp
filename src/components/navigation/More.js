@@ -8,6 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { refreshDisplayPrices, updatePrefferedCurrency } from "../../redux/data/dataActions";
 import Options from "../pages/Options";
 
+/**
+  * The triple dot vertical icon at the top right.
+  * Simple Dialog menu used to display a few more extra options to the user
+  * which are not that relevant as the main menu tabs.
+  */
 function More() {
 
     const [anchorEl, setAnchorEl] = React.useState(null);

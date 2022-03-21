@@ -7,6 +7,11 @@ import { alerts } from '../../redux/app/appActions';
 import Web3 from "web3";
 import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 
+/**
+  * Component for the Admin page.
+  * Handles burning, granting/revoking roles and setting
+  * addresses for the odometers.
+  */
 const Admin = () => {
 
   const data = useSelector((state) => state.data);

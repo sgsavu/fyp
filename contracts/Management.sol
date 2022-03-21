@@ -3,6 +3,11 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "./Roles.sol";
 
+/*
+This contract is used to manage the IoT devices/odometers
+It can dictate the odomters to refresh the cache, to restart themselves or
+to even change the api address that they are fetching from.
+*/
 contract Management {
   
     bool private refreshCache = false;

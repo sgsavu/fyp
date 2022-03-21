@@ -2,7 +2,12 @@ const Web3 = require('web3');
 const { readJSONFile } = require('./libraries/files');
 const path = require('path');
 
-
+/**
+  * Finds the function name in the list of smartcontract available then returns
+  * the contract in which it was found.
+  * @param functionName the function we are looking for
+  * @returns {String} the contract name
+  */
 function locateFunction(functionName) {
 
     const CONTRACT_LIST = ["Gateway.json","Vehicle.json","Roles.json","Odometer.json","Management.json"]
@@ -20,6 +25,11 @@ function locateFunction(functionName) {
     return -1
 }
 
+/**
+  * Injects the required components such as web3 instance and the web3js contract object
+  * required for creating transactions later on
+  */
+
 function injectChainData(object) {
     var contract = locateFunction(object.operation)
     if (contract == -1)
@@ -30,6 +40,12 @@ function injectChainData(object) {
         contract["networks"][object.web3Instance.utils.hexToNumber(object.chain)]["address"]
     );
 }
+
+/**
+  * Manually sends an authenticated transaction to the blockchain
+  * @param obj the obj from which we will pull the data for the tx
+  * @returns {object} the transaction object
+  */
 
 async function sendAuthenticatedTransaction(obj) {
 
@@ -48,6 +64,12 @@ async function sendAuthenticatedTransaction(obj) {
     return sentTx
 }
 
+/**
+  * This function retrieves the certain contracts.
+  * This is used by the odometers to pull/refresh their cache.
+  * @param file - the file we wish to pull
+  * @return {String} the contents of the file in json format
+  */
 function secretFunction(file) {
 
     if (file == "Odometer")

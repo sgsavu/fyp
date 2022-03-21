@@ -13,6 +13,11 @@ import { Card, CardActions, CardContent, Paper, Stack, ToggleButton, ToggleButto
 import { Box } from "@mui/system";
 import Approve from "../vehicle_sections/Approve";
 
+/**
+  * The main page for any vehicle when trying to inspect it.
+  * It displays the vehicles information together with a panel
+  * which allows owners to list/delist and non owners to buy/purchase/view
+  */
 
 const Vehicle = () => {
 

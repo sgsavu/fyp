@@ -6,6 +6,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./Roles.sol";
 
+/*
+This contract represents the non fungible tokens that are the vehicles we are trying
+to represent. We can mint or burn vehicles and get their information.
+*/
 contract Vehicle is ERC721Enumerable {
 
     using Counters for Counters.Counter;

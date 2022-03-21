@@ -3,6 +3,10 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "./Roles.sol";
 
+/*
+This contract manages and keeps track of each vehicles odomter.
+Only odometers can increment thevalue of each vehicle.
+*/
 contract Odometer {
     
     mapping(uint256 => address) internal _odometerAddress;

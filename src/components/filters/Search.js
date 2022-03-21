@@ -4,7 +4,16 @@ import { sleep } from '../utils/Other';
 
 import { MdOutlinePersonSearch } from "react-icons/md";
 
-
+/**
+  * The search bar functionality component used in Verify.
+  * It modifies the pool inputted into this component and then
+  * sets it back to the caller with the modifier function callback
+  * The reset is used to reset the pool to its initial value. the reset is 
+  * used as backup.
+  * @param pool the list we apply filtering on
+  * @param modifier the callback for the caller
+  * @param reset the backup
+  */
 const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
 
     const [wordEntered, setWordEntered] = useState("");

@@ -5,7 +5,10 @@ export const WeiToEth = (amount) => {
     return web3.utils.fromWei(String(amount), 'ether')
 }
 
-
+/**
+ * Grabs a list of all official currencies from the COINBASE API
+ * @returns {String} the list of all currencies in the world
+ */
 export const fetchAllCurrencies = async () => {
     const request = new URL("https://api.coinbase.com/v2/currencies");
     const response = await (await fetch(request)).json();
@@ -20,7 +23,11 @@ export function roundToNDigits(digits,num) {
     return +(Math.round(num + `e+${digits}`) + `e-${digits}`);
 }
 
-
+/**
+ * Finds the exchange rate between 2 currencies
+ * @param from the currency we wish to convert from
+ * @param to the currecy we wish to convert to
+ */
 export const fetchRate = async (from, to) => {
     var request = new URL("https://api.coinbase.com/v2/prices/" + from + "-" + to + "/spot");
     var response = await (await fetch(request)).json();
@@ -32,11 +39,21 @@ export const fetchRate = async (from, to) => {
     return parseFloat(response.data.amount)
 }
 
+/**
+ * Returns the exchanged value from one currency to another
+ * @param amount the amount of the from currency we wish to convert
+ * @param from the currency we wish to convert from
+ * @param to the currecy we wish to convert to
+ */
 export const currencyToCurrency = async (amount, from, to) => {
     const rate = await fetchRate(from, to)
     return amount * rate
 }
 
+/**
+ * Converts wei to the currency selected by the user as favorite in the app
+ * @param price the price in wei we wish to convert to display currency
+ */
 export const weiToMyCurrency = async (price) => {
 
     let myPrefferedCurrency = await store

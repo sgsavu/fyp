@@ -12,6 +12,11 @@ import * as BsIcons from 'react-icons/bs';
 import { getUserAccount } from '../../redux/reduxUtils';
 import { formatAccountAddress } from '../utils/Other';
 
+/**
+ * Component to display the view of the management tab for when the vehicle
+ * you are seeing is not yours and listed.
+ * @param vehicle the vehicle in question
+ */
 function NotMyVehicleListed({ vehicle }) {
 
 

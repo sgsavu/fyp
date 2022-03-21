@@ -8,6 +8,9 @@ import MiniCard from '../vehicle_sections/MiniCard';
 import { default as Select2 } from "@mui/material/Select";
 import { alerts } from '../../redux/app/appActions';
 
+/**
+  * The garage component garages uses to see the vehicles that approved them as a garage.
+  */
 const Garage = () => {
 
     const dispatch = useDispatch();

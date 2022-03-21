@@ -3,6 +3,9 @@ import Form from '../form/Form';
 import Dropzone from '../form/Dropzone';
 import { Stack } from '@mui/material';
 
+/**
+  * Component for the Minting page.
+  */
 const Mint = () => {
 
     return (

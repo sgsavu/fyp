@@ -3,7 +3,9 @@ import '../../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Snackbar } from "@mui/material";
 
-
+/**
+  * The handling of the pending TX modals.
+  */
 function PendingTX() {
 
     const dispatch = useDispatch();

@@ -7,6 +7,9 @@ import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+/**
+  * The modal for errors displayed through the app
+  */
 function Error() {
 
   const dispatch = useDispatch();

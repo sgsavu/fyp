@@ -3,6 +3,10 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "./BoolBitStorage.sol";
 
+/*
+The marketplace. This contract includes the functionality to list, delist
+vehiles as instant or auction, to set prices, and top bidders.
+*/
 contract Marketplace {
 
     mapping(uint256 => uint256) private _forSale;

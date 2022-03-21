@@ -7,6 +7,9 @@ function Loading() {
 
   const app = useSelector((state) => state.app);
 
+  /**
+  * The loading modal which happens when the store value of loading is not empty.
+  */
   return (
     app.alerts.loading.length != 0 ?
       <Backdrop

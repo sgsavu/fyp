@@ -22,7 +22,10 @@ import { useMediaQuery } from "@mui/material";
 import { Box } from "@mui/system";
 
 
-
+/**
+  * The dialog which allows the user to click to select the network
+  * they wish to change to.
+  */
 function SimpleDialog(props) {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
@@ -63,7 +66,11 @@ function SimpleDialog(props) {
         </Dialog>
     );
 }
-
+/**
+  * The select network component at the top right allowing one to change
+  * the app's network from a pool of available networks that the app is deployed
+  * on.
+  */
 function SelectNetwork() {
 
     const dispatch = useDispatch();

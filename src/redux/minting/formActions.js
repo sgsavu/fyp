@@ -44,6 +44,13 @@ export const resetForm = () => {
   };
 };
 
+/**
+ * Function which assembles the data from the redux form store and uploads it to ipfs.
+ * The image is uploaded to ipfs then the hash of the image is embedded into the object 
+ * which itself is uploaded to ipfs.
+ * The generated hash is then sent to the blockchain as parameter to the mint function
+ * requiring a token URI.
+ */
 export const createMetaDataAndMint = () => {
   return async (dispatch) => {
     try {
@@ -77,6 +84,11 @@ export const createMetaDataAndMint = () => {
   };
 };
 
+/**
+ * Similar functionality to the createMetaDataAndMint function however on this ocassion
+ * the vehicle is updated with a new hash. We make sure that there has been a change
+ * in the information before data is modified in the new hash.
+ */
 export const updateMetadata = () => {
   return async (dispatch) => {
     try {

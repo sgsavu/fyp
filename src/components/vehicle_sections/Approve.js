@@ -13,7 +13,13 @@ import { getUserAccount } from '../../redux/reduxUtils';
 
 import { GiMechanicGarage } from "react-icons/gi";
 import Web3 from 'web3';
+import { formatAccountAddress } from '../utils/Other';
 
+
+/**
+ * Component used for approving addresses as garages for the vehicle passed as prop
+ * @param vehicle the vehicle for which we wish to approve
+ */
 function Approve({ vehicle }) {
 
 
@@ -33,7 +39,6 @@ function Approve({ vehicle }) {
         }
     }, [])
 
-
     async function approve() {
         if (garageAddress) {
             if (Web3.utils.isAddress(garageAddress)) {
@@ -46,6 +51,7 @@ function Approve({ vehicle }) {
         }
     }
 
+
     function buttonOnOrOff() {
         if (garageAddress) {
             return "panel-button"
@@ -55,12 +61,6 @@ function Approve({ vehicle }) {
         }
     }
 
-    function formatAccountAddress(address) {
-        if (address) {
-            var length = address.length
-            return address.slice(0, 6) + "..." + address.slice(length - 4, length)
-        }
-    }
 
     return (
 
@@ -80,19 +80,19 @@ function Approve({ vehicle }) {
                 <p>
                     Approve your vehicle for a garage to modify it's data.
                 </p>
-                {alreadyApproved? <p>
+                {alreadyApproved ? <p>
                     Approved garage: {formatAccountAddress(alreadyApproved)}
-                   </p> : null}
-                
+                </p> : null}
+
                 <div className='panel-input'>
                     <p>Set garage address:</p>
                     <div>
                         <input placeholder='eg. 0xc1375A3812518208373474cCaB030CBb9cD9A499' type="text" value={garageAddress} onChange={(e) => { setGarageAddress(e.target.value) }}></input>
                     </div>
                 </div>
-                
-               
-                   
+
+
+
             </div>
             <div className="panel-bottom-1">
                 <div

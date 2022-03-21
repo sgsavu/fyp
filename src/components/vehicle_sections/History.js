@@ -5,6 +5,10 @@ import '../../styles/Timeline.css';
 import { callViewChainFunction, getContractFor, getNetworkExplorer } from '../utils/GatewayParser';
 import { MdSpeed } from "react-icons/md";
 
+/**
+ * Component used for listing the history of the vehicle aka its owners.
+ * @param vehicle the vehicle in question
+ */
 const History = ({ vehicle }) => {
 
     const data = useSelector((state) => state.data);
@@ -40,7 +44,7 @@ const History = ({ vehicle }) => {
 
         setOdometerValue(await callViewChainFunction("getOdometerValue", [vehicle.injected.id]))
 
-    }, [ data.allVehicles])
+    }, [data.allVehicles])
 
 
     function getDate(timestamp) {
@@ -48,6 +52,10 @@ const History = ({ vehicle }) => {
         return date.toLocaleDateString()
     }
 
+    /**
+ * Function used to open a new tab for a transaction with the provided hash
+ * @param txHash the hash of the transaction
+ */
     async function newTabTx(txHash) {
 
         var win = window.open((await getNetworkExplorer(blockchain.currentNetwork)) + "/tx/" + txHash, '_blank');

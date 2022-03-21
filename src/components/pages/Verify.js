@@ -3,7 +3,10 @@ import { useSelector } from "react-redux";
 import SearchFilter from '../filters/Search';
 import { Link, useHistory } from 'react-router-dom';
 import { Paper, Stack } from '@mui/material';
-
+/**
+  * The Verify component which is displayed on the Verify page
+  * It allows for users (police/authority) to search for any vehicle that exists
+  */
 function Verify() {
 
   const data = useSelector((state) => state.data);

@@ -1,3 +1,9 @@
+
+/**
+ * Function which mixes and radomizes a string.
+ * @param string the vehicle in question
+ * @returns {String} the randomized string
+ */
 export const scramble = (string) => {
 
     var x = string.split('').sort(function () { return 0.5 - Math.random() }).join('');

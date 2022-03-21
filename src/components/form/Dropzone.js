@@ -5,7 +5,12 @@ import { useDropzone } from "react-dropzone"
 import { Stack } from '@mui/material';
 import { alerts } from '../../redux/app/appActions';
 import { gcd } from '../utils/Other';
-
+/**
+  * Dropzone component which allows for users to upload images
+  * This is regulated and restricted on uploading certain dimensions for
+  * images. 
+  * The user can either drag and drop or click to upload.
+  */
 const Dropzone = () => {
 
 
@@ -16,9 +21,11 @@ const Dropzone = () => {
     const [buffer, setBuffer] = useState(null)
     const [preview, setPreview] = useState(null)
 
-
+    /**
+  * Checks that the aspect ratio is good enough for the app
+  */
     function checkDimensions() {
-        try { 
+        try {
             var gcxd = gcd(this.width, this.height)
             if (this.width / gcxd - this.height / gcxd < 0)
                 throw Error("Image must not have a portrait aspect ratio.")
@@ -65,7 +72,7 @@ const Dropzone = () => {
             sx={{
                 background: "linear-gradient(90deg,rgb(39, 176, 255) 0%,rgb(0, 232, 236) 100%)"
             }}
-            borderRadius= "10px"
+            borderRadius="10px"
             bgcolor="red"
             display="flex"
             alignItems="center"

@@ -7,6 +7,11 @@ const initialState = {
     initializedApp: false,
 };
 
+/**
+ * The app reducer.
+ * Used to manage alerts and queue them in a stack last in first out
+ * system.
+ */
 const appReducer = (state = initialState, action) => {
     switch (action.type) {
         case "UPDATE_APP_STATE":

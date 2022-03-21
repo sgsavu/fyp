@@ -3,6 +3,11 @@ const { sendAuthenticatedTransaction } = require("./blockchain")
 const keccak256 = require('keccak256')
 const { injectChainData } = require("./blockchain")
 
+/**
+  * Calls a blockchain authenticated function
+  * @param obj the accummulated query object passed in from the request
+  * @returns {object} response
+  */
 async function callChainFunction(obj) {
 
     injectChainData(obj)

@@ -6,6 +6,15 @@ const initialState = {
   myRole: roles.VIEWER_ROLE,
 };
 
+/**
+ * The data reducer.
+ * In the case of dispatching to update the data state the value
+ * of the field is simply updated
+ * In the case of entry data state the value is simply inserted
+ * as to facilitate event triggers in the react components
+ * In the case of Delete field key a certain field is deleted
+ * from the state
+ */
 const dataReducer = (state = initialState, action) => {
   switch (action.type) {
     case "UPDATE_DATA_STATE":

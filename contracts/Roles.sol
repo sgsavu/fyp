@@ -3,6 +3,10 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+/*
+This contract manages the roles in the entire ecosystem. Whoever
+deploys this smart contract is the owner over the ecosystem.
+*/
 contract Roles is AccessControl {
    
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");

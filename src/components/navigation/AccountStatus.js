@@ -22,7 +22,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { useHistory } from "react-router-dom";
 import { formatAccountAddress } from "../utils/Other";
 
-
+/**
+  * Dialog which opens when the user is not connect. It allows the user
+  * to authenticate through a list of available web3 wallets.
+  */
 function NotConnectedDialog(props) {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
@@ -47,7 +50,10 @@ function NotConnectedDialog(props) {
         </Dialog>
     );
 }
-
+/**
+  * Dialog which opens when the user is connected. It displays
+  * information about the user's account and the option to disconnect.
+  */
 function ConnectedDialog(props) {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
@@ -98,6 +104,10 @@ function ConnectedDialog(props) {
     );
 }
 
+/**
+  * Component chip seen at the top of the page which displays the current status of users.
+  * Authenticated/Unauthenticated
+  */
 function AccountStatus() {
 
     const dispatch = useDispatch();

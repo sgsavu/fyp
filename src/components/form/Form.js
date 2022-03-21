@@ -6,13 +6,22 @@ import { IconButton, Stack, TextField, Typography } from '@mui/material';
 import { IoMdArrowBack } from "react-icons/io";
 
 
-
+/**
+  * The form component. It allows the user to type in the values
+  * for minting/editing etc. It is linked to the redux value store with the
+  * same name for data storing.
+  */
 const Form = () => {
 
   const dispatch = useDispatch();
   const form = useSelector((state) => state.form);
   const [forceUpdate, setForceUpdate] = useState(0)
 
+  /**
+  * Checks if any of the fields have been left uninputted.
+  * If so set the redux value of the errors for those fields to 
+  * required.
+  */
   function validate() {
     var currentFields = getCurrentFields()
     var pass = true

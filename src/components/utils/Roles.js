@@ -2,6 +2,9 @@ import { Sidebar } from '../navigation/SidebarData';
 
 const keccak256 = require('keccak256')
 
+/**
+ * MASTER OBJECT of the roles in the app
+ */
 export const roles = {
   DEFAULT_ADMIN_ROLE: "0x00",
   MINTER_ROLE_ADMIN: keccak256("MINTER_ROLE_ADMIN"),
@@ -19,6 +22,9 @@ export const actions = {
   REVOKE: "revokeRole",
 }
 
+/**
+ * The admin options for the DEFAULT_ADMIN_ROLE
+ */
 const DEFAULT_ADMIN_OPTIONS = {
   roleManaging: {
     actions: [actions.GIVE, actions.REVOKE],
@@ -28,6 +34,9 @@ const DEFAULT_ADMIN_OPTIONS = {
   setOdometers: true
 }
 
+/**
+ * The admin options for the MINTER_ADMIN_ROLE
+ */
 const MINTER_ADMIN_OPTIONS = {
   roleManaging: {
     actions: [actions.GIVE, actions.REVOKE],
@@ -54,6 +63,13 @@ const EMPTY_OPTIONS = {
 export const superUsers = [roles.DEFAULT_ADMIN_ROLE, roles.AUTHORITY_ROLE, roles.AUTHORITY_ROLE_ADMIN]
 
 
+/**
+ * Returns the admin options for the role provided.
+ * This is used in combination with the role the user is
+ * assigned in the app.
+ * @param role the role of the user
+ * @returns {Object} object with the options
+ */
 export const getAdminOptionsFor = (role) => {
   switch (role) {
     case roles.MINTER_ROLE_ADMIN:
@@ -67,6 +83,13 @@ export const getAdminOptionsFor = (role) => {
   }
 }
 
+/**
+ * Returns the appropriate sidebar for each role.
+ * This is used in combination with the role the user is
+ * assigned in the app.
+ * @param the role of the user
+ * @returns {Object} sidebar object
+ */
 export const getSidebarFor = (role) => {
   switch (role) {
     case roles.VIEWER_ROLE:
@@ -97,6 +120,12 @@ const pageAccess = {
   ADMIN: [roles.MINTER_ROLE_ADMIN, roles.AUTHORITY_ROLE_ADMIN, roles.DEFAULT_ADMIN_ROLE]
 }
 
+/**
+ * Checks if the path being accessed is accessible to the user provided
+ * @param pathBeingAccessed the path we are trying to access
+ * @param userRole the role of the user
+ * @returns {boolean}
+ */
 export const checkRoutePermissionFor = (pathBeingAccessed, userRole) => {
   switch (pathBeingAccessed) {
     case "/admin":

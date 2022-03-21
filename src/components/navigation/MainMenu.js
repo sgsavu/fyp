@@ -16,7 +16,11 @@ import { IconButton, Stack } from '@mui/material';
 
 import { useMediaQuery } from 'react-responsive';
 
-
+/**
+  * The main menu displayed at the top left.
+  * Turns into a hamburger menu when the dimensions of the user's
+  * view are too low.
+  */
 export default function MainMenu() {
 
     const [state, setState] = React.useState({

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
+/*
+    This library allows for bit storage of booleans in an 256bit uint
+*/
+
 library BoolBitStorage {
     function _getBoolean(uint256 _packedBools, uint256 _boolNumber)
         public

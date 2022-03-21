@@ -23,6 +23,10 @@ const formFields = {
   loading: false
 };
 
+/**
+ * The form reducer used to propagate the form and manage
+ * different fields in the state related to forms throuhgout the app
+ */
 const formReducer = (state = formFields, action) => {
   switch (action.type) {
     case "NEXT_STEP":

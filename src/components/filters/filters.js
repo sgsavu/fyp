@@ -1,5 +1,10 @@
 import { getUserAccount } from "../../redux/reduxUtils";
 
+/**
+  * Sorts a list by ascending or descending price
+  * @param list the list we wish to sort
+  * @param sortType the type of sort
+  */
 export function sortBy(list, sortType) {
     switch (sortType) {
         case "ascending":
@@ -12,6 +17,11 @@ export function sortBy(list, sortType) {
     return list
 }
 
+/**
+  * THis function sorts the list to always display the vehicles which you are
+  * an owner of and the ones on which you have bidded.
+  * @param list the list we wish to sort
+  */
 export function specialSort(list) {
 
     list.sort(async (a, b) => { 
@@ -27,6 +37,12 @@ export function specialSort(list) {
     return list
 }
 
+/**
+  * Filter a list so that each element fits between a min price and a max price
+  * @param list the list we wish to sort
+  * @param minPrice the minimum price
+  * @param maxPrice the maximum price
+  */
 export function filterPriceRange(list, minPrice, maxPrice) {
     return list.filter((element) => {
         if (element.injected.display_price > minPrice && element.injected.display_price < maxPrice)
@@ -36,12 +52,24 @@ export function filterPriceRange(list, minPrice, maxPrice) {
     })
 }
 
+/**
+  * this function filters a list by the existence of a property for 
+  * each element in the list
+  * @param list the list we wish to filter
+  * @param property the property we are filter for
+  */
 export function filterByPropertyExistence(list, property) {
     return list.filter((element) => {
         return element.injected.hasOwnProperty(property);
     });
 }
 
+/**
+  * Filter a list by the value of a certain property
+  * @param list the list we are filtering
+  * @param property the property we are evaluationg
+  * @param value the value for the property
+  */
 export function filterByPropertyValue(list, property, value) {
 
         return list.filter((element) => {
@@ -50,6 +78,13 @@ export function filterByPropertyValue(list, property, value) {
 }
 
 
+/**
+  * Filters a list by a filtering object. It filters objects
+  * which only abide by the pattern the obj dictates
+  * @param obj the filtering object
+  * @param list the list we are filtering
+  * @param acc the account for the user
+  */
 export function filterByFilterObject(obj, list, acc) {
 
     if (Object.keys(obj).length != 0) {

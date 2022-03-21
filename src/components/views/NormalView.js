@@ -6,7 +6,6 @@ import Marketplace from '../pages/Marketplace';
 import Verify from '../pages/Verify';
 import Mint from '../pages/Mint';
 import Admin from '../pages/Admin';
-import Options from '../pages/Options';
 import ControlledRoute from '../navigation/ControlledRoute';
 import Vehicle from "../pages/Vehicle";
 import Error from "../modals/Error";
@@ -18,20 +17,14 @@ import MainMenu from "../navigation/MainMenu";
 import AccountStatus from "../navigation/AccountStatus";
 import PendingTX from "../modals/PendingTX";
 import SelectNetwork from "../navigation/SelectNetwork";
-
 import Stack from '@mui/material/Stack';
 import More from "../navigation/More";
 
-import { useDispatch, useSelector } from "react-redux";
-
+/**
+ * Component for the principal view of the app
+ * It encapusaltes menus, page views, etc.
+ */
 function NormalView() {
-
-
-    const data = useSelector((state) => state.data);
-
-
-
-
 
     return (
         <div>
@@ -46,9 +39,6 @@ function NormalView() {
                     </Stack>
                 </Stack>
 
-            
-
-
                 <PendingTX></PendingTX>
                 <Error></Error>
                 <CustomModal></CustomModal>
@@ -62,7 +52,6 @@ function NormalView() {
                     <ControlledRoute path='/admin' component={Admin} />
                     <ControlledRoute path='/edit' component={Edit} />
                     <Route path='/vehicle' component={Vehicle} />
-                    <Route path='/options' component={Options} />
                     <Route path='/garage' component={Garage} />
                 </Switch>
             </Router>

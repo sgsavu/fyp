@@ -6,6 +6,11 @@ import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+/**
+  * The main modal/snackbar displayed at the bottom when any success happens
+  * It is handled in a last in first out system (check blockchain reducer) in order
+  * to store order of the modals.
+  */
 function CustomModal() {
 
   const dispatch = useDispatch();

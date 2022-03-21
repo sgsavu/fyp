@@ -13,7 +13,7 @@ Content-Type: application/json
             "model": "Model X",
             "vhcid": "Tesla29482032103102",
             "year": "2020",
-            "color": "Black",
+            "color": "White",
             "body": "Hatchback",
             "transmission": "Automatic",
             "fuel": "Electric",
@@ -27,6 +27,36 @@ Content-Type: application/json
 }
 
 ###
+
+#MINT 
+POST https://localhost:8443/
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://assets-eu-01.kc-usercontent.com/bb5aba31-d98c-0160-8548-418b3723c58e/fd3665fd-f9bc-4cef-b398-edf1c3fe3798/Mercedes%20GLE%20(4).jpg",
+        "attributes": {
+            "company": "Mercedes-Benz",
+            "model": "GLE",
+            "vhcid": "MB9288092847828",
+            "year": "2019",
+            "color": "Blue",
+            "body": "Hatchback",
+            "transmission": "Manual",
+            "fuel": "Diesel",
+            "engine": "3.0L V6",
+            "doors": "5",
+            "seats": "5",
+            "driver_side": "Right"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
 #BURN
 POST https://localhost:8443/
 Content-Type: application/json

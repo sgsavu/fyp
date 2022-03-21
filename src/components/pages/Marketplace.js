@@ -30,7 +30,10 @@ export function getSaleVehicles(allVehicles) {
   return saleVehicles
 }
 
-
+/**
+  * The main marketplace component.
+  * Displays vehicles listed for sale and allows searching and filtering.
+  */
 const Marketplace = () => {
 
   const data = useSelector((state) => state.data);
@@ -55,6 +58,13 @@ const Marketplace = () => {
     return list.filter(() => true);
   }
 
+  /**
+  * Grabs all of the attributes vehicles have and puts them
+  * together for later use. Makes sure certain keywords are not
+  * added twice
+  * @param listOfVehicles the list of all vehicles
+  * @returns {Object} a collection of all attributes
+  */
   function getAttributesCollection(listOfVehicles) {
     var collection = {}
     for (var vehicle of listOfVehicles) {
@@ -70,7 +80,12 @@ const Marketplace = () => {
     return collection
   }
 
-
+/**
+  * Assembles the collection of attributes into specifically designed objects
+  * to be used for filtering by the search.
+  * @param allAttributes the collection of all attributes
+  * @returns {Object} Object to fit in the search box functionality
+  */
   function assembleAllKeywords(allAttributes) {
     var temp = {}
     for (var key of Object.keys(allAttributes)) {
@@ -113,6 +128,13 @@ const Marketplace = () => {
     ]
   }
 
+  /**
+  * Assembles object for the search bar to use as filtering.
+  * It updates the state of the NewSelect which is used as a pool of 
+  * choices for the select.
+  * @param allAttributes all the attributes of all vehicles
+  * 
+  */
   function assembleSearcher(allAttributes) {
     var newSelect = []
     if (blockchain.account) {
@@ -124,6 +146,11 @@ const Marketplace = () => {
     setNewSelect(newSelect)
   }
 
+  /**
+  * Computes the low boundary for the range slider from all of the 
+  * vehicles listed for sale
+  * @param vehicles the lsit of vehicles
+  */
   async function createLowBoundary(vehicles) {
     var lowBoundary = 99999999999999999
     for (var vehicle of vehicles) {
@@ -137,6 +164,11 @@ const Marketplace = () => {
     setLowBound(roundToNDigits(2, final))
   }
 
+   /**
+  * Computes the high boundary for the range slider from all of the 
+  * vehicles listed for sale
+  * @param vehicles the lsit of vehicles
+  */
   async function createHighBoundary(vehicles) {
     var highBoundary = 0
     for (var vehicle of vehicles) {
@@ -150,7 +182,10 @@ const Marketplace = () => {
   }
 
 
-
+/**
+  * On changes to the allVehicles object in the redux store 
+  * Get all of the vehicle attributes again and calculate the search options.
+  */
   useEffect(() => {
     var saleVehicles = getSaleVehicles(data.allVehicles)
     setPool(Object.values(saleVehicles))
@@ -160,6 +195,10 @@ const Marketplace = () => {
   }, [data.allVehicles])
 
 
+  /**
+  * On change to the display currency or vehicles object recreate the low
+  * and high boundaries
+  */
   useEffect(() => {
 
     var saleVehicles = getSaleVehicles(data.allVehicles)
@@ -169,12 +208,20 @@ const Marketplace = () => {
   }, [data.displayCurrency, data.allVehicles])
 
 
+  /**
+  * Apply filtering to the vehicles for sale array when any of the
+  * listeners are changed
+  */
   useEffect(() => {
     setPages(applyFilters(pool))
   }, [pool, filterObject, minPrice, maxPrice, perPage])
 
 
 
+  /**
+  * Applies the filters to the vehicle list in a specific order
+  * @param list the list of vehicles we wish to apply the filters to
+  */
   function applyFilters(list) {
     setPageNr(0)
     var listOfVehicles = newCopy(list)
@@ -186,7 +233,10 @@ const Marketplace = () => {
   }
 
 
-
+  /**
+  * Creates the filtering object used in filtering 
+  * @param list
+  */
   function loadFilterObject(list) {
     var mf = {}
     for (var object of list) {
@@ -208,7 +258,9 @@ const Marketplace = () => {
     },
   ];
 
-
+  /**
+  * Handles the change in the position of the range sliders thumbs
+  */
   const handleChange2 = (event, newValue, activeThumb) => {
     var minDistance = highBound / 100
 
@@ -223,6 +275,9 @@ const Marketplace = () => {
     }
   };
 
+  /**
+  * Handles the change in the value of the range sliders
+  */
   const handleChange1 = (event, newValue) => {
     if (!Array.isArray(newValue)) {
       return;
