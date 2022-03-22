@@ -48,7 +48,8 @@
   "scripts": {
     "start": "npm-run-all -p -r app api",
     "app": "react-scripts start",
-    "api": "node ./src/api/server.js"
+    "api": "node ./src/api/server.js",
+    "build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [

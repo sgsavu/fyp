@@ -1,6 +1,6 @@
 
 #MINT 
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {   
@@ -29,7 +29,7 @@ Content-Type: application/json
 ###
 
 #MINT 
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {   
@@ -57,8 +57,184 @@ Content-Type: application/json
 
 ###
 
+#MINT 
+POST https://localhost:8443/api
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/9/94/VW_Golf_2.0_TDI_BlueMotion_Technology_Highline_%28VII%29_%E2%80%93_Frontansicht%2C_28._Juli_2013%2C_M%C3%BCnster.jpg",
+        "attributes": {
+            "company": "Volkswagen",
+            "model": "Golf Mk7",
+            "vhcid": "VW2818283812884",
+            "year": "2021",
+            "color": "White",
+            "body": "Hatchback",
+            "transmission": "Manual",
+            "fuel": "Petrol",
+            "engine": "1.2L TSI",
+            "doors": "5",
+            "seats": "5",
+            "driver_side": "Left"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
+#MINT 
+POST https://localhost:8443/api
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://cdn.motor1.com/images/mgl/NGZEA9/s1/2022-mitsubishi-outlander-exterior.jpg",
+        "attributes": {
+            "company": "Mitsubishi",
+            "model": "Outlander",
+            "vhcid": "M2818283812884",
+            "year": "2022",
+            "color": "White",
+            "body": "Hatchback",
+            "transmission": "Automatic",
+            "fuel": "Diesel",
+            "engine": "2.4L MIVEC",
+            "doors": "5",
+            "seats": "5",
+            "driver_side": "Right"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
+###
+
+#MINT 
+POST https://localhost:8443/api
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://cdn.carbuzz.com/gallery-images/840x560/633000/200/633294.jpg",
+        "attributes": {
+            "company": "BMW",
+            "model": "X6",
+            "vhcid": "BMW254122241",
+            "year": "2021",
+            "color": "Black",
+            "body": "Hatchback",
+            "transmission": "Automatic",
+            "fuel": "Diesel",
+            "engine": "4.4L V8",
+            "doors": "5",
+            "seats": "5",
+            "driver_side": "Left"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
+#MINT 
+POST https://localhost:8443/api
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://carwow-uk-wp-3.imgix.net/2018-audi-a6-uk-review-9-1-scaled-e1642431559694.jpg",
+        "attributes": {
+            "company": "AUDI",
+            "model": "A6",
+            "vhcid": "AUDI6723251",
+            "year": "2020",
+            "color": "Red",
+            "body": "Sedan",
+            "transmission": "Automatic",
+            "fuel": "Diesel",
+            "engine": "3.0L V6",
+            "doors": "5",
+            "seats": "5",
+            "driver_side": "Right"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
+#MINT 
+POST https://localhost:8443/api
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Toyota_Auris_1.6_Life%2B_%28Facelift%29_%E2%80%93_Frontansicht%2C_21._Juni_2011%2C_Ratingen.jpg",
+        "attributes": {
+            "company": "TOYOTA",
+            "model": "AURIS",
+            "vhcid": "TYT5215125",
+            "year": "2018",
+            "color": "Grey",
+            "body": "Hatchback",
+            "transmission": "Manual",
+            "fuel": "Petrol",
+            "engine": "2.4L 2AZ-FE",
+            "doors": "5",
+            "seats": "5",
+            "driver_side": "Left"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
+#MINT 
+POST https://localhost:8443/api
+Content-Type: application/json
+
+{   
+    "chain":"0xfa2",
+    "operation":"mint",
+    "data": {
+        "image": "https://cdn.motor1.com/images/mgl/4yv4K/s1/ford-focus-st-edition-front.jpg",
+        "attributes": {
+            "company": "Ford",
+            "model": "Focus",
+            "vhcid": "FORD9281257",
+            "year": "2019",
+            "color": "Blue",
+            "body": "Hatchback",
+            "transmission": "Manual",
+            "fuel": "Diesel",
+            "engine": "2.3L 4-cylinder",
+            "doors": "5",
+            "seats": "6",
+            "driver_side": "Right"
+        }
+    },
+    "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
+}
+
+###
+
 #BURN
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {   
@@ -72,7 +248,7 @@ Content-Type: application/json
 
 ###
 #LIST FOR SALE
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {   
@@ -89,21 +265,21 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
     "chain":"0xfa2",
     "operation":"exists",
     "data": {
-        "tokenId": "2"
+        "tokenId": "1"
     }
 }
 
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -117,7 +293,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -131,7 +307,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -147,7 +323,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -162,7 +338,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -175,7 +351,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -190,7 +366,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -203,7 +379,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -219,7 +395,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -234,7 +410,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -243,7 +419,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -253,7 +429,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -267,7 +443,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -277,7 +453,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -289,7 +465,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/
+POST https://localhost:8443/api
 Content-Type: application/json
 
 {
@@ -303,7 +479,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/
+GET https://localhost:8443/api
 Content-Type: application/json
 
 {
