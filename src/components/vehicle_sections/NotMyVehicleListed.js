@@ -51,7 +51,7 @@ function NotMyVehicleListed({ vehicle }) {
         }
 
         if (blockchain.account) {
-            var myBalanceRaw = await blockchain.web3.eth.getBalance(await getUserAccount())
+            var myBalanceRaw = await blockchain.web3.eth.getBalance(blockchain.account)
             setMyBalance(await weiToMyCurrency(myBalanceRaw))
 
             if (parseInt(myBalanceRaw) > parseInt(vehiclePriceRaw)) {

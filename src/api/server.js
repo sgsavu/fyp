@@ -14,11 +14,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+app.enable('trust proxy')
+app.use(function(request, response, next) {
+    if (!request.secure) {
+       return response.redirect("https://" + request.headers.host + request.url);
+    }
+    next();
+})
 app.use(express.static(path.join(__dirname, "../../", 'build')));
 
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
-});
 
 app.get('/api', async (req, res) => {
   var result = null
@@ -39,8 +43,6 @@ app.get('/api', async (req, res) => {
   })
 });
 
-
-
 app.post('/api', async (req, res) => {
 
   var result = null
@@ -57,7 +59,15 @@ app.post('/api', async (req, res) => {
   })
 });
 
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+});
 
+
+const httpServer = http.createServer(app)
 const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(process.env.REST_API_PORT, () =>
-  console.log(`HTTPS Server listening on port ${process.env.REST_API_PORT}!`));
+
+httpServer.listen(process.env.REST_API_PORT_HTTP, () =>
+  console.log(`HTTP Server listening on port ${process.env.REST_API_PORT_HTTP}!`));
+httpsServer.listen(process.env.REST_API_PORT_HTTPS, () =>
+  console.log(`HTTPS Server listening on port ${process.env.REST_API_PORT_HTTPS}!`));

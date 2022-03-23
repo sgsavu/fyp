@@ -241,7 +241,7 @@ Content-Type: application/json
     "chain":"0xfa2",
     "operation":"burn",
     "data": {
-        "tokenId": 13
+        "tokenId": 45
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
 }
@@ -265,7 +265,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/api
+GET https://92.85.45.14:8000/api
 Content-Type: application/json
 
 {
@@ -279,11 +279,11 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET https://localhost:8443/api
+GET http://fyp.sgsavu.com/api
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"isForSale",
     "data": {
         "tokenId": 0
