@@ -234,7 +234,7 @@ Content-Type: application/json
 ###
 
 #BURN
-POST https://localhost:8443/api
+POST https://fyp.sgsavu.com/api
 Content-Type: application/json
 
 {   
@@ -279,7 +279,7 @@ Content-Type: application/json
 
 ###
 #ANY GET
-GET http://fyp.sgsavu.com/api
+GET https://fyp.sgsavu.com/api
 Content-Type: application/json
 
 {
@@ -470,21 +470,21 @@ Content-Type: application/json
 
 {
     "chain":"0x4",
-    "operation":"setRestart",
+    "operation":"setApiAddress",
     "data": {
-        "value": true
+        "value": "fyp.sgsavu.com"
     },
     "private_key": "3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd"
 }
 
 ###
 #ANY GET
-GET https://localhost:8443/api
+GET https://fyp.sgsavu.com/api
 Content-Type: application/json
 
 {
-    "chain":"0x4",
-    "operation":"getRestart",
+    "chain":"0xfa2",
+    "operation":"getApiAddress",
     "data": {
     }
 }

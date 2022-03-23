@@ -6,10 +6,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./Roles.sol";
 
-/*
-This contract represents the non fungible tokens that are the vehicles we are trying
-to represent. We can mint or burn vehicles and get their information.
-*/
+/// @title The Vehicle NFT contract
+/// @notice This contract represents the non fungible tokens that are the vehicles we are trying
+///         to represent. We can mint or burn vehicles and get their information.
 contract Vehicle is ERC721Enumerable {
 
     using Counters for Counters.Counter;
@@ -17,55 +16,17 @@ contract Vehicle is ERC721Enumerable {
 
     Roles roles;
 
-    struct getObject {
-        uint[] ids;
-        string[] uris;
-        address[] owners;
-        address[] garages;
-    }
-
     event NewGarageApproval(uint256 indexed tokenId);
 
     mapping(uint256 => string) internal _tokenURIs;
     mapping(string => bool) private _uriRegistered;
     mapping(uint256 => address) private _approvedGarage;
 
+    /// @dev We are inheriting the roles and permissions from our
+    ///      Roles contract deployed before this one. 
     constructor(address addr) ERC721("Vehicle", "VHC") {
         roles = Roles(addr);
     }
-
-    function getAllVehicles () 
-    public
-    view
-    returns (getObject memory)
-    {   
-
-        getObject memory getObject1;
-
-
-        uint256 totalSupply = totalSupply();
-        uint256[] memory ids = new uint256[](totalSupply);
-        string[] memory uris = new string[](totalSupply);
-        address[] memory owners = new address[](totalSupply);
-        address[] memory garages = new address[](totalSupply);
-        
-        for (uint256 i=0 ; i< totalSupply; i++) {
-            uint256 index = tokenByIndex(i);
-
-            ids[i] = index;
-            uris[i] = tokenURI(index);
-            owners[i] = ownerOf(index);
-            garages[i] = _approvedGarage[index];
-        }
-
-        getObject1.ids = ids;
-        getObject1.uris = uris;
-        getObject1.owners = owners;
-        getObject1.garages = garages;
-
-        return getObject1;
-    }
-
 
     function tokenURI(uint256 tokenId)
         public
@@ -77,20 +38,24 @@ contract Vehicle is ERC721Enumerable {
         return _tokenURIs[tokenId];
     }
 
+    /// @dev Getter that checks if the tokenId exists in the pool of vehicles.
     function exists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
 
+    /// @dev Getter that returns the approved garage/modifier for the tokenId provided.
     function getApprovedGarage (uint256 tokenId) public view returns (address) {
         return _approvedGarage[tokenId];
     }
 
+    /// @dev Setter that enables owners to approve another address as a garage/modifier.
     function setApprovedGarage (uint256 tokenId, address addr) external {
         require(msg.sender == ownerOf(tokenId));
         _approvedGarage[tokenId] = addr;
         emit NewGarageApproval(tokenId);
     }
 
+    ///@dev The permission is revoked upon success
     function setTokenURI(uint256 tokenId, string memory _tokenURI) external {
         require (getApprovedGarage(tokenId) == msg.sender);
         require (roles.hasRole(roles.GARAGE_ROLE(), msg.sender));
@@ -103,6 +68,8 @@ contract Vehicle is ERC721Enumerable {
         _tokenURIs[tokenId] = _tokenURI;
     }
 
+    ///@dev Only minters are allowed to create vehicles
+    ///     No duplicate uris allowed.
     function mint(string memory uri) external {
         require(
             roles.isMinterClass(msg.sender)
@@ -115,6 +82,7 @@ contract Vehicle is ERC721Enumerable {
         _tokenIds.increment();
     }
 
+    ///@dev Only the authority class is allowed to destroy vehicles
     function burn(uint256 _tokenId) external {
         require(
             roles.isAuthorityClass(msg.sender)

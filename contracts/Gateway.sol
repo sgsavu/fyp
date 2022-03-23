@@ -4,12 +4,11 @@ pragma solidity >=0.6.0 <0.9.0;
 import "./Marketplace.sol";
 import "./Vehicle.sol";
 
-/*
-This contract is a superset of Marketplace and acts as a gateway between
-the users and the marketplace. It places a significant number of restrictions on
-the basic functionalities of the market. It also keeps a profit from each transaction
-and acts as a treasury.
-*/
+/// @title The Gateway between the ecosystem and the consumer.
+/// @notice This contract is a superset of Marketplace and acts as a gateway between
+/// the users and the marketplace. It places a significant number of restrictions on
+/// the basic functionalities of the market. It also keeps a profit from each transaction
+/// and acts as a treasury.
 contract Gateway is Marketplace {
     event NewPrice(uint256 indexed tokenId);
     event NewTopBidder(uint256 indexed tokenId);
@@ -19,6 +18,8 @@ contract Gateway is Marketplace {
 
     receive() external payable {}
 
+    /// @dev Object to be used to get all the necessary data for the 
+    ///     frontend dapp.
     struct getObject {
         uint256[] ids;
         string[] uris;
@@ -30,6 +31,8 @@ contract Gateway is Marketplace {
         address[] bidders;
     }
 
+    /// @dev This function grabs all necessary data for the specified
+    ///     vehicle tokenId
     function refreshOne(uint256 tokenId)
         public
         view
@@ -77,6 +80,8 @@ contract Gateway is Marketplace {
         return getObject1;
     }
 
+    /// @dev This function grabs all necessary data for all vehicles
+    ///     existing in the ecosystem.
     function getEverything() public view returns (getObject memory) {
         getObject memory getObject1;
 
@@ -128,6 +133,8 @@ contract Gateway is Marketplace {
         return getObject1;
     }
 
+    /// @dev This function grabs all necessary data for market vehicles
+    ///     listed in the ecosystem.
     function getMarketVehicles() public view returns (getObject memory) {
         getObject memory getObject1;
 
@@ -315,6 +322,8 @@ contract Gateway is Marketplace {
 
     //// MONEY TX
 
+    /// @dev Money is transferred, then the vehicle/token is exchanged
+    ///     and then the vehicle is delisted.
     function buy(uint256 tokenId)
         external
         payable
@@ -333,6 +342,10 @@ contract Gateway is Marketplace {
         emit SaleStatus(tokenId, false);
     }
 
+
+    /// @dev The current topbidder with the highest stake is refunded
+    ///     after which the money sent through this function is stored
+    ///     and it becomes the new high price for the vehicle.
     function bid(uint256 tokenId)
         external
         payable
@@ -352,6 +365,9 @@ contract Gateway is Marketplace {
         emit NewTopBidder(tokenId);
     }
 
+    /// @dev The current top bidder is the winner of the auction
+    ///     and receives the token/vehicle that they have bidded for. While
+    ///     the lister is sent the stored bid money.
     function concludeAuction(uint256 tokenId)
         external
         onlyIfExists(tokenId)
