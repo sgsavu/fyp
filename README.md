@@ -5,11 +5,41 @@ PREREQUISITES:
 - Metamask wallet extension for Chromium based browsers: https://metamask.io/
 - Node.js/NPM: https://nodejs.org/en/ 
 
-I will deploy the smart contracts myself and then commit them in the github repo for you to test (this is the EASY mode and enables you to see the system from the point of view of a normal USER). However, if you wish you can redeploy the contracts and become owner over the ecosystem to test certain functionality and/or edge cases (this is the HARD mode). 
-
 The ecosystem is deployed on 2 networks (hopefully one of those will be up on the day you are testing it):
 - Fantom Testnet
-- Rinkeby Testnet
+- Rinkeby Testnet (no example vehicles included)
+
+**EASY MODE**
+
+Here is the master account with all functionality enabled aka the deployer:
+- PUBLIC ADDRESS: 0x41F71840346605b60B12CCaa19f7842c869f0095
+- PRIVATE KEY: 3e4f26cb570f3db2f744b90862882578f5bce24b10de35ad947bf13b0c3ccebd
+
+Create a new MetaMask Wallet
+Click on the avatar picture -> Import Account -> Paste the Private key
+
+App is running at https://fyp.sgsavu.com or https://fyp2.sgsavu.com
+
+After you are connected to the app, added the network and switched to it, refresh the page.
+
+Enjoy.
+
+
+**TESTING ODOMETER SCRIPT**
+
+To test the python IoT script:
+
+```sh
+./iot/load_python_libraries.sh
+```
+
+```sh
+python3 ./iot/iot.py
+```
+
+**HARD MODE:**
+
+You will need to create a fresh metamask wallet (reinstall extension). 
 
 You will need to add some test cryptocurrency to be able to send transactions to the blockchain (simply input your public address from your metamask wallet into the following websites):
 - for the Fantom chain: https://faucet.fantom.network/
@@ -21,8 +51,6 @@ Inside the sgs020 directory run the following command to install all required de
 ```sh
 npm install
 ```
-
-**EASY MODE**
 
 To test the app:
 ```sh
@@ -37,18 +65,6 @@ The api uses the private key to authenticate for the transactions since we canno
 Please refer to the API documentation which I have made available at: https://armenz-savu.gitbook.io/api-docs/
 To find your private key go to the vertical three dot menu in metamask -> Account Details -> Export Private key
 
-
-To test the python IoT script:
-
-```sh
-./iot/load_python_libraries.sh
-```
-
-```sh
-python3 ./iot/iot.py
-```
-
-**HARD MODE:**
 
 You will have to modify the .env file MNEMONIC variable to match your metamask wallet's mnemonic.
 You can find your metamask mnemonic by clicking on the randomly generated profile picture for your account -> Settings -> Security & Privacy -> Reveal Secret Recovery Phrase

@@ -1,0 +1,8 @@
+node_modules
+build
+contracts
+iot
+migrations
+test
+README.md
+truffle-config.js
