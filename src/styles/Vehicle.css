@@ -1,109 +1,42 @@
-:root {
-    --font-family-primary: "Vollkorn", serif;
-    --font-family-secondary: "PT Sans", sans-serif;
-    --font-size-title: 32px;
-    --line-height-title: 1.4;
-    --font-size-caption: 14px;
-    --line-height-caption: 1.2;
-    --color-text: #222022;
-    --color-highlight-primary: #FFEF7E;
-    --color-highlight-secondary: #B7F9E9;
-    --border-radius-primary: 32px;
-  }
 
 
-  .card {
-    border-radius: var(--border-radius-primary);
-    box-shadow: 24px 24px 80px rgba(0, 0, 0, 0.1);
-    padding: 20px 20px 28px 20px;
-    box-sizing: border-box;
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  
-  .card__image {
-    object-fit: cover ;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-radius-primary);
-    margin-bottom: 18px;
-  }
-  
-  .card__date {
+  .vehicle-text-attribute, .vehicle-text-attribute-secondary {
     display: block;
-    font-family: var(--font-family-secondary);
-    font-size: var(--font-size-caption);
-    line-height: var(--line-height-caption);
+    font-size: 14px;
+    line-height: 1.2;
     text-transform: uppercase;
-    color: var(--color-text);
-    margin-bottom: 6px;
+    color: black;
+    margin-bottom: 2px;
   }
-  
-  .card__title {
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-title);
-    line-height: var(--line-height-title);
-    color: var(--color-text);
-    -webkit-box-decoration-break: clone;
-            box-decoration-break: clone;
-    background-image: linear-gradient(90deg, var(--color-highlight-primary), var(--color-highlight-secondary));
+
+  .vehicle-text-attribute-secondary {
+    font-size: 10px;
+  }
+
+  .vehicle-text-value, .vehicle-text-value-secondary  {
+    
+    font-family: "Vollkorn";
+    font-size: 32px;
+    line-height: 1.4;
+    color: black;
+    background-image: linear-gradient(90deg, #FFEF7E, #B7F9E9);
     background-size: 100% 42%;
     background-repeat: no-repeat;
-    background-position: 0 85%;
-    padding: 0 4px;
-    margin-left: -4px;
+    background-position: 0 80%;
   }
 
-  .card__title2 {
-    font-family: var(--font-family-primary);
+  .vehicle-text-value-secondary {
     font-size: 25px;
-    line-height: var(--line-height-title);
-    color: var(--color-text);
-    -webkit-box-decoration-break: clone;
-            box-decoration-break: clone;
-    background-image: linear-gradient(90deg, var(--color-highlight-primary), var(--color-highlight-secondary));
     background-size: 100% 20%;
-    background-repeat: no-repeat;
-    background-position: 0 85%;
-    padding: 0 4px;
-    margin-left: -4px;
   }
 
-  .card__date2 {
-    display: block;
-    font-family: var(--font-family-secondary);
-    font-size: 10px;
-    line-height: var(--line-height-caption);
-    text-transform: uppercase;
-    color: var(--color-text);
-    margin-bottom: 6px;
-  }
+  
 
 
   
 
 
-
-/********************/
-
-.massive-circle {
-  width: 40rem;
-  height: 40rem;
-  border-radius: 100%;
-  background: linear-gradient(40deg, var(--color-highlight-primary), var(--color-highlight-secondary) 70%);
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  transform: translate(-50%, -70%)
-}
-
-/***********/
-
-
-
-.phone {
+.panel {
   margin: 41px;
   width: 21rem;
   height: 45rem;
@@ -118,7 +51,7 @@
   border-radius: 100%;
   width: 8rem;
   height: 8rem;
-  background: linear-gradient(40deg, var(--color-highlight-primary), var(--color-highlight-secondary) 70%);
+  background: linear-gradient(40deg, #FFEF7E, #B7F9E9 70%);
   margin: auto;
 }
 
@@ -138,41 +71,33 @@
   font-size: 32px;
 }
 
-p { 
-  font-size: 90%;
-}
+
+
 
 .panel-heading {
-  font-size: 140%;
-  font-weight: bolder;
-  margin: 3rem 0 .2rem 0;
+  font-size: 130%;
+  font-weight: 1000;
+  margin: 3.1rem 0 .3rem 0;
 }
 
 .panel-info {
-
   margin: 2rem 0 .2rem 0;
 }
 
 .panel-input {
-
   margin: 6rem 0 .2rem 0;
 }
 
 
 
-
 .mark {
-  border-radius: 100px;
   background-color: black;
-}
-.mark {
   width: 7%;
-  margin: auto;
+  height: 0.30rem;
   position: relative;
-  height: .25rem;
 }
 
-.mark::before {
+.mark::before,.mark::after {
   content: '';
   position: absolute;
   width: .25rem;
@@ -182,26 +107,12 @@ p {
   background-color: inherit;
 }
 .mark::after {
-  content: '';
-  position: absolute;
-  width: .25rem;
-  height: 100%;
+  left: auto;
   right: -70%;
-  opacity: .45;
-  background-color: inherit;
 }
 
-.mark-both {
-
-  margin-top: 60px;
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-}
 
 .mark-on {
-  -webkit-text-stroke: 0.2px black;
-
   opacity: 1;
   color: greenyellow;
 }
@@ -210,6 +121,8 @@ p {
   opacity: .35;
   font-size: 15px;
 }
+
+
 
 
 /* BOTTOM */
@@ -309,7 +222,6 @@ p {
 
 
 .content {
-  z-index: 2;
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -317,8 +229,7 @@ p {
   width: 70%;
 }
 
-.boss {
-  z-index: 2;
+.toggler {
   height: 2.8rem;
   border-radius: 100px;
   width: 100%;

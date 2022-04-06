@@ -5,7 +5,7 @@ import '../../styles/MiniCard.css';
 import * as GameIcons from "react-icons/gi";
 import * as MDIcons from "react-icons/md";
 import * as RiIcons from 'react-icons/ri';
-import { Avatar, Stack } from "@mui/material";
+import { Avatar, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
@@ -28,19 +28,29 @@ const MiniCard = ({ vehicle }) => {
             state: { metadata: vehicle },
         }}>
 
-            <img className="minicard-image" src={vehicle.image} />
+            <img
+                style={{
+                    width: "100%",
+                    height: "100%"
+                }}
+                src={vehicle.image} />
 
-            <div className="minicard-overlay">
-                <div className="minicard-header">
-                    <svg className="minicard-arc" ><path /></svg>
+            <div className="minicard-wrapper">
+                <div className="minicard-info">
+                    <svg className="minicard-corner" >
+                        <path style={{ fill: "white" }} d="M 40 80 c 22 0 40 -22 40 -40 v 40 Z" />
+                    </svg>
                     <Avatar>
                         <Jazzicon diameter={40} seed={jsNumberForAddress(vehicle.injected.owner)} />
                     </Avatar>
-                    
-                    <div className="minicard-text">
-                        <h3 className="minicard-title"> {vehicle.attributes.company} {vehicle.attributes.model} {vehicle.attributes.year}</h3>
-                        <span className="minicard-status">{vehicle.injected.display_price ? vehicle.injected.display_price + " " + data.displayCurrency : "Not listed."}</span>
-                    </div>
+
+                    <Stack color="black">
+                        <h3 style={{
+                            fontSize: "1em",
+                            margin: "0 0 .3em"
+                        }} > {vehicle.attributes.company} {vehicle.attributes.model} {vehicle.attributes.year}</h3>
+                        <p style={{ fontSize: "0.8em" }} >{vehicle.injected.display_price ? vehicle.injected.display_price + " " + data.displayCurrency : "Not listed."}</p>
+                    </Stack>
 
                     <Stack spacing={2} display="flex" align-items="center" justify-content="center" direction="row">
 
@@ -49,7 +59,7 @@ const MiniCard = ({ vehicle }) => {
                             <GameIcons.GiHomeGarage></GameIcons.GiHomeGarage>
                             : null}
 
-                        {blockchain.account? vehicle.injected.topBidder == blockchain.account ?
+                        {blockchain.account ? vehicle.injected.topBidder == blockchain.account ?
 
                             <MDIcons.MdPriceCheck></MDIcons.MdPriceCheck>
                             : null : null}
@@ -64,7 +74,14 @@ const MiniCard = ({ vehicle }) => {
 
 
                 </div>
-                <p className="minicard-description">{vehicle.attributes.transmission} - {vehicle.attributes.fuel} - {vehicle.attributes.color} </p>
+                <Typography sx={{
+                    color: "black",
+                    fontSize: "0.8rem",
+                    padding: "0 1.5em 1.5em",
+                    margin: "0"
+                }} >{vehicle.attributes.transmission} - {vehicle.attributes.fuel} - {vehicle.attributes.color}
+                </Typography>
+
             </div>
 
         </Link>

@@ -465,11 +465,11 @@ Content-Type: application/json
 
 ###
 #ANY GET
-POST https://localhost:8443/api
+POST https://fyp.sgsavu.com/api
 Content-Type: application/json
 
 {
-    "chain":"0x4",
+    "chain":"0xfa2",
     "operation":"setApiAddress",
     "data": {
         "value": "fyp.sgsavu.com"

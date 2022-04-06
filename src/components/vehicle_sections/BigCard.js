@@ -15,7 +15,12 @@ const BigCard = ({ vehicle }) => {
 
                     <Box width={{ xs: "100%", sm: "100%", md: "50%" }} margin={1} padding={2}>
                         <img
-                            className="card__image"
+                            style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: "30px",
+                            }}
                             src={vehicle.image}
                         />
                     </Box>
@@ -27,36 +32,36 @@ const BigCard = ({ vehicle }) => {
                         justifyContent={{ md: "space-between" }}
                         direction={{ xs: "column", sm: "column", md: "row" }}>
                         <Stack display="flex" alignItems={{ xs: "center", sm: "center", md: "left" }} justifyContent="center">
-                            <div className="card__date">{vehicle.injected.id} - {vehicle.attributes.vhcid}</div>
-                            <span className="card__title">{vehicle.attributes.company}</span>
-                            <div className="card__date">Make</div>
-                            <span className="card__title">{vehicle.attributes.model}</span>
-                            <div className="card__date">Model</div>
-                            <span className="card__title">{vehicle.attributes.year}</span>
-                            <div className="card__date">Year</div>
+                            <div className="vehicle-text-attribute">{vehicle.injected.id} - {vehicle.attributes.vhcid}</div>
+                            <span className="vehicle-text-value">{vehicle.attributes.company}</span>
+                            <div className="vehicle-text-attribute">Make</div>
+                            <span className="vehicle-text-value">{vehicle.attributes.model}</span>
+                            <div className="vehicle-text-attribute">Model</div>
+                            <span className="vehicle-text-value">{vehicle.attributes.year}</span>
+                            <div className="vehicle-text-attribute">Year</div>
                         </Stack >
 
                         <Stack display="flex" alignItems={{ xs: "center", sm: "center", md: "end" }} justifyContent="center">
-                            <span className="card__title2">{vehicle.attributes.color}</span>
-                            <div className="card__date2">Color</div>
-                            <span className="card__title2">{vehicle.attributes.body}</span>
-                            <div className="card__date2">Body</div>
-                            <span className="card__title2">{vehicle.attributes.transmission}</span>
-                            <div className="card__date2">Transmission</div>
-                            <span className="card__title2">{vehicle.attributes.fuel}</span>
-                            <div className="card__date2">Fuel</div>
-                            <span className="card__title2">{vehicle.attributes.engine}</span>
-                            <div className="card__date2">Engine</div>
-                            <span className="card__title2">{vehicle.attributes.driver_side}</span>
-                            <div className="card__date2">Driver Side</div>
+                            <span className="vehicle-text-value-secondary">{vehicle.attributes.color}</span>
+                            <div className="vehicle-text-attribute-secondary">Color</div>
+                            <span className="vehicle-text-value-secondary">{vehicle.attributes.body}</span>
+                            <div className="vehicle-text-attribute-secondary">Body</div>
+                            <span className="vehicle-text-value-secondary">{vehicle.attributes.transmission}</span>
+                            <div className="vehicle-text-attribute-secondary">Transmission</div>
+                            <span className="vehicle-text-value-secondary">{vehicle.attributes.fuel}</span>
+                            <div className="vehicle-text-attribute-secondary">Fuel</div>
+                            <span className="vehicle-text-value-secondary">{vehicle.attributes.engine}</span>
+                            <div className="vehicle-text-attribute-secondary">Engine</div>
+                            <span className="vehicle-text-value-secondary">{vehicle.attributes.driver_side}</span>
+                            <div className="vehicle-text-attribute-secondary">Driver Side</div>
                             <Stack spacing={{ xs: 0, sm: 0, md: 1 }} display="flex" alignItems={{ xs: "center", sm: "center", md: "end" }} justifyContent="center" direction={{ xs: "column", sm: "column", md: "row" }}>
                                 <Stack display="flex" alignItems="inherit" justifyContent="center">
-                                    <span className="card__title2">{vehicle.attributes.doors}</span>
-                                    <div className="card__date2">Doors</div>
+                                    <span className="vehicle-text-value-secondary">{vehicle.attributes.doors}</span>
+                                    <div className="vehicle-text-attribute-secondary">Doors</div>
                                 </Stack>
                                 <Stack display="flex" alignItems="inherit" justifyContent="center">
-                                    <span className="card__title2">{vehicle.attributes.seats}</span>
-                                    <div className="card__date2">Seats</div>
+                                    <span className="vehicle-text-value-secondary">{vehicle.attributes.seats}</span>
+                                    <div className="vehicle-text-attribute-secondary">Seats</div>
                                 </Stack>
                             </Stack>
                         </Stack>

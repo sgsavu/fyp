@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import '../../styles/Timeline.css';
+import '../../styles/History.css';
 import { callViewChainFunction, getContractFor, getNetworkExplorer } from '../utils/GatewayParser';
 import { MdSpeed } from "react-icons/md";
 
@@ -75,16 +75,26 @@ const History = ({ vehicle }) => {
             <MdSpeed></MdSpeed>
             <p>{odometerValue} km</p>
 
-            <div className="timeline">
+            <div className="history">
                 {Object.keys(vehicleHistory).map((time, index) => {
                     return (
 
-                        <div key={index} className="timeline-event">
-                            <label className="timeline-event-icon"></label>
-                            <div className="timeline-event-info">
-                                <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} className="timeline-event-date">{getDate(time)}</p>
-                                <h4 onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</h4>
-                                <h6>Proprietor</h6>
+                        <div key={index} className="history-event">
+                            <label className="history-icon"></label>
+                            <div className="history-info">
+                                <p onClick={async () => { newTabTx(vehicleHistory[time]?.transactionHash) }} className="history-date">{getDate(time)}</p>
+                                <Typography sx={{
+                                    color: "black",
+                                    fontWeight: "100",
+                                    fontSize: "1.55em",
+                                    cursor: "true"
+                                }} onClick={async () => { newTabAddress(vehicleHistory[time]?.to) }} >{(vehicleHistory[time]?.to).slice(0, 7) + "..." + (vehicleHistory[time]?.to).slice((vehicleHistory[time]?.to).length - 5, (vehicleHistory[time]?.to).length)}</Typography>
+                                <Typography sx={{
+                                    color: "black",
+                                    fontWeight: "100",
+                                    fontSize: "0.75em",
+                                    cursor: "true"
+                                }}>Proprietor</Typography>
                             </div>
 
                         </div>

@@ -25,17 +25,13 @@ After you are connected to the app, added the network and switched to it, refres
 Enjoy.
 
 
-**TESTING ODOMETER SCRIPT**
+**INTERMEDIATE MODE:**
 
-To test the python IoT script:
+If you use docker you can get the container for the project from my AWS:
 
-```sh
-./iot/load_python_libraries.sh
-```
+public.ecr.aws/q4m8f1t4/vhc3
 
-```sh
-python3 ./iot/iot.py
-```
+Run on port 3000/8000/8080
 
 **HARD MODE:**
 
@@ -83,3 +79,14 @@ Now you are the DEFAULT_ADMIN over the smart contracts and can give/revoke permi
 I recommend creating a couple more new metamask accounts and testing features out going back to the instructions of easy mode. You can create new accounts by clicking on your profile icon then Create Account. Remember to adequately equip each account with testing cryptocurrency.
 
 
+**TESTING ODOMETER SCRIPT**
+
+To test the python IoT script:
+
+```sh
+./iot/load_python_libraries.sh
+```
+
+```sh
+python3 ./iot/iot.py
+```

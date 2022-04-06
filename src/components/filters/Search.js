@@ -3,6 +3,7 @@ import '../../styles/VerifyBox.css';
 import { sleep } from '../utils/Other';
 
 import { MdOutlinePersonSearch } from "react-icons/md";
+import { Stack } from '@mui/material';
 
 /**
   * The search bar functionality component used in Verify.
@@ -53,7 +54,7 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
     }, [inputFocused])
 
     return (
-        <div className='search-wrapper'>
+        <Stack className='search-wrapper'>
             <div className="search-container">
                 <button
                     className="search-button"
@@ -76,7 +77,7 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
                 >
                 </input>
             </div>
-        </div>
+        </Stack>
     );
 }
 

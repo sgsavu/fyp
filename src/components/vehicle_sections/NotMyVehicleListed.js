@@ -108,7 +108,7 @@ function NotMyVehicleListed({ vehicle }) {
 
 
 
-        <div className="phone">
+        <div className="panel">
             <div className="content">
                 <div className={blockchain.pendingTx.length != 0 ? "circle-loading" : "circle"}>
                     <div className='circle-status'>

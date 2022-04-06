@@ -4,12 +4,11 @@
   box-sizing: border-box;
 }
 
-.timeline {
+.history {
   position: relative;
   margin: 20px;
 }
-.timeline:before {
-  
+.history:before {
   background-color: black;
   content: '';
   margin-left: -1px;
@@ -20,20 +19,20 @@
   height: 100%;
 }
 
-.timeline-event {
+.history-event {
   width: 325px;
   position: relative;
 }
-.timeline-event:hover .timeline-event-icon {
-  transform: rotate(180deg);
+.history-event:hover .history-icon {
   background-image: linear-gradient(90deg, #FFEF7E, #B7F9E9);
+  transform: rotate(180deg);
 }
-.timeline-event:hover .timeline-event-date {
+.history-event:hover .history-date {
   box-shadow: inset 12em 0 0 0 #B7F9E9;
   color: black;
 }
 
-.timeline-event-info {
+.history-info {
   padding: 2em;
   position: relative;
   top: -1.875em;
@@ -42,49 +41,34 @@
   font-size: 1.25em;
 }
 
-.timeline-event-icon {
-  transition: transform 0.2s ease-in;
-  transform: rotate(45deg);
+.history-icon {
+  top: 0;
+  left: 2em;
+  transition: transform 0.3s ease-in;
+  transform: rotate(-45deg);
   background-color: white;
-  outline: 10px solid black;
+  outline: 8px solid black;
   display: block;
   margin: 0.5em 0.5em 0.5em -0.5em;
   position: absolute;
-  top: 0;
-  left: 2em;
   width: 1em;
   height: 1em;
-  
 }
 
-.timeline-event-date {
+.history-date {
   background-color: black;
   color: white;
   display: inline-block;
   
-  transition: color 0.5s, box-shadow 0.5s ease-in 0.1s;
-  font-size: 0.75em;
+  font-size: 0.80em;
+  margin-bottom: 1.0em;
+  padding: 0.25em 3em 0.2em 3em;
+  
+  transition: color 0.5s, box-shadow 0.3s ease-in 0.1s;
   box-shadow: inset 0 0 0 0em grey;
   
-  margin-bottom: 1.2em;
-  
-  padding: 0.25em 3em 0.2em 3em;
   cursor: pointer;
 }
 
 
-.timeline-event h4 {
-  color: black;
-  font-weight: 100;
-  text-align: left;
-  font-size: 1.55em;
-  cursor: pointer;
-}
-
-.timeline-event h6 {
-  color: black;
-  font-weight: 100;
-  text-align: left;
-  font-size: 0.75em;
-}
 

@@ -8,6 +8,7 @@ import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
+import { Stack } from '@mui/material';
 
 /**
  * Component to display the view of the management tab for when the vehicle
@@ -53,7 +54,7 @@ function MyVehicleNotListed({ vehicle }) {
     return (
 
 
-        <div className="phone">
+        <div className="panel">
             <div className="content">
                 <div className={blockchain.pendingTx.length != 0 ? "circle-loading" : "circle"}>
                     <div className='circle-status'>
@@ -62,9 +63,10 @@ function MyVehicleNotListed({ vehicle }) {
                 </div>
                 <p className="panel-heading">List your vehicle</p>
                 <p>Simply select the type of listing and set a price.</p>
-                <div className="boss" onClick={() => setTypeToggle(!typeToggle)}>
+                <div className="toggler" onClick={() => setTypeToggle(!typeToggle)}>
                     <div className={typeToggle ? "toggle-right" : "toggle-left"}></div>
-                    <div className="options">
+                    <div 
+                    className='options'>
                         <p className={typeToggle ? "optionOff" : "optionOn"}>Instant</p>
                         <p className={typeToggle ? "optionOn" : "optionOff"}>Auction</p>
                     </div>
@@ -79,7 +81,7 @@ function MyVehicleNotListed({ vehicle }) {
                     </div>
                 </div>
 
-                <div className='mark-both'>
+                <Stack marginTop="60px" flexDirection="row" display="flex" justifyContent="space-between" alignItems="center" >
                     <div className={approved? 'mark-on' : 'mark-off' }>
                         1. Approve
                     </div>
@@ -87,7 +89,7 @@ function MyVehicleNotListed({ vehicle }) {
                     <div className='mark-off'>
                         2. ListVHC
                     </div>
-                </div>
+                </Stack>
 
 
             </div>

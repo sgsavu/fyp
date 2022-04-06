@@ -7,93 +7,60 @@
     box-sizing: border-box;
   }
   
-
-
   .minicard {
     position: relative;
     display: block;
-    height: 100%;  
-    border-radius: calc(var(--curve) * 1px);
+    border-radius: calc(var(--curve) * 1.25px);
     overflow: hidden;
   }
   
-  .minicard-image {      
-    width: 100%;
-    height: 100%;
-  }
-  
-  .minicard-overlay {
+  .minicard-wrapper {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;      
-    border-radius: calc(var(--curve) * 1px);    
-    background-color: var(--surface-color);      
+
+    border-radius: calc(var(--curve) * 1.25px);    
+    background-color: var(--surface-color);   
+
+    bottom: 0px;
+    left: 0px;
+    right: 0px;   
+    
     transform: translateY(100%);
     transition: .2s ease-in-out;
   }
   
-  .minicard:hover .minicard-overlay {
-    transform: translateY(0);
-  }
+ 
   
-  .minicard-header {
+  .minicard-info {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 2em;
+    gap: 2.1em;
     padding: 1em;
-    border-radius: calc(var(--curve) * 1px) 0 0 0;    
+    border-radius: calc(var(--curve) * 1.25px) 0 0 0;    
     background-color: var(--surface-color);
     transform: translateY(-100%);
     transition: .2s ease-in-out;
   }
   
-  .minicard-arc {
+  .minicard-corner {
+    position: absolute;
     width: 80px;
     height: 80px;
-    position: absolute;
     bottom: 100%;
-    right: 0;      
-    z-index: 1;
+    right: 0px;      
   }
-  
-  .minicard-arc path {
-    fill: var(--surface-color);
-    d: path("M 40 80 c 22 0 40 -22 40 -40 v 40 Z");
-  }       
-  
-  .minicard:hover .minicard-header {
+
+  .minicard:hover .minicard-wrapper {
     transform: translateY(0);
-    
   }
   
-  .minicard-thumb {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;      
-    border-radius: 50%;      
+  .minicard:hover .minicard-info {
+    transform: translateY(0);
   }
+
+
   
-  .minicard-title {
-    font-size: 1em;
-    margin: 0 0 .3em;
-    color: black;
-  }
-  
-  .minicard-status {
-    font-size: .8em;
-    color: black;
-  }
-  
-  .minicard-description {
-    padding: 0 1.5em 1.5em;
-    margin: 0;
-    color: black;
-    font-family: "MockFlowFont";   
-    overflow: hidden;
-  }    
+ 
 
 
 
