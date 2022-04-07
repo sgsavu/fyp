@@ -2,6 +2,10 @@
 Node version: v14.18.1
 NPM version: 6.14.15
 
+You can find the deployed addresses of the smart contracts by ctrl+f for "networks" inside the smart contract
+JSON file in /src/api/resources
+
+
 PREREQUISITES:
 - Chromium browser (I recommend Brave or Chrome): https://brave.com/
 - Metamask wallet extension for Chromium based browsers: https://metamask.io/
