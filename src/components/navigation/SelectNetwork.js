@@ -2,48 +2,24 @@ import React from "react";
 import '../../styles/App.css';
 import { useDispatch, useSelector } from "react-redux";
 import { addOrSwitchNetwork, updateAppNetwork } from "../../redux/blockchain/blockchainActions";
-
-
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
-import Typography from '@mui/material/Typography';
-import * as FaIcons from "react-icons/fa";
-import Link from '@mui/material/Link';
-import { useMediaQuery } from "@mui/material";
 import { Box } from "@mui/system";
 
-
-/**
-  * The dialog which allows the user to click to select the network
-  * they wish to change to.
-  */
 function SimpleDialog(props) {
-    const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const data = useSelector((state) => state.data);
-
-    const changeNetwork = async (newNetwork) => {
-        if (blockchain.walletProvider)
-            await addOrSwitchNetwork(newNetwork)
-        else
-            dispatch(updateAppNetwork(newNetwork))
-    }
 
     const { onClose, open } = props;
 
     const handleClose = () => {
         onClose();
     };
-
 
     const handleListItemClick = (value) => {
         onClose(value);
@@ -66,17 +42,10 @@ function SimpleDialog(props) {
         </Dialog>
     );
 }
-/**
-  * The select network component at the top right allowing one to change
-  * the app's network from a pool of available networks that the app is deployed
-  * on.
-  */
-function SelectNetwork() {
 
+function SelectNetwork() {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const data = useSelector((state) => state.data);
-
 
     const changeNetwork = async (newNetwork) => {
         if (blockchain.walletProvider)
@@ -86,7 +55,6 @@ function SelectNetwork() {
     }
 
     const [open, setOpen] = React.useState(false);
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -99,24 +67,18 @@ function SelectNetwork() {
         }
     };
 
-
-
     return (
         <div>
-
             <Chip
                 avatar={<Avatar src={blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.images[blockchain.currentNetwork] : null} />}
                 label={<Box display={{xs: "none", sm: "none" , md: "block"}} >{blockchain.networkTables && blockchain.currentNetwork ? blockchain.networkTables.networks[blockchain.currentNetwork].chainName : "null"}</Box>   }
                 variant="outlined"
                 onClick={handleClickOpen}
             />
-
             <SimpleDialog
                 open={open}
                 onClose={handleClose}
             />
-
-
         </div>
     );
 }

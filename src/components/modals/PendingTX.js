@@ -4,7 +4,7 @@ import { Alert, Snackbar } from "@mui/material";
 import '../../styles/App.css';
 
 function PendingTX() {
-    const blockchain = useSelector((state) => state.blockchain);
+    const blockchain = useSelector(state => state.blockchain)
 
     return (
         blockchain.pendingTx.length !== 0 ? 

@@ -3,7 +3,6 @@ import React from "react";
 import '../../styles/Vehicle.css';
 
 const BigCard = ({ vehicle }) => {
-
     return (
         <div>
             <Card sx={{ padding: 0, margin: 4, borderRadius: 10, backgroundColor: "rgba(0, 0, 0, 0.02) "}}>

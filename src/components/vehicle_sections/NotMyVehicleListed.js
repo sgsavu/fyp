@@ -130,8 +130,6 @@ function NotMyVehicleListed({ vehicle }) {
                     }
                 </div>
 
-
-
                 {isAuction ?
                     <div className='panel-input'>
                         <p>My Bid:</p>

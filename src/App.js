@@ -10,13 +10,9 @@ function App() {
 
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
-  const data = useSelector((state) => state.data);
   const app = useSelector((state) => state.app);
   const [first, setfirst] = useState("")
 
-  /**
-  * On app load initialize it and autologin
-  */
   useEffect(async () => {
     await dispatch(init())
     await dispatch(login())

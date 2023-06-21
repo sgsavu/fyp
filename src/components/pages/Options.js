@@ -11,7 +11,6 @@ const Options = () => {
     const [availableCurrencies, setAvailableCurrencies] = useState([])
 
     useEffect(async () => {
-    
         setAvailableCurrencies(cryptoCurrencies.concat(await fetchAllCurrencies()))
     }, [])
 

@@ -6,13 +6,11 @@ import { formUpdate, updateEntry, uploadImage } from "../../redux/minting/formAc
 import Mint from "./Mint";
 
 const Edit = () => {
-
     const location = useLocation()
     let vehicle = location.state?.metadata
     const dispatch = useDispatch();
 
     useEffect(async () => {
-
         Object.keys(vehicle.attributes).forEach((element) => {
             dispatch(
                 formUpdate({ name: element, value: vehicle.attributes[element] })

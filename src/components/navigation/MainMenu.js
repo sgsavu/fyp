@@ -1,15 +1,14 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import * as FaIcons from 'react-icons/fa';
 import { getSidebarFor } from '../utils/Roles';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { IconButton, Stack } from '@mui/material';
@@ -38,9 +37,7 @@ export default function MainMenu() {
         setState({ ...state, [anchor]: open });
     };
 
-    const dispatch = useDispatch();
     const data = useSelector((state) => state.data);
-    const blockchain = useSelector((state) => state.blockchain);
     var sidebar = getSidebarFor(data.myRole)
     const [value, setValue] = React.useState(0)
     const history = useHistory();
@@ -89,11 +86,7 @@ export default function MainMenu() {
 
 
     return (
-
-
         <Stack direction="row" >
-
-
             <Drawer
                 anchor={'left'}
                 open={state['left']}
@@ -101,7 +94,6 @@ export default function MainMenu() {
             >
                 {drawer('left')}
             </Drawer>
-
 
             {greaterThan700 ? <Box sx={{ maxWidth: { sm: 320, md: 480, lg: 640, xl: 800 }, bgcolor: 'background.paper' }}>
                 <Tabs
@@ -113,7 +105,6 @@ export default function MainMenu() {
                     {sidebar.map((item, index) => (
                         <Tab onClick={handleChange} key={index} label={item.title} />
                     ))}
-
                 </Tabs>
             </Box> : <React.Fragment key={'left'}>
                 <IconButton onClick={toggleDrawer('left', true)}>

@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { checkRoutePermissionFor } from '../utils/Roles';
 
 /**
@@ -9,7 +9,6 @@ import { checkRoutePermissionFor } from '../utils/Roles';
   * based on their role in the ecosystem.
   */
 const PrivateRoute = ({ component: Component, ...rest }) => {
-
     const data = useSelector((state) => state.data);
 
     return (

@@ -1,11 +1,8 @@
-import { alerts, deleteFieldKey, entryDataState, updateDataState } from "../app/appActions";
+import { deleteFieldKey, updateDataState } from "../app/appActions";
 import store from "../store";
 import { getUserAccount } from "../reduxUtils";
 import { getContractFor } from "../../components/utils/GatewayParser";
 import { refreshVehicle } from "../data/dataActions";
-import { useDispatch } from "react-redux";
-
-
 
 /**
  * Function which refreshes the information/data of a certain token.

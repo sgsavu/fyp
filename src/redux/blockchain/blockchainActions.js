@@ -9,8 +9,8 @@ import detectEthereumProvider from '@metamask/detect-provider';
 
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { alerts, updateAppState, updateBlockchainState } from "../app/appActions";
-import { clearMyData, getAuthenticatedData } from "../data/dataActions";
-import { subscribeToApproval, subscribeToEvent, subscribeToNewGarageApproval, subscribeToNewPrice, subscribeToNewTopBidder, subscribeToSaleStatus, subscribeToTransfers } from "./eventSubscriber";
+import { clearMyData } from "../data/dataActions";
+import { subscribeToApproval, subscribeToEvent, subscribeToTransfers } from "./eventSubscriber";
 import { getCurrentNetwork, getNetworkTables, getWalletProvider, getWeb3 } from "../reduxUtils";
 import { getNetworkRpcUrl } from "../../components/utils/GatewayParser";
 

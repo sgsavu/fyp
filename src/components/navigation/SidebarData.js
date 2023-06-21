@@ -1,10 +1,8 @@
 import React from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
 import * as GameIcons from 'react-icons/gi';
 import * as BiIcons from "react-icons/bi";
-
 
 const ViewerSidebar = [
     {
@@ -14,7 +12,6 @@ const ViewerSidebar = [
         cName: 'nav-text'
     }
 ]
-
 
 const UserSidebar = [
     ...ViewerSidebar,
@@ -90,8 +87,6 @@ const DefaultAdminSidebar = [
     },
     AdminSidebar
 ];
-
-
 
 export const Sidebar = {
     VIEWER: ViewerSidebar,

@@ -1,6 +1,6 @@
 import React from "react";
 import '../../styles/App.css';
-import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import MyVehicles from '../pages/MyVehicles';
 import Marketplace from '../pages/Marketplace';
 import Verify from '../pages/Verify';
@@ -24,7 +24,6 @@ function NormalView() {
     return (
         <div>
             <Router>
-
                 <Stack margin={1} direction="row" justifyContent="space-between" >
                     <MainMenu></MainMenu>
                     <Stack direction="row" spacing={1} alignItems="center">
