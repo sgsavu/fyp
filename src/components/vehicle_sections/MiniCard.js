@@ -27,7 +27,8 @@ const MiniCard = ({ vehicle }) => {
                     width: "100%",
                     height: "100%"
                 }}
-                src={vehicle.image} />
+                src={vehicle.image} 
+            />
 
             <div className="minicard-wrapper">
                 <div className="minicard-info">

@@ -14,9 +14,9 @@ async function callChainFunction(obj) {
 
     var response = {}
 
-    if (obj.operation=="grantRole" || obj.operation=="revokeRole" )
+    if (obj.operation === "grantRole" || obj.operation === "revokeRole" )
         obj.data.role = keccak256(obj.data.role)
-    else if (obj.operation=="mint")
+    else if (obj.operation === "mint")
     {   
         const tokenURI = await uploadToIPFS(obj)
         response.ipfsURI = tokenURI
