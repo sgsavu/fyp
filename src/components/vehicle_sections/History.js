@@ -52,12 +52,7 @@ const History = ({ vehicle }) => {
         return date.toLocaleDateString()
     }
 
-    /**
- * Function used to open a new tab for a transaction with the provided hash
- * @param txHash the hash of the transaction
- */
     async function newTabTx(txHash) {
-
         var win = window.open((await getNetworkExplorer(blockchain.currentNetwork)) + "/tx/" + txHash, '_blank');
         win.focus();
     }
@@ -66,8 +61,6 @@ const History = ({ vehicle }) => {
         var win = window.open((await getNetworkExplorer(blockchain.currentNetwork)) + "/address/" + txHash, '_blank');
         win.focus();
     }
-
-
 
     return (
         <Stack margin={3} display="flex" alignItems="center" justifyContent="center">

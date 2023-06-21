@@ -20,12 +20,7 @@ import SelectNetwork from "../navigation/SelectNetwork";
 import Stack from '@mui/material/Stack';
 import More from "../navigation/More";
 
-/**
- * Component for the principal view of the app
- * It encapusaltes menus, page views, etc.
- */
 function NormalView() {
-
     return (
         <div>
             <Router>

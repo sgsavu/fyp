@@ -1,28 +1,12 @@
-import { FormControl, Grid, InputLabel, MenuItem, Stack, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUserAccount } from '../../redux/reduxUtils';
-import { callChainFunction, callViewChainFunction } from '../utils/GatewayParser';
+import { Grid } from '@mui/material';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { roles } from '../utils/Roles';
 import MiniCard from '../vehicle_sections/MiniCard';
-import { default as Select2 } from "@mui/material/Select";
-import { alerts } from '../../redux/app/appActions';
 
-/**
-  * The garage component garages uses to see the vehicles that approved them as a garage.
-  */
 const Garage = () => {
-
-    const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
-    const [address, setAddress] = useState("")
-    const [vehicle, setVehicle] = useState("")
-
-    function handleSelect (e) {
-        setVehicle(e.target.value)
-    }
-
 
     return (
         <div>

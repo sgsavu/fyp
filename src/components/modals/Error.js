@@ -1,15 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { alerts } from "../../redux/app/appActions";
-
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { alerts } from "../../redux/app/appActions";
 
-/**
-  * The modal for errors displayed through the app
-  */
 function Error() {
 
   const dispatch = useDispatch();

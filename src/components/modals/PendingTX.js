@@ -1,26 +1,18 @@
-import React, { useEffect, useState } from "react";
-import '../../styles/App.css';
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import { Alert, Snackbar } from "@mui/material";
+import '../../styles/App.css';
 
-/**
-  * The handling of the pending TX modals.
-  */
 function PendingTX() {
-
-    const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
 
     return (
-
-        blockchain.pendingTx.length != 0 ? 
+        blockchain.pendingTx.length !== 0 ? 
         <Snackbar open={true} >
             <Alert severity="info" sx={{ width: '100%' }}>
                 {blockchain.pendingTx.length} transaction(s) pending...
             </Alert>
         </Snackbar> : null
-
-
     );
 }
 

@@ -3,10 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { refreshDisplayPrices, updatePrefferedCurrency } from '../../redux/data/dataActions';
 import { fetchAllCurrencies } from '../utils/Exchange';
 
-/**
-  * Options component allows for the user to change the display currency
-  * across the app.
-  */
 const Options = () => {
 
     const dispatch = useDispatch();

@@ -7,7 +7,6 @@ import { getNetworkExplorer } from "../utils/GatewayParser";
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,7 +14,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
-import Typography from '@mui/material/Typography';
 import * as FaIcons from "react-icons/fa";
 import Link from '@mui/material/Link';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'

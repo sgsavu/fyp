@@ -5,11 +5,8 @@ import { myCurrencyToWei, weiToMyCurrency } from '../utils/Exchange'
 import { alerts } from '../../redux/app/appActions';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
-import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
 
-import { getUserAccount } from '../../redux/reduxUtils';
 import { formatAccountAddress } from '../utils/Other';
 
 /**
@@ -22,14 +19,12 @@ function NotMyVehicleListed({ vehicle }) {
 
     const dispatch = useDispatch();
 
-    const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
 
     const [desiredPrice, setDesiredPrice] = useState(0)
     const [displayPrice, setDisplayPrice] = useState(9999)
     const [topBidder, setTopBidder] = useState("0x0")
-    const [isForSale, setIsForSale] = useState(false)
     const [isAuction, setIsAuction] = useState(false)
     const [isTopBidder, setIsTopBidder] = useState(false)
     const [myBalance, setMyBalance] = useState(0)

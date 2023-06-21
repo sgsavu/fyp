@@ -1,18 +1,13 @@
-import { Box, Card, Paper, Stack } from "@mui/material";
+import { Box, Card, Stack } from "@mui/material";
 import React from "react";
 import '../../styles/Vehicle.css';
 
 const BigCard = ({ vehicle }) => {
 
     return (
-
         <div>
-
             <Card sx={{ padding: 0, margin: 4, borderRadius: 10, backgroundColor: "rgba(0, 0, 0, 0.02) "}}>
-
                 <Stack display="flex" alignItems={{ xs: "center", sm: "center", md: "stretch" }} borderRadius={18} margin={0} padding={0} direction={{ xs: "column", sm: "column", md: "row" }}>
-
-
                     <Box width={{ xs: "100%", sm: "100%", md: "50%" }} margin={1} padding={2}>
                         <img
                             style={{
@@ -24,7 +19,6 @@ const BigCard = ({ vehicle }) => {
                             src={vehicle.image}
                         />
                     </Box>
-
 
                     <Stack width={{ xs: "100%", sm: "100%", md: "50%" }}
                         margin={1}
@@ -67,8 +61,6 @@ const BigCard = ({ vehicle }) => {
                         </Stack>
                     </Stack>
                 </Stack>
-
-
             </Card>
         </div>
     );

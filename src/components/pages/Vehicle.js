@@ -9,8 +9,7 @@ import MyVehicleListed from "../vehicle_sections/MyVehicleListed";
 
 import '../../styles/Vehicle.css';
 import BigCard from "../vehicle_sections/BigCard";
-import { Card, CardActions, CardContent, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import Approve from "../vehicle_sections/Approve";
 
 /**
@@ -31,9 +30,6 @@ const Vehicle = () => {
     const [isForSale, setIsForSale] = useState({})
     const [isOwner, setIsOwner] = useState({})
 
-    const [pageToggle, setPageToggle] = useState(false)
-
-
     useEffect(async () => {
 
         if (blockchain.smartContracts.length != 0) {
@@ -53,7 +49,7 @@ const Vehicle = () => {
 
     const [tab, setTab] = React.useState('History');
 
-    const handleChange = (event, newAlignment) => {
+    const handleChange = (_, newAlignment) => {
         setTab(newAlignment);
     };
 

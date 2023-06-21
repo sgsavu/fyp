@@ -1,21 +1,13 @@
 import { Grid } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import MiniCard from "../vehicle_sections/MiniCard";
 
-/**
-  * Component for the My Vehicles page.
-  * It displays only those vehicles which are owned by the user.
-  */
 function MyVehicles() {
-
   const data = useSelector((state) => state.data);
   const blockchain = useSelector((state) => state.blockchain);
 
-
   return (
-
-
     <Grid container padding={5} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 6, md: 12, xl: 18 }}>
       {Object.values(data.allVehicles).map((vehicle, index) => {
         if (vehicle.injected.owner == blockchain.account)
@@ -27,7 +19,6 @@ function MyVehicles() {
       })
       }
     </Grid>
-
   );
 }
 

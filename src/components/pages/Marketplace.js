@@ -11,8 +11,7 @@ import Stack from '@mui/material/Stack';
 import { default as Select2 } from "@mui/material/Select";
 
 import { FormControl, Grid, IconButton, InputLabel, MenuItem, Tooltip, Typography } from '@mui/material';
-import { fetchRate2, roundToNDigits, weiToMyCurrency } from "../utils/Exchange";
-import { DeleteOutlined } from "@mui/icons-material";
+import { roundToNDigits, weiToMyCurrency } from "../utils/Exchange";
 import * as GameIcons from "react-icons/gi";
 import * as MDIcons from "react-icons/md";
 import * as FeatherIcons from "react-icons/fi";

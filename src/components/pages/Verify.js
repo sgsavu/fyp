@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from "react-redux";
 import SearchFilter from '../filters/Search';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Paper, Stack } from '@mui/material';
-/**
-  * The Verify component which is displayed on the Verify page
-  * It allows for users (police/authority) to search for any vehicle that exists
-  */
+
 function Verify() {
 
   const data = useSelector((state) => state.data);
@@ -16,16 +13,10 @@ function Verify() {
 
   const history = useHistory()
 
-  useEffect(() => {
-
-  }, [])
-
-
   return (
     <Stack  display="flex" alignItems="center" justifyContent="center" >
       <SearchFilter pool={Object.values(vehicleList)} modifier={setPool} reset={[]} />
       <Stack
- 
         spacing={3}
         width={{xs:"80%",sm:"40%"}}
       >

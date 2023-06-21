@@ -6,17 +6,11 @@ import * as GameIcons from "react-icons/gi";
 import * as MDIcons from "react-icons/md";
 import * as RiIcons from 'react-icons/ri';
 import { Avatar, Stack, Typography } from "@mui/material";
-import { Box } from "@mui/system";
-
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
-import { callViewChainFunction } from "../utils/GatewayParser";
-
 
 const MiniCard = ({ vehicle }) => {
-
     const data = useSelector((state) => state.data);
     const blockchain = useSelector((state) => state.blockchain);
-
 
     return (
 

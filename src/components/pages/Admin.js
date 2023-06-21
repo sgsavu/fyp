@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from "react-hook-form";
-import { roles, actions, getAdminOptionsFor } from '../utils/Roles';
+import { roles, getAdminOptionsFor } from '../utils/Roles';
 import { callChainFunction } from '../utils/GatewayParser';
 import { alerts } from '../../redux/app/appActions';
 import Web3 from "web3";
@@ -15,7 +14,6 @@ import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Ty
 const Admin = () => {
 
   const data = useSelector((state) => state.data);
-  const { register, handleSubmit } = useForm();
   const myAdminOptions = getAdminOptionsFor(data.myRole)
   const dispatch = useDispatch();
 

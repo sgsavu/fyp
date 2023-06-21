@@ -12,8 +12,6 @@ import { gcd } from '../utils/Other';
   * The user can either drag and drop or click to upload.
   */
 const Dropzone = () => {
-
-
     const dispatch = useDispatch();
     const form = useSelector((state) => state.form);
 
@@ -21,9 +19,6 @@ const Dropzone = () => {
     const [buffer, setBuffer] = useState(null)
     const [preview, setPreview] = useState(null)
 
-    /**
-  * Checks that the aspect ratio is good enough for the app
-  */
     function checkDimensions() {
         try {
             var gcxd = gcd(this.width, this.height)
@@ -36,7 +31,7 @@ const Dropzone = () => {
         }
     }
 
-    const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
+    const { getRootProps, getInputProps } = useDropzone({
         multiple: false,
         accept: "image/*",
         onDrop: (acceptedFiles) => {
@@ -64,8 +59,6 @@ const Dropzone = () => {
             setGoodToGo(false)
         }
     }, [goodToGo])
-
-
 
     return (
         <Stack

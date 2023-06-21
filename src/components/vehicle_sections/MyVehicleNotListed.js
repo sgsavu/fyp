@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { listForSale, listAuction, callChainFunction, callViewChainFunction, getContractFor } from "../utils/GatewayParser";
+import { callChainFunction, callViewChainFunction, getContractFor } from "../utils/GatewayParser";
 import { useDispatch, useSelector } from 'react-redux';
-import { alerts } from '../../redux/app/appActions';
 import { myCurrencyToWei } from '../utils/Exchange';
 import * as FaIcons from 'react-icons/fa';
-import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import * as RiIcons from 'react-icons/ri';
 import * as BsIcons from 'react-icons/bs';
@@ -19,7 +17,6 @@ function MyVehicleNotListed({ vehicle }) {
 
     const dispatch = useDispatch();
  
-    const app = useSelector((state) => state.app);
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
     const [desiredPrice, setDesiredPrice] = useState(0)

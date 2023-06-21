@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/VerifyBox.css';
 import { sleep } from '../utils/Other';
-
 import { MdOutlinePersonSearch } from "react-icons/md";
 import { Stack } from '@mui/material';
 
-/**
-  * The search bar functionality component used in Verify.
-  * It modifies the pool inputted into this component and then
-  * sets it back to the caller with the modifier function callback
-  * The reset is used to reset the pool to its initial value. the reset is 
-  * used as backup.
-  * @param pool the list we apply filtering on
-  * @param modifier the callback for the caller
-  * @param reset the backup
-  */
-const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
+const SearchFilter = ({ pool, modifier, reset }) => {
 
     const [wordEntered, setWordEntered] = useState("");
     const [iconFocused, setIconFocused] = useState(false);
@@ -46,7 +35,7 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
         setWordEntered("");
     };
 
-    useEffect(async () => {                             
+    useEffect(async () => {
         if (inputFocused == false && window.location.pathname == "/verify") {
             await sleep(100);
             clearInput()
@@ -62,7 +51,7 @@ const SearchFilter = ({ pool: pool, modifier: modifier, reset: reset }) => {
                     onBlur={() => setIconFocused(false)}
                     onFocus={() => setIconFocused(true)}
                 >
-                    {wordEntered ? (inputFocused || iconFocused ? "✖️" : <MdOutlinePersonSearch/>) : <MdOutlinePersonSearch/>}
+                    {wordEntered ? (inputFocused || iconFocused ? "✖️" : <MdOutlinePersonSearch />) : <MdOutlinePersonSearch />}
                 </button>
                 <input
                     className="search-input"
